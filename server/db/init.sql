@@ -23,5 +23,18 @@ CREATE TABLE IF NOT EXISTS user_profiles (
   updated_at timestamptz NOT NULL DEFAULT now()
 );
 
+CREATE TABLE IF NOT EXISTS survey_responses (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid REFERENCES users(id) ON DELETE SET NULL,
+  satisfaction smallint NOT NULL CHECK (satisfaction BETWEEN 1 AND 5),
+  understanding smallint NOT NULL CHECK (understanding BETWEEN 1 AND 5),
+  anxiety text NOT NULL,
+  compliance jsonb,
+  helpful text NOT NULL,
+  suggestion text,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+
 CREATE INDEX IF NOT EXISTS idx_users_account_lower ON users(account_lower);
 CREATE INDEX IF NOT EXISTS idx_profiles_phone ON user_profiles(phone);
+CREATE INDEX IF NOT EXISTS idx_survey_user_id ON survey_responses(user_id);

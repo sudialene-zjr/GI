@@ -1210,23 +1210,23 @@
               <div class="survey-question">1. 术前教育整体满意度</div>
               <div class="scale-group">
                 <div class="scale-option">
-                  <input type="radio" id="sat-1" name="satisfaction" required />
+                  <input type="radio" id="sat-1" name="satisfaction" value="1" required />
                   <label for="sat-1">1</label>
                 </div>
                 <div class="scale-option">
-                  <input type="radio" id="sat-2" name="satisfaction" />
+                  <input type="radio" id="sat-2" name="satisfaction" value="2" />
                   <label for="sat-2">2</label>
                 </div>
                 <div class="scale-option">
-                  <input type="radio" id="sat-3" name="satisfaction" />
+                  <input type="radio" id="sat-3" name="satisfaction" value="3" />
                   <label for="sat-3">3</label>
                 </div>
                 <div class="scale-option">
-                  <input type="radio" id="sat-4" name="satisfaction" />
+                  <input type="radio" id="sat-4" name="satisfaction" value="4" />
                   <label for="sat-4">4</label>
                 </div>
                 <div class="scale-option">
-                  <input type="radio" id="sat-5" name="satisfaction" />
+                  <input type="radio" id="sat-5" name="satisfaction" value="5" />
                   <label for="sat-5">5</label>
                 </div>
               </div>
@@ -1240,23 +1240,23 @@
               <div class="survey-question">2. 对术前/术后知识的理解程度</div>
               <div class="scale-group">
                 <div class="scale-option">
-                  <input type="radio" id="under-1" name="understanding" required />
+                  <input type="radio" id="under-1" name="understanding" value="1" required />
                   <label for="under-1">1</label>
                 </div>
                 <div class="scale-option">
-                  <input type="radio" id="under-2" name="understanding" />
+                  <input type="radio" id="under-2" name="understanding" value="2" />
                   <label for="under-2">2</label>
                 </div>
                 <div class="scale-option">
-                  <input type="radio" id="under-3" name="understanding" />
+                  <input type="radio" id="under-3" name="understanding" value="3" />
                   <label for="under-3">3</label>
                 </div>
                 <div class="scale-option">
-                  <input type="radio" id="under-4" name="understanding" />
+                  <input type="radio" id="under-4" name="understanding" value="4" />
                   <label for="under-4">4</label>
                 </div>
                 <div class="scale-option">
-                  <input type="radio" id="under-5" name="understanding" />
+                  <input type="radio" id="under-5" name="understanding" value="5" />
                   <label for="under-5">5</label>
                 </div>
               </div>
@@ -1338,9 +1338,10 @@
 
             <div class="survey-block">
               <div class="survey-question">6. 还有哪些建议或困惑需要我们改进？</div>
-              <textarea class="survey-textarea" placeholder="例如：希望加入更详细的饮食计划或随访提醒"></textarea>
+              <textarea class="survey-textarea" name="suggestion" placeholder="例如：希望加入更详细的饮食计划或随访提醒"></textarea>
             </div>
 
+            <div class="form-message" id="survey-message"></div>
             <div class="survey-actions">
               <button type="submit" class="btn btn-primary">提交问卷</button>
               <button type="button" class="btn btn-ghost" data-view="profile">稍后填写</button>

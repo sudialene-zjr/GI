@@ -331,6 +331,45 @@ async function handleSaveProfile(req, res) {
   }
 }
 
+async function handleSaveSurvey(req, res) {
+  try {
+    const payload = verifyToken(req, res);
+    if (!payload) return;
+    const body = await parseJsonBody(req);
+    const satisfaction = Number(body.satisfaction);
+    const understanding = Number(body.understanding);
+    const anxiety = String(body.anxiety || "").trim();
+    const helpful = String(body.helpful || "").trim();
+    const compliance = Array.isArray(body.compliance) ? body.compliance : [];
+    const suggestion = String(body.suggestion || "").trim();
+
+    if (!satisfaction || !understanding || !anxiety || !helpful) {
+      sendJson(res, 400, { ok: false, error: "请完整填写问卷" });
+      return;
+    }
+    if (satisfaction < 1 || satisfaction > 5 || understanding < 1 || understanding > 5) {
+      sendJson(res, 400, { ok: false, error: "评分范围应为1-5" });
+      return;
+    }
+
+    await pool.query(
+      `INSERT INTO survey_responses
+        (user_id, satisfaction, understanding, anxiety, compliance, helpful, suggestion)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+      [payload.sub, satisfaction, understanding, anxiety, JSON.stringify(compliance), helpful, suggestion || null]
+    );
+
+    sendJson(res, 200, { ok: true });
+  } catch (error) {
+    if (error && (error.message === "Invalid JSON" || error.message === "Body too large")) {
+      sendJson(res, 400, { ok: false, error: "请求格式有误" });
+      return;
+    }
+    console.error("Save survey error:", error);
+    handleDbError(res, error);
+  }
+}
+
 const server = http.createServer(async (req, res) => {
   if (req.method === "OPTIONS") {
     res.writeHead(204, {
@@ -361,6 +400,10 @@ const server = http.createServer(async (req, res) => {
     }
     if (req.method === "POST" && req.url === "/api/profile") {
       await handleSaveProfile(req, res);
+      return;
+    }
+    if (req.method === "POST" && req.url === "/api/survey") {
+      await handleSaveSurvey(req, res);
       return;
     }
     if (req.method === "GET" && req.url === "/api/health") {

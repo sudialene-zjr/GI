@@ -461,12 +461,57 @@ if (articleList) {
 if (surveyForm) {
   surveyForm.addEventListener("submit", (event) => {
     event.preventDefault();
-    if (!surveyToast) return;
-    surveyToast.classList.add("is-visible");
-    clearTimeout(surveyToastTimer);
-    surveyToastTimer = setTimeout(() => {
-      surveyToast.classList.remove("is-visible");
-    }, 2400);
+    const token = getToken();
+    if (!token) {
+      setFormMessage(surveyForm, "请先登录后再提交问卷");
+      return;
+    }
+
+    const satisfaction = Number(
+      surveyForm.querySelector('input[name="satisfaction"]:checked')?.value
+    );
+    const understanding = Number(
+      surveyForm.querySelector('input[name="understanding"]:checked')?.value
+    );
+    const anxiety =
+      surveyForm.querySelector('input[name="anxiety"]:checked')?.value || "";
+    const helpful =
+      surveyForm.querySelector('input[name="helpful"]:checked')?.value || "";
+    const compliance = Array.from(
+      surveyForm.querySelectorAll('input[name="compliance"]:checked')
+    ).map((item) => item.value);
+    const suggestion =
+      surveyForm.querySelector('textarea[name="suggestion"]')?.value.trim() ||
+      "";
+
+    if (!satisfaction || !understanding || !anxiety || !helpful) {
+      setFormMessage(surveyForm, "请完整填写必填项");
+      return;
+    }
+
+    const payload = {
+      satisfaction,
+      understanding,
+      anxiety,
+      compliance,
+      helpful,
+      suggestion
+    };
+
+    setFormMessage(surveyForm, "");
+    postJson("/api/survey", payload, true)
+      .then(() => {
+        if (!surveyToast) return;
+        surveyToast.textContent = "感谢反馈，已收到您的随访信息。";
+        surveyToast.classList.add("is-visible");
+        clearTimeout(surveyToastTimer);
+        surveyToastTimer = setTimeout(() => {
+          surveyToast.classList.remove("is-visible");
+        }, 2400);
+      })
+      .catch((error) => {
+        setFormMessage(surveyForm, error.message || "提交失败");
+      });
   });
 }
 
