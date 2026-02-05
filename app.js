@@ -115,10 +115,30 @@ function clearStoredUser() {
   window.localStorage.removeItem("gi_user");
 }
 
-async function postJson(url, payload) {
+function getToken() {
+  return window.localStorage.getItem("gi_token");
+}
+
+function storeToken(token) {
+  if (!token) return;
+  window.localStorage.setItem("gi_token", token);
+}
+
+function clearToken() {
+  window.localStorage.removeItem("gi_token");
+}
+
+async function postJson(url, payload, useAuth = false) {
+  const headers = { "Content-Type": "application/json" };
+  if (useAuth) {
+    const token = getToken();
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+  }
   const response = await fetch(url, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers,
     body: JSON.stringify(payload)
   });
   const data = await response.json().catch(() => ({}));
@@ -128,9 +148,25 @@ async function postJson(url, payload) {
   return data;
 }
 
-  if (loginForm) {
-    loginForm.addEventListener("submit", async (event) => {
-      event.preventDefault();
+async function getJson(url, useAuth = false) {
+  const headers = {};
+  if (useAuth) {
+    const token = getToken();
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+  }
+  const response = await fetch(url, { headers });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok || data.ok === false) {
+    throw new Error(data.error || "请求失败");
+  }
+  return data;
+}
+
+if (loginForm) {
+  loginForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
     const account = loginForm.elements.account?.value.trim();
     const password = loginForm.elements.password?.value || "";
     if (!account || !password) {
@@ -140,6 +176,9 @@ async function postJson(url, payload) {
     setFormMessage(loginForm, "");
     try {
       const data = await postJson("/api/login", { account, password });
+      if (data?.token) {
+        storeToken(data.token);
+      }
       if (data?.user) {
         storeUser(data.user);
       }
@@ -153,9 +192,9 @@ async function postJson(url, payload) {
   });
 }
 
-  if (registerForm) {
-    registerForm.addEventListener("submit", async (event) => {
-      event.preventDefault();
+if (registerForm) {
+  registerForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
     const name = registerForm.elements.name?.value.trim();
     const account = registerForm.elements.account?.value.trim();
     const password = registerForm.elements.password?.value || "";
@@ -176,6 +215,9 @@ async function postJson(url, payload) {
         password,
         confirmPassword
       });
+      if (data?.token) {
+        storeToken(data.token);
+      }
       if (data?.user) {
         storeUser(data.user);
       }
@@ -225,8 +267,8 @@ function updateProfileDisplay(profile = {}) {
 
 async function loadProfile() {
   if (!profileForm) return;
-  const user = getStoredUser();
-  const isGuest = !user?.id;
+  const token = getToken();
+  const isGuest = !token;
   if (profileGuestEl) profileGuestEl.classList.toggle("is-hidden", !isGuest);
   if (profileContentEl) profileContentEl.classList.toggle("is-hidden", isGuest);
   if (isGuest) {
@@ -234,35 +276,48 @@ async function loadProfile() {
     return;
   }
 
-  const nameField = profileForm.elements.name;
-  if (nameField && !nameField.value) {
-    nameField.value = user.name || "";
-  }
-
   try {
-    const response = await fetch(`/api/profile?userId=${encodeURIComponent(user.id)}`);
-    const data = await response.json().catch(() => ({}));
-    if (response.ok && data?.profile) {
-      const profile = data.profile;
-      if (profileForm.elements.name) profileForm.elements.name.value = profile.name || user.name || "";
-      if (profileForm.elements.birth) profileForm.elements.birth.value = profile.birth || "";
-      if (profileForm.elements.gender) profileForm.elements.gender.value = profile.gender || "";
-      if (profileForm.elements.education) profileForm.elements.education.value = profile.education || "";
-      if (profileForm.elements.phone) profileForm.elements.phone.value = profile.phone || "";
-      updateProfileDisplay({ ...profile, account: user.account });
-    } else {
+    const meData = await getJson("/api/me", true);
+    const user = meData.user;
+    if (user) {
+      storeUser(user);
+      const nameField = profileForm.elements.name;
+      if (nameField && !nameField.value) {
+        nameField.value = user.name || "";
+      }
+    }
+
+    try {
+      const profileData = await getJson("/api/profile", true);
+      if (profileData?.profile) {
+        const profile = profileData.profile;
+        if (profileForm.elements.name) profileForm.elements.name.value = profile.name || user.name || "";
+        if (profileForm.elements.birth) profileForm.elements.birth.value = profile.birth || "";
+        if (profileForm.elements.gender) profileForm.elements.gender.value = profile.gender || "";
+        if (profileForm.elements.education) profileForm.elements.education.value = profile.education || "";
+        if (profileForm.elements.phone) profileForm.elements.phone.value = profile.phone || "";
+        updateProfileDisplay({ ...profile, account: user.account });
+      } else {
+        updateProfileDisplay({ name: user.name || "", account: user.account });
+      }
+    } catch {
       updateProfileDisplay({ name: user.name || "", account: user.account });
     }
-  } catch {
-    updateProfileDisplay({ name: user.name || "", account: user.account });
+  } catch (error) {
+    clearToken();
+    clearStoredUser();
+    if (profileGuestEl) profileGuestEl.classList.remove("is-hidden");
+    if (profileContentEl) profileContentEl.classList.add("is-hidden");
+    updateProfileDisplay({});
   }
 }
 
 if (profileForm) {
   profileForm.addEventListener("submit", async (event) => {
     event.preventDefault();
+    const token = getToken();
     const user = getStoredUser();
-    if (!user?.id) {
+    if (!token || !user?.account) {
       setFormMessage(profileForm, "请先登录后再填写资料");
       return;
     }
@@ -282,7 +337,7 @@ if (profileForm) {
 
     setFormMessage(profileForm, "");
     try {
-      const data = await postJson("/api/profile", { userId: user.id, profile });
+      const data = await postJson("/api/profile", { profile }, true);
       updateProfileDisplay({ ...(data.profile || profile), account: user.account });
       setFormMessage(profileForm, "资料已保存", "success");
     } catch (error) {
@@ -293,6 +348,7 @@ if (profileForm) {
 
 if (logoutLink) {
   logoutLink.addEventListener("click", () => {
+    clearToken();
     clearStoredUser();
   });
 }

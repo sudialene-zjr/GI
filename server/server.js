@@ -3,17 +3,25 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 const { Pool } = require("pg");
+const jwt = require("jsonwebtoken");
 
 const PORT = process.env.PORT || 3000;
 const ROOT = path.resolve(__dirname, "..");
 const MAX_BODY_SIZE = 1e6; // 1MB
 const RAW_DATABASE_URL = process.env.DATABASE_URL || "";
-const DATABASE_URL = RAW_DATABASE_URL.replace(/^postgresql\\+psycopg:\\/\\//, "postgresql://");
+const DATABASE_URL = RAW_DATABASE_URL.replace(/^postgresql\+psycopg:\/\//, "postgresql://");
 if (!DATABASE_URL) {
   console.error("Missing DATABASE_URL. Please set it before starting the server.");
   process.exit(1);
 }
-const useSSL = !/localhost|127\\.0\\.0\\.1/.test(DATABASE_URL);
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  console.error("Missing JWT_SECRET. Please set it before starting the server.");
+  process.exit(1);
+}
+const JWT_ISSUER = "gi-edu";
+const JWT_EXPIRES_IN = "7d";
+const useSSL = !/localhost|127\.0\.0\.1/.test(DATABASE_URL);
 const pool = new Pool({
   connectionString: DATABASE_URL,
   ssl: useSSL ? { rejectUnauthorized: false } : false
@@ -35,7 +43,7 @@ function sendJson(res, status, payload) {
   res.writeHead(status, {
     "Content-Type": "application/json; charset=utf-8",
     "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS"
   });
   res.end(JSON.stringify(payload));
@@ -125,6 +133,46 @@ function normalizeAccount(account) {
   return account.trim().toLowerCase();
 }
 
+function handleDbError(res, error) {
+  if (error && error.code === "42P01") {
+    sendJson(res, 500, { ok: false, error: "数据库未初始化，请先执行 init.sql" });
+    return;
+  }
+  if (error && error.code === "28P01") {
+    sendJson(res, 500, { ok: false, error: "数据库认证失败，请检查账号密码" });
+    return;
+  }
+  sendJson(res, 500, { ok: false, error: "服务器内部错误" });
+}
+
+function signToken(user) {
+  return jwt.sign(
+    { sub: user.id, name: user.name, account: user.account },
+    JWT_SECRET,
+    { issuer: JWT_ISSUER, expiresIn: JWT_EXPIRES_IN }
+  );
+}
+
+function getBearerToken(req) {
+  const auth = req.headers.authorization || "";
+  if (!auth.startsWith("Bearer ")) return null;
+  return auth.slice(7).trim();
+}
+
+function verifyToken(req, res) {
+  const token = getBearerToken(req);
+  if (!token) {
+    sendJson(res, 401, { ok: false, error: "未登录" });
+    return null;
+  }
+  try {
+    return jwt.verify(token, JWT_SECRET, { issuer: JWT_ISSUER });
+  } catch {
+    sendJson(res, 401, { ok: false, error: "登录已过期" });
+    return null;
+  }
+}
+
 async function handleRegister(req, res) {
   try {
     const { name, account, password, confirmPassword } = await parseJsonBody(req);
@@ -149,13 +197,19 @@ async function handleRegister(req, res) {
       [String(name).trim(), String(account).trim(), normalized, hash, salt]
     );
     const user = result.rows[0];
-    sendJson(res, 200, { ok: true, user });
+    const token = signToken(user);
+    sendJson(res, 200, { ok: true, user, token });
   } catch (error) {
     if (error && error.code === "23505") {
       sendJson(res, 409, { ok: false, error: "账号已存在" });
       return;
     }
-    sendJson(res, 400, { ok: false, error: "请求格式有误" });
+    if (error && (error.message === "Invalid JSON" || error.message === "Body too large")) {
+      sendJson(res, 400, { ok: false, error: "请求格式有误" });
+      return;
+    }
+    console.error("Register error:", error);
+    handleDbError(res, error);
   }
 }
 
@@ -178,39 +232,61 @@ async function handleLogin(req, res) {
       sendJson(res, 401, { ok: false, error: "账号或密码错误" });
       return;
     }
-    sendJson(res, 200, { ok: true, user: { id: user.id, name: user.name, account: user.account } });
+    const safeUser = { id: user.id, name: user.name, account: user.account };
+    const token = signToken(safeUser);
+    sendJson(res, 200, { ok: true, user: safeUser, token });
   } catch (error) {
-    sendJson(res, 400, { ok: false, error: "请求格式有误" });
+    if (error && (error.message === "Invalid JSON" || error.message === "Body too large")) {
+      sendJson(res, 400, { ok: false, error: "请求格式有误" });
+      return;
+    }
+    console.error("Login error:", error);
+    handleDbError(res, error);
+  }
+}
+
+async function handleMe(req, res) {
+  const payload = verifyToken(req, res);
+  if (!payload) return;
+  try {
+    const result = await pool.query(
+      "SELECT id, name, account FROM users WHERE id = $1",
+      [payload.sub]
+    );
+    const user = result.rows[0];
+    if (!user) {
+      sendJson(res, 401, { ok: false, error: "用户不存在" });
+      return;
+    }
+    sendJson(res, 200, { ok: true, user });
+  } catch (error) {
+    console.error("Me error:", error);
+    handleDbError(res, error);
   }
 }
 
 async function handleGetProfile(req, res) {
-  const url = new URL(req.url, `http://${req.headers.host}`);
-  const userId = url.searchParams.get("userId");
-  if (!userId) {
-    sendJson(res, 400, { ok: false, error: "缺少用户信息" });
-    return;
+  const payload = verifyToken(req, res);
+  if (!payload) return;
+  try {
+    const profileResult = await pool.query(
+      `SELECT name, birth_month AS birth, gender, education, phone, updated_at
+       FROM user_profiles WHERE user_id = $1`,
+      [payload.sub]
+    );
+    sendJson(res, 200, { ok: true, profile: profileResult.rows[0] || null });
+  } catch (error) {
+    console.error("Get profile error:", error);
+    handleDbError(res, error);
   }
-  const userResult = await pool.query(
-    "SELECT id FROM users WHERE id = $1",
-    [userId]
-  );
-  if (userResult.rowCount === 0) {
-    sendJson(res, 404, { ok: false, error: "用户不存在" });
-    return;
-  }
-  const profileResult = await pool.query(
-    `SELECT name, birth_month AS birth, gender, education, phone, updated_at
-     FROM user_profiles WHERE user_id = $1`,
-    [userId]
-  );
-  sendJson(res, 200, { ok: true, profile: profileResult.rows[0] || null });
 }
 
 async function handleSaveProfile(req, res) {
   try {
-    const { userId, profile } = await parseJsonBody(req);
-    if (!userId || !profile) {
+    const payload = verifyToken(req, res);
+    if (!payload) return;
+    const { profile } = await parseJsonBody(req);
+    if (!profile) {
       sendJson(res, 400, { ok: false, error: "请完整填写资料" });
       return;
     }
@@ -221,7 +297,7 @@ async function handleSaveProfile(req, res) {
     }
     const client = await pool.connect();
     try {
-      const userResult = await client.query("SELECT id FROM users WHERE id = $1", [userId]);
+      const userResult = await client.query("SELECT id FROM users WHERE id = $1", [payload.sub]);
       if (userResult.rowCount === 0) {
         sendJson(res, 404, { ok: false, error: "用户不存在" });
         return;
@@ -238,15 +314,20 @@ async function handleSaveProfile(req, res) {
            phone = EXCLUDED.phone,
            updated_at = now()
          RETURNING name, birth_month AS birth, gender, education, phone, updated_at`,
-        [userId, String(name).trim(), String(birth), String(gender), String(education), String(phone).trim()]
+        [payload.sub, String(name).trim(), String(birth), String(gender), String(education), String(phone).trim()]
       );
-      await client.query("UPDATE users SET name = $2 WHERE id = $1", [userId, String(name).trim()]);
+      await client.query("UPDATE users SET name = $2 WHERE id = $1", [payload.sub, String(name).trim()]);
       sendJson(res, 200, { ok: true, profile: profileResult.rows[0] });
     } finally {
       client.release();
     }
   } catch (error) {
-    sendJson(res, 400, { ok: false, error: "请求格式有误" });
+    if (error && (error.message === "Invalid JSON" || error.message === "Body too large")) {
+      sendJson(res, 400, { ok: false, error: "请求格式有误" });
+      return;
+    }
+    console.error("Save profile error:", error);
+    handleDbError(res, error);
   }
 }
 
@@ -254,7 +335,7 @@ const server = http.createServer(async (req, res) => {
   if (req.method === "OPTIONS") {
     res.writeHead(204, {
       "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Headers": "Content-Type",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
       "Access-Control-Allow-Methods": "GET, POST, OPTIONS"
     });
     res.end();
@@ -268,6 +349,10 @@ const server = http.createServer(async (req, res) => {
     }
     if (req.method === "POST" && req.url === "/api/login") {
       await handleLogin(req, res);
+      return;
+    }
+    if (req.method === "GET" && req.url === "/api/me") {
+      await handleMe(req, res);
       return;
     }
     if (req.method === "GET" && req.url.startsWith("/api/profile")) {
