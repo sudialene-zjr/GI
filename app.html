@@ -1,0 +1,1377 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>胃肠镜教育助手 | 智能问答</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="page">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark">HX</span>
+        <div>
+          <div class="brand-title">胃肠镜教育助手</div>
+          <div class="brand-sub">术前教育 · 术后恢复 · 智能随访</div>
+        </div>
+      </div>
+      <nav class="nav">
+        <button class="nav-link is-active" data-view="chat">智能问答</button>
+        <button class="nav-link" data-view="learn">学习中心</button>
+        <button class="nav-link" data-view="profile">我的信息</button>
+      </nav>
+      <a class="btn btn-primary" href="index.html" id="logout-link">退出</a>
+    </header>
+
+    <main>
+      <section id="chat" class="view is-active">
+        <div class="grid chat-grid">
+          <aside class="panel side-panel">
+            <div class="panel-title">快速指引</div>
+            <div class="pill-group">
+              <button class="pill" data-prompt="术前一天需要禁食多久？">术前禁食</button>
+              <button class="pill" data-prompt="麻醉后可以吃什么？">术后饮食</button>
+              <button class="pill" data-prompt="肠镜前泻药怎么安排？">泻药安排</button>
+              <button class="pill" data-prompt="出现腹痛怎么办？">异常处理</button>
+            </div>
+            <div class="side-card">
+              <div class="side-card-title">今日提醒</div>
+              <div class="side-card-desc">保持清淡饮食，避免高纤维与油炸食物。</div>
+            </div>
+            <div class="side-card">
+              <div class="side-card-title">检查准备度</div>
+              <div class="progress">
+                <div class="progress-bar" style="width: 72%;"></div>
+              </div>
+              <div class="progress-text">完成度 72%</div>
+            </div>
+          </aside>
+
+          <section class="panel chat-panel">
+            <div class="panel-title">智能问答</div>
+            <div class="chat-window" id="chat-window">
+              <div class="message bot">
+                <div class="avatar">医</div>
+                <div class="bubble">
+                  <div class="bubble-title">术前教育提示</div>
+                  <div class="bubble-text">检查前需遵循禁食禁饮要求，具体时长请告知检查时间，我可以帮你生成个性化方案。</div>
+                  <div class="bubble-meta">刚刚</div>
+                </div>
+              </div>
+              <div class="message user">
+                <div class="bubble">
+                  <div class="bubble-text">我是上午9点的胃镜，需要几点开始禁食？</div>
+                  <div class="bubble-meta">刚刚</div>
+                </div>
+              </div>
+            </div>
+            <form class="chat-input" id="chat-form">
+              <input type="text" id="chat-text" placeholder="输入你的问题，例如：术后腹胀是否正常？" />
+              <button type="submit" class="btn btn-primary">发送</button>
+            </form>
+            <div class="chat-hint">系统建议仅供参考，如出现持续不适请及时就医。</div>
+          </section>
+
+          <aside class="panel side-panel">
+            <div class="panel-title">恢复路径</div>
+            <div class="timeline">
+              <div class="timeline-item">
+                <div class="dot"></div>
+                <div>
+                  <div class="timeline-title">术后0-6小时</div>
+                  <div class="timeline-desc">观察麻醉反应，少量温水</div>
+                </div>
+              </div>
+              <div class="timeline-item">
+                <div class="dot"></div>
+                <div>
+                  <div class="timeline-title">术后24小时</div>
+                  <div class="timeline-desc">清淡饮食，避免刺激性食物</div>
+                </div>
+              </div>
+              <div class="timeline-item">
+                <div class="dot"></div>
+                <div>
+                  <div class="timeline-title">术后48小时</div>
+                  <div class="timeline-desc">恢复日常活动，关注异常出血</div>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section id="learn" class="view">
+        <div class="panel learn-panel">
+          <div class="learn-header">
+            <div>
+              <div class="panel-title">学习中心</div>
+              <div class="learn-sub">选择“视频教学”或“常见疑问解答”，点击条目展开小节与内容。</div>
+            </div>
+            <div class="tab-header learn-tabs">
+              <button class="tab" data-learn="video">视频教学</button>
+              <button class="tab is-active" data-learn="article">常见疑问解答</button>
+            </div>
+          </div>
+
+          <div class="learn-body">
+            <div class="learn-view" data-learn-view="video">
+              <div class="video-list">
+                <details open>
+                  <summary>
+                    <div class="learn-summary">
+                      <div class="learn-summary-title">胃镜检查流程概览</div>
+                      <div class="learn-summary-meta">时长 03:12 · 基础流程</div>
+                    </div>
+                    <span class="learn-summary-action">观看</span>
+                  </summary>
+                  <div class="video-detail">
+                    <div class="video-player">
+                      <span class="video-play">▶</span>
+                      <span class="video-tip">点击播放（示意）</span>
+                    </div>
+                    <div class="video-desc">从预约、准备到检查结束的全流程说明，帮助患者建立整体认知。</div>
+                  </div>
+                </details>
+                <details>
+                  <summary>
+                    <div class="learn-summary">
+                      <div class="learn-summary-title">肠镜前饮食与泻药安排</div>
+                      <div class="learn-summary-meta">时长 04:05 · 清肠准备</div>
+                    </div>
+                    <span class="learn-summary-action">观看</span>
+                  </summary>
+                  <div class="video-detail">
+                    <div class="video-player">
+                      <span class="video-play">▶</span>
+                      <span class="video-tip">点击播放（示意）</span>
+                    </div>
+                    <div class="video-desc">饮食过渡、清肠步骤与常见注意事项，降低准备过程的不确定感。</div>
+                  </div>
+                </details>
+                <details>
+                  <summary>
+                    <div class="learn-summary">
+                      <div class="learn-summary-title">术后恢复注意事项</div>
+                      <div class="learn-summary-meta">时长 02:48 · 恢复期</div>
+                    </div>
+                    <span class="learn-summary-action">观看</span>
+                  </summary>
+                  <div class="video-detail">
+                    <div class="video-player">
+                      <span class="video-play">▶</span>
+                      <span class="video-tip">点击播放（示意）</span>
+                    </div>
+                    <div class="video-desc">麻醉恢复、饮食与观察要点，适合术后24-48小时随时查看。</div>
+                  </div>
+                </details>
+              </div>
+            </div>
+
+            <div class="learn-view is-active" data-learn-view="article">
+              <div class="article-list" id="article-list">
+                <!-- ARTICLES_START -->
+<details class="article-item">
+  <summary>
+    <div class="learn-summary">
+      <div class="learn-summary-title">体验和恢复期</div>
+      <div class="learn-summary-meta">约 2 分钟阅读 · 3 小节</div>
+    </div>
+    <span class="learn-summary-action">阅读</span>
+  </summary>
+  <div class="article-sections">
+    <details class="article-section">
+  <summary>
+    <span class="section-title">1.术后常规不适、饮食 / 作息 / 复工恢复</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>检查后会不会很难受？多久能正常吃喝、上班？</h3>
+    <blockquote class="article-quote">
+<p><strong>胃镜后：</strong>可能有轻微咽喉不适，多数数小时内可缓解；一般 1–2 小时后可以先喝少量温开水，无不适再逐步进食。</p>
+<p><strong>结肠镜后：</strong>可能有轻微腹胀、放屁增多，一般当天就能缓解；没有特殊治疗（如大息肉切除）的话，当天可以进清淡易消化食物。因为有镇静/麻醉，当天建议：多休息，避免剧烈运动和重要决策；第二天一般即可恢复正常生活和工作。</p>
+    </blockquote>
+<h3>检查后肚子很胀、老想放屁正常吗？需要吃药吗？</h3>
+<blockquote class="article-quote">
+这是很常见的正常现象：结肠镜检查时会向肠腔内送气（很多中心已经改用 CO₂），检查结束后这部分气体需要一段时间才能完全排出；所以会感觉腹胀、肠鸣增加、放屁增多。<br><br>一般建议：检查后适当 下床走动，有助于肠道排气；如无大范围治疗，轻柔揉腹也可以缓解不适。通常不需要额外吃药，1 天内会明显好转；如腹痛进行性加重、胀得难以忍受，则需及时就医评估。
+</blockquote>
+<h3>检查后大便次数改变（腹泻或几天没大便）正常吗？</h3>
+<blockquote class="article-quote">
+短期改变是常见的：因为前一天喝了大量洗肠药，检查后 1–2 天内偶尔还有稀便或次数略多是正常的；有的人反而会因为“前一天拉空了”而出现 1–2 天不大便，这通常也不用太担心。<br><br>一般建议：多喝水，逐渐恢复正常饮食，多吃一些易消化、含少量纤维的食物；如腹泻持续数天伴发热、腹痛加重，或长期便秘明显恶化，应及时就医。
+</blockquote>
+<h3>做完无痛胃肠镜后，当天会不会一直很困、头晕？需要特别注意什么？</h3>
+<blockquote class="article-quote">
+由于使用了镇静/麻醉药，部分人检查后 当天都会觉得有点困倦、反应略慢，这属于正常现象；一般休息一下午，第二天就恢复平常状态；<br><br>需要特别注意：
+<ol><li>当天避免开车、骑车、上高处、游泳等需要高度集中注意力的活动；</li><li>不要当天安排重要商务谈判、签署重要法律文件等；</li><li>建议有家属或朋友陪同回家。</li></ol>
+如果出现持续明显头晕、站立不稳、意识模糊，应及时联系医院，排除低血压、低血糖或其他情况。
+</blockquote>
+  </div>
+</details>
+<details class="article-section">
+  <summary>
+    <span class="section-title">2.术后饮食禁忌（辛辣、酒、刺激食物）</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>检查后多久可以喝酒、吃烧烤、火锅、辛辣刺激的食物？</h3>
+    <blockquote class="article-quote">
+如果这次只是<strong>单纯诊断性检查或小活检</strong>：一般建议 至少 24 小时内 清淡饮食，避免烈酒、烧烤、火锅、重油重辣；<br><br>如果做了<strong>较大息肉切除或大面积黏膜切除</strong>：通常会建议清淡软食数天甚至 1–2 周，具体由医生在出院/出报告时说明；酒精和重口味食物会刺激黏膜、增加出血和不适的风险，所以宁可“多忍几天”，也不要刚做完检查就大吃大喝。
+    </blockquote>
+  </div>
+</details>
+<details class="article-section">
+  <summary>
+    <span class="section-title">3.术后危险信号（需紧急就医）</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>检查完当天有哪些“危险信号”要警惕？</h3>
+    <blockquote class="article-quote">
+如果出现以下情况之一，请立即就近急诊就医或按医院预案回院复查：
+<ol><li>持续或加重的剧烈腹痛、胸痛；大量鲜红血便、黑便或呕血；</li><li>持续发热、寒战；严重头晕、出冷汗、心慌、气喘；</li><li>切除息肉或大面积治疗后的伤口部位剧烈疼痛。</li></ol>
+<p>大多数人不会出现这些问题，但知道什么时候应该警惕，是非常重要的“安全保险”。</p>
+    </blockquote>
+  </div>
+</details>
+  </div>
+</details>
+<details class="article-item">
+  <summary>
+    <div class="learn-summary">
+      <div class="learn-summary-title">安全性和风险</div>
+      <div class="learn-summary-meta">约 3 分钟阅读 · 4 小节</div>
+    </div>
+    <span class="learn-summary-action">阅读</span>
+  </summary>
+  <div class="article-sections">
+    <details class="article-section">
+  <summary>
+    <span class="section-title">整体安全性与风险获益权衡：1、7</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>无痛胃肠镜安全吗？会不会有生命危险？</h3>
+    <blockquote class="article-quote">
+<p>对大多数身体状况尚可的患者来说，无痛胃肠镜是非常安全的检查，严重并发症总体发生率极低。可能的风险主要有两大类：内镜本身的风险：少数人可能有咽痛、腹胀、恶心；极少数可能发生出血、穿孔（多见于切除大息肉或复杂治疗时），需要内镜止血甚至外科手术。镇静/麻醉的风险：短暂血压、心率变化或呼吸变慢；极少数可能出现严重过敏、呼吸抑制或心律失常。</p>
+<p>所以我们在检查全程会给你监护、吸氧，有完整的抢救设备和受过训练的医护团队，以尽可能把风险控制在最低。</p>
+    </blockquote>
+<h3>“做”和“不做”的风险，怎么权衡？</h3>
+<blockquote class="article-quote">
+如果你属于筛查或高危人群（比如 45 岁以上做肠镜，或有明显症状）：<br><br>不做：可能错过早期肿瘤或重要病变，等到有严重症状时再发现，治疗难度和风险都更大；<br><br>做了：内镜和麻醉本身有小概率风险，但绝大多数可控、可救治，而且可以早期发现和处理病变。<br><br>所以，对于大部分有明确适应证的人，国际和国内指南的共识是：做一次规范的胃肠镜，获益远远大于风险。
+</blockquote>
+  </div>
+</details>
+<details class="article-section">
+  <summary>
+    <span class="section-title">操作相关风险</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>做活检、切息肉会不会很危险？会不会大出血？</h3>
+    <blockquote class="article-quote">
+<p>大部分胃肠道活检和小息肉切除都是很成熟的操作，多数病人没有明显不适，也不会影响生活。</p>
+<p>出血风险：切除小息肉时出血风险很低，多数可在内镜下直接止住；大息肉、广泛黏膜切除时风险会高一些，我们会提前评估、采取预防性止血措施（如夹子、圈套结扎、肾上腺素注射等）。一旦出现明显出血或穿孔风险，我们会在内镜室内优先尝试内镜止血/闭合，如仍无法控制，才考虑转外科处理。检查后如出现剧烈腹痛、持续大量鲜红血便或呕血、发热、头晕出冷汗等，请立刻及时回院。</p>
+    </blockquote>
+  </div>
+</details>
+<details class="article-section">
+  <summary>
+    <span class="section-title">特殊人群安全：</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>无痛胃肠镜对心脏不好、年纪大的人安全吗？</h3>
+    <blockquote class="article-quote">
+年龄大、有心肺疾病、糖尿病、肾功能不全等人群，确实是我们重点关注的高危人群；在你做检查前，医生会：了解详细病史，查看心电图和必要的化验；有需要时请心内科、麻醉科等会诊；调整药物种类和剂量，必要时选择监护更完善的环境。只要是在充分评估和监测下进行，大部分老年患者仍然可以比较安全地完成无痛胃肠镜。
+    </blockquote>
+<h3>如果对药物过敏，或者以前麻醉不太顺利，还能做无痛胃肠镜吗？</h3>
+<blockquote class="article-quote">
+<p>关键是提前告诉医生：你对哪些药物过敏（如青霉素、碘造影剂、止痛药等）；以前做手术或麻醉时是否出现过严重呕吐、难以唤醒、心律失常、呼吸困难等情况。在了解这些信息后：麻醉医生可以避开同类药物或选择更安全的替代方案；检查时也会加强监护，准备好应急药物和抢救设备。绝大多数有“过敏史/麻醉不适史”的患者，在充分准备下仍然可以安全完成无痛胃肠镜。真正危险的是“隐瞒不说”。</p>
+</blockquote>
+  </div>
+</details>
+<details class="article-section">
+  <summary>
+    <span class="section-title">特殊安全风险（感染、误吸 / 肺炎）</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>无痛胃肠镜会不会被“感染”？会不会传染乙肝、幽门螺杆菌之类？</h3>
+    <blockquote class="article-quote">
+医院的内镜器械都经过严格的规范清洗和高水平消毒，有专门的再处理流程（床旁预处理→手工清洗→机器高水平消毒→干燥储存），并有记录可追溯。在这样的流程下，通过内镜传播乙肝、丙肝、HIV 等的风险极低，远低于日常生活中一些常见的暴露风险。幽门螺杆菌这类细菌主要通过口口传播或家庭内共餐等途径获得，并不是做一次胃镜就“传上来的”。所以只要是规范医院和内镜中心，不用过度担心“做一次胃镜会被传染”。
+    </blockquote>
+<h3>无痛胃肠镜会不会呛咳、误吸，引起肺炎？</h3>
+<blockquote class="article-quote">
+<p>呛咳、误吸的风险主要来自：胃里还有食物/大量液体，在镇静状态下反流到气道。所以我们非常强调：严格执行禁食禁饮时间（固体 8 小时、清流质 2 小时以上）；有胃排空延迟、严重糖尿病胃轻瘫等患者，可能会适当延长禁食时间或采取特别策略。在检查过程中：你会侧卧位，口腔有吸引装置；一旦有呛咳、分泌物增多，医护人员会立即吸引、调整体位、必要时暂停操作。在准备到位、监护到位的前提下，严重误吸导致肺炎或呼吸衰竭的情况非常罕见。</p>
+</blockquote>
+  </div>
+</details>
+  </div>
+</details>
+<details class="article-item">
+  <summary>
+    <div class="learn-summary">
+      <div class="learn-summary-title">心理准备 · 隐私与就诊体验</div>
+      <div class="learn-summary-meta">约 5 分钟阅读 · 4 小节</div>
+    </div>
+    <span class="learn-summary-action">阅读</span>
+  </summary>
+  <div class="article-sections">
+    <details class="article-section">
+  <summary>
+    <span class="section-title">1.麻醉恐惧、焦虑抑郁情绪应对</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>如果对麻醉特别恐惧，担心“睡不过来”，怎么办？</h3>
+    <blockquote class="article-quote">
+现代短效麻醉药物（如丙泊酚）在专业麻醉医生监护下使用是非常安全的：药物作用时间短，停药后几分钟～十几分钟就基本代谢；全程监测血压、心率、血氧，必要时进行干预。在检查前，你可以：把自己的担心、既往麻醉经历、家族中是否有麻醉不良反应，坦白告诉麻醉医生；麻醉医生会根据你的情况设计最低有效剂量的方案，并随时调整。真正危险的是隐瞒病史或用药史，而不是坦诚地讲出你的恐惧。
+    </blockquote>
+<h3>如果平时就有焦虑/抑郁，担心做检查会“触发”情绪问题，有什么建议吗？</h3>
+<blockquote class="article-quote">
+<p>如果你有明确的焦虑症、抑郁症或正在接受心理/精神科治疗，请提前告诉医生：包括目前用的药、最近情绪是否稳定、有没有自伤或强烈绝望感。</p>
+<p>医生可以做的包括：</p>
+<ol><li>在解释检查时尽量讲清楚可控部分和不确定的边界，减少灾难化联想；</li><li>尽量让整个流程可预期：告诉你大致时间线、可能感觉和恢复方式；</li><li>必要时，与精神科医生沟通，避免随意停用原有药物，调整好检查当天的用药。<strong>你可以尝试：</strong></li><li>检查前提前写下“我最怕的三件事”和“我希望医生帮我做到的两件事”，就诊时直接给医生看；</li><li>在检查前练习一些简单的放松练习（缓慢深呼吸、肌肉放松等）。</li></ol>
+<p>如果检查后情绪明显波动、失眠加重或出现强烈负面想法，也可以及时联系心理/精神科，这都是照顾自己、而不是“矫情”。</p>
+</blockquote>
+  </div>
+</details>
+<details class="article-section">
+  <summary>
+    <span class="section-title">2.隐私保护与家属陪同</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>胃肠镜检查时的隐私如何保护？会不会走光、被录像乱用？</h3>
+    <blockquote class="article-quote">
+医生会尽量保护你的隐私：检查时尽量只暴露必要区域，其他部位用布单遮盖；内镜图像主要是消化道内部结构，不涉及身体外观。图像/录像的用途：主要用于病历记录、随访对比和（在脱敏处理后）医学教学/科研；如需用于公开展示（学术会议、出版物等），一般会做隐私处理并按规定取得同意。医院和科室都有明确的隐私保护制度和信息保密流程，不会随意泄露你的个人信息和影像。
+    </blockquote>
+<h3>检查的时候，家属能不能陪在旁边？我一个人会不会很害怕？</h3>
+<blockquote class="article-quote">
+出于无菌、隐私和操作空间的考虑，一般情况下家属是不能进入内镜操作间全程陪同的；但在你进入内镜室之前和检查结束之后：医护会向你和家属说明流程、风险和注意事项；检查做完、你苏醒之后，我们也会尽量让熟悉的人出现，帮助你缓解紧张。如果你特别焦虑，可以：提前告诉我们“我非常紧张/有焦虑症/以前有不好的体验”；护士和医生会在进内镜室前多花几分钟解释，必要时在镇静药用量上做一些调整，让你尽量在“睡着”的状态下完成检查。
+</blockquote>
+  </div>
+</details>
+<details class="article-section">
+  <summary>
+    <span class="section-title">3.术前资料准备 &amp; 突发不适（感冒 / 发烧 / 腹泻）</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>做检查前，我最好提前准备/带些什么信息给医生？</h3>
+    <blockquote class="article-quote">
+建议你在来院前准备好这些内容，能大大提高沟通效率、减少风险；<br><br>病史信息：现在最困扰你的症状：部位、持续时间、加重/缓解因素；过去是否做过胃肠镜、CT、B 超，是否有相关病理报告。<br><br>用药清单：把你目前在吃的所有药（处方药、非处方药、中成药、保健品）写在纸上或拍照，包括剂量和用药频率；<br><br>特别标出：抗凝药、抗血小板药、降糖药、心律药等。<br><br>过敏史和手术史：是否对某些药物或食物过敏；是否做过心脏支架、瓣膜置换、腹部/胸部手术等。<br><br>紧急联系人信息：留一位家属或朋友的手机号，以便需要时联系。
+<figure class="article-figure"><img src="/Users/apple/Desktop/患者提问整理后/media_out/心理准备_隐私与就诊体验/media/image1.png" style="width:2.00579in;height:2.67447in" /><figcaption class="article-caption">图示</figcaption></figure>
+    </blockquote>
+<h3>如果患者检查前几天突然感冒、发烧或急性拉肚子，还能照常做无痛胃肠镜吗？</h3>
+<blockquote class="article-quote">
+轻微上呼吸道感染（一点流涕、轻微咳嗽）：一般可以按计划检查，但麻醉医生会评估是否增加呼吸道并发症风险。发烧、严重咳嗽、喘不上气、剧烈腹泻等：建议先暂停检查，等急性感染或严重症状控制之后再安排；因为全身状态不稳定时做麻醉和肠道准备，风险会显著升高，体验也很差。遇到这种情况，尽量提前一两天电话联系或线上咨询，不要当天才临时放弃或硬撑做检查。
+</blockquote>
+  </div>
+</details>
+<details class="article-section">
+  <summary>
+    <span class="section-title">4.医患沟通、疑问咨询与二次诊疗</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>我很紧张，不知道要问什么，也怕问多了打扰医生，怎么办？</h3>
+    <blockquote class="article-quote">
+<p>你的担心非常常见，也完全可以理解。事实上，我们欢迎你提问，因为：你越了解流程，越能配合检查，体验也会越好；很多风险防范、用药调整，都需要你主动提供信息。</p>
+<div class="article-callout">小建议：可以提前把问题写在纸上或手机备忘录里（比如“疼吗？多久？可以开车吗？药要停吗？”等）；就诊时把清单拿出来，我们会一一帮你解答。别担心“打扰医生”：有效沟通本身就是医疗的一部分，也是保障安全的一部分。</div>
+    </blockquote>
+<h3>如果我对这次检查、麻醉过程或者医生的解释不太满意，可以要求复印资料或找其他医生看看吗？</h3>
+<blockquote class="article-quote">
+<p>答：可以的。</p>
+<p>你有权利：申请复印检查报告、病理结果、影像资料（胃肠镜照片/视频），用于自我留存或给其他医生参考；在同院或外院寻求第二诊疗意见，这是很正常也很常见的做法。</p>
+<p>一般流程是：</p>
+<ol><li>到医院的病案/资料室或窗口，按规定填写申请，缴纳少量复印或刻盘费用；</li><li>拿到资料后，可以去其他科室或其他医院的门诊，让医生结合你带来的材料再做一次评估。</li></ol>
+<p>合理的医生团队不会因为你想“多问一个医生”而生气，相反，我们希望你在弄明白、想清楚之后再做下一步决定。</p>
+<figure class="article-figure"><img src="/Users/apple/Desktop/患者提问整理后/media_out/心理准备_隐私与就诊体验/media/image2.png" style="width:2.24788in;height:2.99726in" alt="图形用户界面 AI 生成的内容可能不正确。" /><figcaption class="article-caption">图示</figcaption></figure>
+</blockquote>
+  </div>
+</details>
+  </div>
+</details>
+<details class="article-item">
+  <summary>
+    <div class="learn-summary">
+      <div class="learn-summary-title">无痛概念解析</div>
+      <div class="learn-summary-meta">约 4 分钟阅读 · 4 小节</div>
+    </div>
+    <span class="learn-summary-action">阅读</span>
+  </summary>
+  <div class="article-sections">
+    <details class="article-section">
+  <summary>
+    <span class="section-title">基础认识</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>什么是无痛胃肠镜？</h3>
+    <blockquote class="article-quote">
+<p>无痛胃肠镜是在普通胃肠镜检查基础上，通过短效静脉镇静 / 麻醉药（常见如丙泊酚 ± 少量止痛药），让受检者处于类似 “睡着” 的镇静 / 麻醉状态，对检查过程几乎无记忆，也不会有明显疼痛或恶心呕吐难受感的内镜检查方式。这是控制好的镇静 / 麻醉，并非深度昏迷，受检者会自然呼吸，有时可对呼唤做出简单反应，检查结束后 10–30 分钟逐渐清醒。</p>
+    </blockquote>
+<h3>无痛与普通胃肠镜有什么区别？是否必须选无痛？</h3>
+<blockquote class="article-quote">
+区别主要在于舒适度和是否使用静脉麻醉 / 镇静药物：普通胃肠镜采用咽喉局部喷雾麻醉＋少量镇静或不镇静，部分人会出现明显恶心、腹胀或不适；无痛胃肠镜借助静脉麻醉 / 镇静药物，受检者几乎无检查过程不适感。并非所有人都必须选择无痛：对疼痛和紧张耐受度较好者，可选择普通检查；对检查极度紧张、恶心反射严重、需胃 + 肠联合检查或复杂内镜治疗时，更建议选择无痛。
+</blockquote>
+<h3>无痛胃肠镜属于全麻吗？需要气管插管吗？</h3>
+<blockquote class="article-quote">
+<p>大多数情况下，无痛胃肠镜属于短效静脉镇静或浅～中度麻醉，采用保留自主呼吸的方式，无需气管插管，仅需佩戴吸氧装置、进行生命体征监测即可。仅在极少数高危情况或复杂操作（如长时间内镜治疗、严重肺功能问题）下，才会考虑气管插管＋全身麻醉，这类情况麻醉医生会提前单独与受检者沟通说明。</p>
+</blockquote>
+  </div>
+</details>
+<details class="article-section">
+  <summary>
+    <span class="section-title">麻醉药的安全性</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>无痛胃肠镜用的麻醉药会不会“上瘾”？会不会伤肝、伤肾？</h3>
+    <blockquote class="article-quote">
+医生使用的是一次性、短时间的小剂量静脉麻醉药，在医院受控环境下使用，和长期滥用完全不是一回事。对肝肾功能正常的人来说，这样的单次短程用药不会导致成瘾，也不会损伤肝肾。有严重肝肾功能异常的患者，医生会在检查前评估、必要时调整用药方案或监护方式，尽量把风险降到最低。
+    </blockquote>
+<h3>做了无痛胃肠镜，会不会影响记忆力或智力？会不会“伤脑子”？</h3>
+<blockquote class="article-quote">
+目前的证据和长期临床经验表明：单次短时丙泊酚镇静/麻醉不会造成长期记忆力下降或智力损害；有些人检查当天可能会有一点“犯迷糊”“记不清过程”，这是药物在体内尚未完全清除的短期效应，1 天左右基本恢复。真正需要警惕的是：高龄伴严重合并症的大手术、长期 ICU 深镇静等情境，才可能和“术后谵妄、认知功能变化”有关系；简单的无痛胃肠镜远远达不到那种剂量和持续时间。
+</blockquote>
+<h3>无痛胃肠镜时我会不会说胡话、泄露隐私？</h3>
+<blockquote class="article-quote">
+少数人醒来或半清醒阶段，可能会说些梦话、反应有点“迷糊”，这是药物作用下短暂的正常现象。一方面，这种“梦话”一般不会持续太久；另一方面，医生有严格的职业保密义务：不会把你的任何隐私内容泄露给与诊疗无关的人；内镜室只有必要的医护人员在场，尽量保证你的隐私和尊严。所以不需要因为“怕说胡话”而畏惧无痛检查。
+</blockquote>
+  </div>
+</details>
+<details class="article-section">
+  <summary>
+    <span class="section-title">手术感受</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>无痛胃肠镜会不会“做到一半突然醒来”？醒来以后会不会很难受？</h3>
+    <blockquote class="article-quote">
+镇静深度是麻醉医生实时调节的：如果发现你有明显反应，会适当追加少量药物；目标是“你不难受，但呼吸和血压稳定”。个别人会在过程中出现短暂翻身、皱眉等“浅反应”，但通常不会记得也不会痛苦。检查结束醒来时，大多数人感觉就是“打了个盹”，可能略微困倦、口干，一般休息 30–60 分钟就会好转，很少出现剧烈恶心、头痛之类的不适。
+    </blockquote>
+  </div>
+</details>
+<details class="article-section">
+  <summary>
+    <span class="section-title">特殊情况</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>如果我或者我的家人以前对麻醉药“过敏”或者家里有人说“麻醉出过事”，还能做无痛吗？</h3>
+    <blockquote class="article-quote">
+首先要搞清楚当年的具体情况：真正的“麻醉药过敏”其实比较少见；很多是术后恶心、呕吐、头晕，或者手术本身和基础病引起的问题，被笼统地记成“麻醉出了事”；建议你在检查前：尽可能回忆或让家属帮忙了解当年是哪种手术、用了什么麻醉、出了什么状况；如果有麻醉记录或出院小结，带来给医生看更好。对于确实高度怀疑有麻醉相关严重反应（如恶性高热、严重过敏休克）的情况：我们会请麻醉科详细评估，必要时选择不同类别的药物或改变镇静方式；极少数高危患者可能不适合深镇静，而是选择更浅的镇静或在严密监护下由麻醉科单独管理。总的来说，“以前麻醉不舒服”不等于“这辈子再也不能镇静/麻醉”，关键是把当年的细节尽量告诉我们，让麻醉医生来评估和定方案。
+    </blockquote>
+<h3>平时酒量很大，喝酒“千杯不醉”，做无痛胃肠镜会有关系吗？会碰到麻醉不够的情况吗？</h3>
+<blockquote class="article-quote">
+有些“酒量大”的人，确实对镇静/麻醉药的敏感度会稍低一点，也就是：需要的剂量可能比普通人略大一些，或者起效时间稍微慢一点；但这并不是绝对的，医生不会因为你说“酒量大”就一上来猛加剂量，而是：仍然从较小剂量开始，一边监测呼吸、血压、一边看你的反应；如果发现你依旧很清醒、有明显不适，再少量、多次逐步追加。比较重要的是：如实告诉医生你的饮酒情况（喝酒频率、一次大概多少、是否有酗酒史等）；告诉医生你有没有同时服用其他会影响中枢神经的药物（镇静药、安眠药、阿片类止痛药等）。总的来说，“酒量大”并不是不能做无痛的理由，也不是“药一定不够”；只是麻醉医生在设计用药方案时会更有意识地预判你可能“稍微耐药”一点，然后在安全范围内慢慢调到一个让你既舒服又安全的水平。
+</blockquote>
+  </div>
+</details>
+  </div>
+</details>
+<details class="article-item">
+  <summary>
+    <div class="learn-summary">
+      <div class="learn-summary-title">检查流程和时间</div>
+      <div class="learn-summary-meta">约 7 分钟阅读 · 6 小节</div>
+    </div>
+    <span class="learn-summary-action">阅读</span>
+  </summary>
+  <div class="article-sections">
+    <details class="article-section">
+  <summary>
+    <span class="section-title">整体流程、时长与顺序</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>做无痛胃肠镜的整个流程是怎样的？</h3>
+    <blockquote class="article-quote">
+<p>通常流程如下（可能因医院略有差别）：</p>
+<p>检查前：提前若干天完善化验、心电图等；</p>
+<p>当天确认禁食时间、肠道准备情况，签署知情同意书。</p>
+<p>进内镜室：上监护（血压、心电图、血氧监测），建立静脉通道；</p>
+<p>麻醉医生给药，几分钟内进入睡眠状态。</p>
+<figure class="article-figure"><img src="/Users/apple/Desktop/患者提问整理后/media_out/检查流程和时间/media/image1.png" style="width:5.76806in;height:3.24306in" alt="图示 AI 生成的内容可能不正确。" /><figcaption class="article-caption">图示</figcaption></figure>
+    </blockquote>
+<h3>做无痛胃肠镜大概要花多长时间？</h3>
+<blockquote class="article-quote">
+<p>胃镜＋结肠镜：胃镜 3–5 分钟，结肠镜检查一般 15–30 分钟，如果需要切息肉或止血时间会更长一点。</p>
+<p>苏醒与恢复：检查结束回到恢复区观察，一般 30–60 分钟左右可以清醒、生命体征平稳；医生告知初步结果和注意事项。整个检查时间（从推进内镜室到回病房）一般在 1–2 小时左右。</p>
+</blockquote>
+<h3>胃镜和肠镜的顺序是怎样的？</h3>
+<blockquote class="article-quote">
+通常做“胃＋肠”联合检查时：一般先做胃镜，再调整体位做结肠镜；使用的是不同的内镜：胃镜是上消化道内镜，管径略细、长度不一样；结肠镜更长、弯曲度和结构设计是为大肠准备的。
+</blockquote>
+<h3>胃镜和肠镜是同一支镜子做吗？</h3>
+<blockquote class="article-quote">
+两者之间会进行必要的器械更换和操作准备，不会“同一支镜子上下都用”；所以，从专业角度看，联合检查只是把两项检查安排在同一麻醉下连续完成，而不是“一个镜子到处转悠”。
+</blockquote>
+  </div>
+</details>
+<details class="article-section">
+  <summary>
+    <span class="section-title">当日就诊安排（报到、等待、延迟、改无痛）</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>检查当天早上（或中午）几点要到？</h3>
+    <blockquote class="article-quote">
+<p>一般会在预约时给你一个报到时间（比如 7:30 报到、9:00 前后检查）：报到后还需要确认身份、核对禁食/肠道准备、完善知情同意、换衣服、建立静脉通道等，所以要留出一定“准备时间”。</p>
+    </blockquote>
+<h3>检查当天早上（或中午）会不会等很久？</h3>
+<blockquote class="article-quote">
+<p>是否会等很久，受到几个因素影响：当天患者数量、前面检查是否顺利；是否有急诊病人需要插队处理（比如急性消化道出血）。我们会尽量按照约定时间完成检查，但医学工作存在不确定性，请预留充足的半天或一天时间，不要安排太紧的其他行程，以免影响检查体验和安全。</p>
+</blockquote>
+<h3>如果前一个检查拖延了，我会不会因为时间太晚而被取消？</h3>
+<blockquote class="article-quote">
+一般不会轻易取消，但有两种情况需要考虑调整：你的禁食/禁饮时间不再安全：比如原计划上午 9 点检查，你从凌晨开始禁食，但因为各种原因拖到下午 3–4 点，这时重新安排进食和镇静时间，可能需要整体顺延或改期。你的身体状态临时变化：比如长时间等待后出现低血糖、乏力、发烧等，医生会先处理全身状况，再决定是否当天继续。遇到明显延迟时，医护人员会尽量和你沟通，在安全性和合理性之间做平衡，而不是简单地“一取消了之”。
+</blockquote>
+<h3>无痛胃肠镜能不能临时从“普通”改成“无痛”，还是必须提前决定？</h3>
+<blockquote class="article-quote">
+是否能临时改为“无痛”，取决于：当天麻醉医生和恢复区床位是否有空；医院当日麻醉安排和人手是否允许。理论上，如果你在检查前临时改变主意：可以先向接诊护士或医生说明“我想改为无痛”；若当时 麻醉团队有条件接入，是可以临时调整；如果当天麻醉力量已排满，只能改期或改为下一次无痛。所以，最好在预约时就确定好是否需要无痛，方便我们提前安排麻醉和恢复床位，减少你当天的等待和变数。
+</blockquote>
+<h3>为什么检查当天，会有不同的人重复问我同样的问题（比如病史、过敏、用药）？是不是大家都没看前面的记录？</h3>
+<blockquote class="article-quote">
+不是“没人看”，而是出于安全和核对的需要：护士、麻醉医生、内镜医生各自负责不同环节，都需要亲自核对核心信息（身份、用药、过敏、既往病史等）；多次核对可以最大程度避免“搞错人、搞错操作、忽略严重过敏或用药风险”等重大差错。这就像坐飞机前，多次检查登机牌和证件一样，是安全流程的一部分，而不是不信任你。如果你觉得自己已经说了很多遍，可以直接说：“我刚才跟护士/医生说过这些，这里是我写好的清单。”我们会在尊重流程的前提下，尽量减少你重复叙述的时间。
+</blockquote>
+  </div>
+</details>
+<details class="article-section">
+  <summary>
+    <span class="section-title">3. 出行、陪同与住院 / 门诊</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>当天能不能自己开车来、开车回去？能不能一个人来？</h3>
+    <blockquote class="article-quote">
+不建议开车来，更严禁自己开车回去。镇静/麻醉的影响在你完全清醒后仍可能持续数小时，反应速度、判断力会下降，有交通事故风险。建议有家属或朋友陪同，至少在结束后24 小时内不要驾驶、操作危险机械或签署重要法律文件。如果不得已只能一个人来，出院时也应尽量选择打车/网约车，而不是自驾或骑车。
+    </blockquote>
+<h3>无痛胃肠镜是住院做还是门诊就能做？当天能回家吗？</h3>
+<blockquote class="article-quote">
+大部分人是门诊或日间手术形式完成，无需真正住院：早上检查，观察一段时间，下午就可以回家；或下午检查，傍晚/晚上回家。只有以下情况可能需要留院观察或住院：年龄很大、合并严重心肺疾病等高危情况；检查过程中进行了大范围治疗（如大息肉切除、大面积黏膜切除等）；检查后出现需要观察的症状（如持续疼痛、出血、生命体征不稳定等）。是否需要住院或过夜，会由医生根据你的具体情况当场评估并告知。
+</blockquote>
+  </div>
+</details>
+<details class="article-section">
+  <summary>
+    <span class="section-title">4. 肠道准备突发情况</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>如果当天发现肠道准备不合格，会怎么处理？会不会“将就着做完”？</h3>
+    <blockquote class="article-quote">
+肠道不干净（里面还有很多粪水、残渣），会严重影响视野：息肉和早期肿瘤很容易被遮挡，漏诊风险明显增加；一般不会简单“将就着做完”，而是根据情况选择：若只是局部区段稍差，可以在内镜下用大量水冲洗、吸净后尽量完成检查；若整体肠道非常不干净，连基本观察都困难，通常会 终止检查，重新安排肠道准备和下次检查时间。虽然对你来说要“跑第二趟”很麻烦，但相较于做了一次“看不清的肠镜”，宁可多跑一次，也不要漏掉重要病变。
+    </blockquote>
+  </div>
+</details>
+<details class="article-section">
+  <summary>
+    <span class="section-title">5. 术后恢复</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>无痛胃肠镜做完后，什么时候可以正常吃喝、什么时候可以上班？</h3>
+    <blockquote class="article-quote">
+<strong>吃喝：</strong>胃镜＋肠镜结束后，一般需医生确认无特殊风险（如大出血风险、大范围除），通常在1–2 小时后可以先少量喝水，如无不适再逐渐进食清淡食物；<br><br><strong>上班和日常活动：</strong>大部分人第二天就能正常工作和生活；当天建议以休息为主，避免加班、熬夜和剧烈运动。如果有进行大息肉切除、复杂治疗，医生会根据实际情况给出更具体的“饮食与活动限制时间表”。
+    </blockquote>
+  </div>
+</details>
+<details class="article-section">
+  <summary>
+    <span class="section-title">6. 检查差异与结果告知</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>检查结束后，医生会当场跟我说多少信息？家属能不能一起听？</h3>
+    <blockquote class="article-quote">
+<p>一般流程是：你从麻醉中清醒后，内镜医生会先向你（必要时也向家属）口头说明初步结果：比如有没有发现息肉、炎症、溃疡等；大致判断哪些地方需要重点关注；同时会给你一份书面内镜报告，上面写明发现和初步建议。如有取活检或切除息肉：当天给出的只是“肉眼印象”，最终性质以病理报告为准，通常需要几天时间；医生会告知如何、何时复诊看病理结果。</p>
+<p>大多数医院都允许在结果解释时让家属一起在场（特别是老年患者），你可以在醒来后提出：“能不能稍后和我家属一起讲一下结果？”我们也更希望重要信息能同时让患者和家属都听清楚，方便后续配合和决策。</p>
+<p>胃镜和肠镜有什么区别？是不是一定要两个都做？</p>
+<p>两者检查的“入口”“看到的部位”和“准备方式”都不一样：</p>
+<p><strong>胃镜：</strong>从口腔进去，经食管看到 食管、胃、十二指肠起始段，主要用于评估烧心反酸、上腹痛、黑便、贫血原因、怀疑胃癌/食管癌等情况；一般检查时间较短，多数在 3–5 分钟 完成；准备方面主要是 空腹禁食禁饮，不需要洗肠。</p>
+<p><strong>肠镜（结肠镜）：</strong>从肛门进入，主要观察 整个大肠，有时可以看到回肠末端，用于评估大便带血、排便习惯改变、长期腹泻/便秘、结直肠癌筛查、息肉随访等；检查时间一般在 15–30 分钟 左右，复杂治疗会更长；准备的重点是按医嘱 吃低渣饮食 + 服用洗肠药，把大肠清洗干净。器械也不一样：胃镜和结肠镜是两种不同的内镜，长度、粗细和弯曲设计都不同，不会“同一根镜子从嘴里再从肛门用一遍”。是不是一定要两个都做，要结合你的 症状、年龄、家族史和医生评估来决定：比如主要是上腹部不适、反酸，常常先做胃镜；年龄 ≥45 岁或有结直肠癌家族史、便血、排便改变，更倾向先做肠镜；如果既有上消化道症状、又到了肠癌筛查年龄，或者医生认为胃和肠都需要评估，也可以选择 一次麻醉下把胃镜＋肠镜一起做完，省去多次准备和紧张。</p>
+    </blockquote>
+  </div>
+</details>
+  </div>
+</details>
+<details class="article-item">
+  <summary>
+    <div class="learn-summary">
+      <div class="learn-summary-title">检查结果与随访</div>
+      <div class="learn-summary-meta">约 3 分钟阅读 · 4 小节</div>
+    </div>
+    <span class="learn-summary-action">阅读</span>
+  </summary>
+  <div class="article-sections">
+    <details class="article-section">
+  <summary>
+    <span class="section-title">1.结果出具与报告解读</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>无痛胃肠镜做完，多久能拿到结果？</h3>
+    <blockquote class="article-quote">
+内镜医生所见的“肉眼结果”（如是否有炎症、溃疡、息肉等），一般检查结束后不久就可以当面告诉你，会有一份初步报告。如有活检或息肉切除，需要送病理：一般需要1-3 个工作日（视医院病理科工作量而定）才能出病理报告；确切的性质（良性/恶性、分级情况）以病理报告为准。医生会根据内镜 + 病理结果，给出后续治疗和随访建议。
+    </blockquote>
+<h3>如果发现癌症，会当场告诉患者吗？</h3>
+<blockquote class="article-quote">
+很多病变在内镜下可以“高度怀疑”是肿瘤，但最终诊断需要病理切片确认。如果内镜高度怀疑恶性：医生会先用相对温和、易理解的方式告诉你“医生发现一个需要进一步认真对待的病变，需要病理确诊”；同时会尽快安排必要的进一步检查（CT、超声内镜等）和 MDT 评估；出于对患者心理和信息准确性的考虑，一般会等病理结果出来再给一个确定的说法，并安排详细沟通。
+</blockquote>
+  </div>
+</details>
+<details class="article-section">
+  <summary>
+    <span class="section-title">2.病理相关问题（癌前病变、腺瘤）</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>病理报告上写“腺瘤”“不典型增生”“癌前病变”，这是什么意思？严重吗？</h3>
+    <blockquote class="article-quote">
+\*“息肉”：是一个形态描述，表示黏膜长了个小突起，里面可以是很多不同性质的组织；<br><br>\*“腺瘤、不典型增生、异型增生”：提示是有潜在癌变风险的良性病变，程度分为轻度、中度、高度；<br><br>\*“癌前病变”：通常指这类有明确进展风险的病变，如果不处理、长期放任，部分可能发展成癌症。<br><br>好在这类病变一旦在早期被发现、完整切除并按指南复查，绝大多数都能“把癌堵在门外”，所以关键是：切干净 + 按时复查，而不是听到“癌前”三个字就恐慌。
+    </blockquote>
+  </div>
+</details>
+<details class="article-section">
+  <summary>
+    <span class="section-title">3.息肉切除后复发与复查</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>息肉已经切掉了，还会不会复发？还需要再查吗？</h3>
+    <blockquote class="article-quote">
+<p>“复发”有两层含义：</p>
+<ol><li>原部位残留/局部复发：特别是对较大、需要分片切除的息肉，少数可能有残留组织，后面复查时需要再次处理；</li><li>肠道其他地方长出新的息肉：有息肉体质的人，将来在其他部位再长新的息肉并不罕见。</li></ol>
+<p>所以，大部分切过息肉的患者，医生都会根据：息肉的大小、数目、病理类型、切除是否完整，制定一个3–5 年不等的结肠镜随访计划，并写在报告上。按时复查是防止“新的”和“残留的”问题变大的关键步骤。</p>
+    </blockquote>
+  </div>
+</details>
+<details class="article-section">
+  <summary>
+    <span class="section-title">4.等待病理期间注意事项</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>病理报告还没出来，这段时间需要注意什么？能不能照常吃药、生活？</h3>
+    <blockquote class="article-quote">
+    </blockquote>
+<h3>绝大多数情况下，在等待病理结果的几天内，你可以正常生活和上班，只需注意：</h3>
+<blockquote class="article-quote">
+<ol><li>按医嘱服用保护胃肠黏膜或预防出血的药物（如果有开的话）；</li><li>避免暴饮暴食、烈酒和特别辛辣刺激饮食；</li><li>如果做了较大范围息肉切除或治疗，短期内避免剧烈运动、重体力活。</li></ol>
+</blockquote>
+<h3>如出现以下情况，应及时回医院：</h3>
+<blockquote class="article-quote">
+<ol><li>明显加重的腹痛、持续发热；</li><li>大量鲜红血便、黑便或呕血；</li><li>头晕、乏力、心慌等疑似失血症状。</li></ol>
+<p>原有的慢性病药物（降压、降脂、部分心血管药等）一般按原计划继续，特殊药物医生会在出院前说明。</p>
+</blockquote>
+<h3>复查必要性与随访规划</h3>
+<blockquote class="article-quote">
+</blockquote>
+<h3>检查结果正常，是不是以后就永远不用查了？</h3>
+<blockquote class="article-quote">
+<p>一次正常的胃肠镜是一个“好消息”，说明目前没有明显器质性病变；但是否需要再次检查、间隔多久取决于：</p>
+<ol><li>你的年龄、家族史、症状是否持续；</li><li>是否属于结直肠癌筛查年龄（比如 45 岁以上）或高危人群；</li><li>是否有胃癌高危因素（如重度萎缩、肠化、一级亲属胃癌史等）。</li></ol>
+<p>医生会在报告上写明下次复查的大致时间建议，请按建议复诊，不要觉得“正常一次就一劳永逸”。</p>
+</blockquote>
+<h3>医生建议“按时复查”，但我总觉得没症状就不想来了，真的有必要吗？</h3>
+<blockquote class="article-quote">
+<p>很多消化道病变，尤其是早期癌症和癌前病变，在相当长一段时间内可以完全没有症状；你这次之所以被发现问题，很大程度上是因为：做了筛查或因轻微症状做了检查；</p>
+<p>不按时复查的后果可能包括：</p>
+<ol><li>小的残留病变悄悄长大，错过最佳处理时机；</li><li>新长出的息肉在多年不被发现的情况下进展。</li></ol>
+<p>所以，“按时复查”不是为了增加你的负担，而是整体治疗策略的一部分，目的就是：把严重问题挡在早期、甚至萌芽阶段。</p>
+</blockquote>
+  </div>
+</details>
+  </div>
+</details>
+<details class="article-item">
+  <summary>
+    <div class="learn-summary">
+      <div class="learn-summary-title">特殊人群与特殊情况</div>
+      <div class="learn-summary-meta">约 4 分钟阅读 · 7 小节</div>
+    </div>
+    <span class="learn-summary-action">阅读</span>
+  </summary>
+  <div class="article-sections">
+    <details class="article-section">
+  <summary>
+    <span class="section-title">特殊生理阶段（孕妇、经期）</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>孕妇能不能做无痛胃肠镜检查？</h3>
+    <blockquote class="article-quote">
+<p>一般来说，怀孕期间不建议常规做胃肠镜，更不建议做无痛胃肠镜，因为涉及胎儿安全和药物暴露问题。只有在下列情况才会慎重考虑：比如持续出血、严重贫血、怀疑消化道肿瘤或严重狭窄等危及母亲生命或可能严重影响妊娠结局的情况；此时需要产科、麻醉科、消化内科三方会诊，共同评估“做与不做”的风险。若仅是一般体检或轻度不适，通常建议延后到分娩或哺乳期之后再行检查。</p>
+    </blockquote>
+<h3>正在月经期可以做无痛结肠镜/胃肠镜吗？</h3>
+<blockquote class="article-quote">
+月经并不是结肠镜的绝对禁忌，从技术上是可以做的；但从实际体验和标本判断角度：对结肠镜本身影响不大；若你经量很大、容易痛经、贫血明显，做检查会更不舒服，也可能影响术后恢复。<br><br>一般建议：如非紧急情况，可以尽量避开经期；如必须在经期做（例如急性出血、重症病情需要尽快明确），医生会根据实际情况评估后安排。
+</blockquote>
+  </div>
+</details>
+<details class="article-section">
+  <summary>
+    <span class="section-title">2.腹部术后</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>做过腹部或肠道手术的人，再做结肠镜有什么特别风险或准备？</h3>
+    <blockquote class="article-quote">
+既往腹部手术（如阑尾切除、结直肠手术、妇科手术等）可能造成粘连、肠腔变形，使结肠镜通过时：转弯更多、角度更大，检查时间可能比普通人略长；少数情况下增加穿孔风险。<br><br>医生会在检查前特别了解你的手术类型和时间，并在操作时：适当降低送镜力量、增加体位调整和辅助按压；必要时选择经验更丰富的内镜医生或在麻醉更充分的情况下操作。这类患者仍然可以顺利完成结肠镜，但需要更加小心和个体化策略。
+    </blockquote>
+  </div>
+</details>
+<details class="article-section">
+  <summary>
+    <span class="section-title">3.高龄人群</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>年纪太大（比如 80 多岁）还能做无痛胃肠镜吗？</h3>
+    <blockquote class="article-quote">
+年龄本身不是绝对禁忌，更重要的是：当前的心肺功能和基础疾病控制情况；这次检查能否真正改变治疗或改善生活质量。如果预期寿命有限，且检查结果不会改变治疗策略（比如不打算做手术、不希望侵袭治疗），可以不再做筛查性胃肠镜；若存在明显症状或怀疑严重疾病（例如持续出血、吞咽困难、严重消瘦），仍然可以在充分评估后安排胃肠镜。对于高龄患者，医生会：调整药物剂量、加强监测；必要时选择在麻醉科/监护条件更好的环境下进行。
+    </blockquote>
+  </div>
+</details>
+<details class="article-section">
+  <summary>
+    <span class="section-title">4.乙肝 / 丙肝 / HIV 等传染病人群</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>有乙肝、丙肝或 HIV 等传染病，还能做无痛胃肠镜吗？会不会被“区别对待”？</h3>
+    <blockquote class="article-quote">
+这些慢性病毒感染不是不能做胃肠镜的理由，反而很多时候需要通过内镜评估肝病并发症（如食管静脉曲张出血等）。医院对所有患者的内镜器械都执行统一标准的清洗和高水平消毒流程，不是“凭肉眼看谁得什么病就决定洗得严不严”。对医生和护士来说，任何患者都按照“可能有传染风险”的最高标准防护；对你来说，不会因为有这些基础病而被拒绝或区别对待。唯一需要的，是你如实告知自己的病情，以便我们更好地评估出血、感染和麻醉风险。
+    </blockquote>
+  </div>
+</details>
+<details class="article-section">
+  <summary>
+    <span class="section-title">5.精神 / 认知 / 听力语言障碍人群</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>有精神疾病、认知障碍或听力/语言障碍的人，怎么安排无痛胃肠镜和知情同意？</h3>
+    <blockquote class="article-quote">
+这类人群更需要特别的沟通与保护：有行为能力但理解稍慢的患者：我们会用更简单易懂的语言、图示或书面说明，给足时间让他/她理解，并解答疑问；合并听力/语言障碍的患者：可以协助安排家属或专业翻译/手语，确保信息沟通准确。若已被评估为明显缺乏民事决策能力：需要由法定监护人或授权代理人代为签署知情同意；医疗决策遵循“对患者整体利益最大化”的原则，并在病历中详细记录判断过程。
+    </blockquote>
+  </div>
+</details>
+<details class="article-section">
+  <summary>
+    <span class="section-title">6.肥胖、睡眠呼吸暂停（打鼾憋气）</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>如果有肥胖、打呼噜厉害或被怀疑有睡眠呼吸暂停综合征，还能做无痛胃肠镜吗？</h3>
+    <blockquote class="article-quote">
+这类人群在镇静/麻醉时，气道塌陷和呼吸变慢的风险会略高一些，所以我们会更加重视：术前询问你是否有打鼾、憋气、夜间频繁憋醒等情况；必要时参考既往多导睡眠监测结果（如果有）。绝大多数这类患者依然可以安全地做无痛胃肠镜，只是需要：更谨慎地调整镇静药剂量；全程加强呼吸和血氧监测，通常会提前给氧，必要时采用辅助通气等措施；有时会建议在麻醉科或监护条件更好的环境下进行。最重要的是：如实告诉我们你打呼噜和夜间憋气的情况，这样我们才能提前设计好更安全的镇静方案。
+    </blockquote>
+  </div>
+</details>
+<details class="article-section">
+  <summary>
+    <span class="section-title">7.心脏起搏器 / ICD 植入人群</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>如果有心脏起搏器/植入除颤器（ICD），能不能在内镜下切息肉、用电凝电刀？</h3>
+    <blockquote class="article-quote">
+有些内镜治疗（如电凝止血、电切息肉）需要使用电流，对带有心脏起搏器或 ICD 的患者，确实需要特别评估，但并不代表一律不能做：术前我们会询问起搏器/ICD 的型号、植入时间、随访情况；必要时联系心内科或起搏器随访门诊，确认设备状态和推荐的操作注意事项。在很多情况下，通过：调整电刀参数和使用方式（尽量短时间、间断放电）；避免电流路径直接经过心脏区域全程心电监护、必要时备有磁铁或专业程序器可以相对安全地完成内镜下治疗。所以请务必在检查前告知：你有无起搏器/ICD，并尽量带上植入卡或相关资料，方便我们和心内科一起评估、制定更安全的操作策略。
+    </blockquote>
+  </div>
+</details>
+  </div>
+</details>
+<details class="article-item">
+  <summary>
+    <div class="learn-summary">
+      <div class="learn-summary-title">禁食与肠道准备与术前检查</div>
+      <div class="learn-summary-meta">约 6 分钟阅读 · 4 小节</div>
+    </div>
+    <span class="learn-summary-action">阅读</span>
+  </summary>
+  <div class="article-sections">
+    <details class="article-section">
+  <summary>
+    <span class="section-title">饮食与肠道准备</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>做无痛“胃＋肠”联合检查，吃喝方面怎么准备？</h3>
+    <blockquote class="article-quote">
+<p>大致原则是：上下午不同，时间略有差异，医生会给你具体时间点，一般为：</p>
+<p>胃镜：固体食物：检查前 8 小时内不吃东西；清流质（白水、运动饮料、淡茶等）：可在检查前 2 小时内适量饮用，之后完全禁饮。</p>
+<p>结肠镜：检查前 1 天，按照医嘱吃低渣/低纤维饮食，避免粗纤维、蔬菜瓜果、带籽食物；按</p>
+<p>照处方服用“洗肠药”（肠道准备药物），严格按照时间分次服用。做联合检查时，一般优先满足肠镜的准备要求，医生会给你详细的小纸条或说明书，一定要照做，否则可能因为肠道不干净导致检查不完整。</p>
+<figure class="article-figure"><img src="/Users/apple/Desktop/患者提问整理后/media_out/禁食与肠道准备与术前检查/media/image1.png" style="width:2.23328in;height:2.97779in" /><figcaption class="article-caption">图示</figcaption></figure>
+    </blockquote>
+<h3>肠道准备药喝起来很难受，可以少喝点或者换成别的吗？</h3>
+<blockquote class="article-quote">
+医生会尽量为你选择更易接受的低容量方案，比如 2L PEG＋抗坏血酸一类，比传统 4L 更容易喝完。实在喝不下时，请不要自己擅自减量或停药，而是提前告诉医生或护士：有时可以调整服药节奏、换口味、冰镇后饮用；必要时在医生评估下调整制剂或剂量。肠道不干净不仅影响结果，还会显著增加漏诊腺瘤和结直肠癌的风险，甚至需要提前复查，所以这一步真的非常关键。
+</blockquote>
+<h3>“清流质”到底包括什么？</h3>
+<blockquote class="article-quote">
+<p>清流质是指可以看得见“透过去”、没有明显残渣、颜色不过深的液体，例如：白开水、矿泉水；运动饮料、淡茶（不加奶、不加豆浆）；颜色较浅、无果肉的透明饮料。</p>
+<p>一般不推荐：牛奶、酸奶、豆浆（都是“浑浊液体”）；带果肉或颜色很深的果汁、蔬菜汁；含大量颜色的饮料（比如深红、深紫），可能影响内镜下判断。简单记忆：能清清楚楚地透过去看见光的，才叫清流质。</p>
+<figure class="article-figure"><img src="/Users/apple/Desktop/患者提问整理后/media_out/禁食与肠道准备与术前检查/media/image2.png" style="width:3.54291in;height:4.72402in" alt="图片包含 应用程序 AI 生成的内容可能不正确。" /><figcaption class="article-caption">图示</figcaption></figure>
+<p>如果我已经喝完洗肠药，大便还是不干净（有渣、有颜色），怎么办？</p>
+理想的肠道准备是：排出的大便几乎全是清水或淡黄色透明液体，几乎没有固体块状物。如果你发现：排出仍有大量渣滓、成形或半成形大便；或大便颜色非常深、量很少；请尽快电话联系或线上联系医院/科室：部分情况下可以按医生建议追加一部分洗肠药或改为同日方案；若实在达不到标准，医生可能会建议改期，以免白受罪又检查不彻底。不要硬“装糊涂”去做检查，不合格的准备很容易导致漏诊和重复检查。
+</blockquote>
+<h3>洗肠药喝到后面，大便已经很清了，还需要把剩下的都喝完吗？</h3>
+<blockquote class="article-quote">
+绝大多数肠道准备方案是根据临床研究固定好的剂量和时间，不是“喝到拉清就可以停”：你看到的只是“你排出来的那一部分”；肠道更远端、隐蔽皱襞里是否还残留粪渣，很难凭肉眼排便就判断。通常建议：严格按说明把规定剂量喝完，这样更有把握让整个结肠都达到合格清洁度；只有在个别特殊体重很低、肾功能不全、心衰明显等情况下，医生可能会个体化减量，这需要事先由医生写明，而不是自己随意调整。简单说：“看着干净”不等于“真的干净”，能喝完规定量就尽量喝完。
+</blockquote>
+  </div>
+</details>
+<details class="article-section">
+  <summary>
+    <span class="section-title">检查当天饮水及用药</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>检查当天早上我能不能喝水、吃药？特别是降压药、心脏药怎么办？</h3>
+    <blockquote class="article-quote">
+<p><strong>喝水</strong>：一般允许在检查前 2 小时内喝少量清水（例如 100–200 mL），之后完全禁饮；</p>
+<p><strong>吃药</strong>：多数降压药、心脏药需要继续吃，通常建议用一小口清水送服（具体按医生给你的个体化方案）；某些特殊药物（降糖药、口服抗凝药等）往往要减量或暂时停用，这部分医生会提前在门诊或住院时写清楚；最安全的做法是：来之前把所有药物写成一张“用药清单”，问诊时给医生看；严格按照医生给你的“检查当天用药说明”执行，不要自己做主停药/加药。</p>
+    </blockquote>
+  </div>
+</details>
+<details class="article-section">
+  <summary>
+    <span class="section-title">特殊体质适配准</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>如果平时肠道就不好，经常便秘或腹泻，肠道准备需要特别注意什么？</h3>
+    <blockquote class="article-quote">
+长期便秘的人：更容易出现“喝了很多药，还是不干净”的情况；医生可能会根据情况提前 2–3 天调整你的饮食，甚至提前加用少量口服通便药，提高清洁成功率。经常腹泻或肠道很敏感的人：在喝洗肠药时可能会更频繁上厕所、更容易乏力、脱水；建议严格按指示补充适量清流质（如含少量电解质的饮料），不要因为怕拉就减少药量。总的原则是：提前告知自己的肠道习惯，我们会帮你量身定制一个相对更合适的准备方案。
+    </blockquote>
+<h3>如果有低血压、容易头晕或身体偏瘦，喝那么多药会不会很虚、脱水？要怎么预防？</h3>
+<blockquote class="article-quote">
+肠道准备的确会带来一定程度的水分和电解质流失，所以：体重偏低、血压偏低、原本就容易晕厥的人要格外注意。预防建议：严格按照医生要求在允许的时间段内补充足够的清流质，可以选择含少量电解质的饮料，而不是只喝白水；上厕所时动作缓慢，从坐位到站立时先在原地停一两秒再走，避免突然起身导致头晕甚至跌倒；如果出现明显心慌、头晕、站不住、眼前发黑等情况，应尽快休息、补充少量液体，并及时联系医生。检查前的门诊评估时，也可以把“我容易低血压/晕厥”这件事先告诉医生，必要时他们会略微调整制剂或给出更细致的补液建议。
+</blockquote>
+  </div>
+</details>
+<details class="article-section">
+  <summary>
+    <span class="section-title">术前化验与异常评估</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>做无痛胃肠镜前，一般需要做哪些术前检查？是不是人人都要查一大堆？</h3>
+    <blockquote class="article-quote">
+<p>通常会根据你的年龄和基础疾病情况来决定检查项目，不是一刀切所有人都查一样多：多数医院常规会参考的项目包括：血常规（看贫血、感染情况）；凝血功能（影响出血和止血风险，尤其是要切息肉的情况）；肝肾功能、电解质（关系到麻醉药代谢和用药安全）；心电图（特别是 ≥40–45 岁、有心脏病或高血压史者）。</p>
+<p>对于年轻、无明显基础疾病的低风险人群：可能只需要少量基础化验，甚至部分检查可以用近期体检结果代替；对于高龄或有心脏病、糖尿病、肾病等慢病患者：术前评估会更严格，检查项目相应更多一些；必要时会请心内科、麻醉科等联合评估。总的来说，是根据你的情况“量身定制”检查，而不是为了检查而检查。</p>
+    </blockquote>
+<h3>体检中心之前做过的化验和心电图，还能用吗？多“新鲜”的检查结果才算数？</h3>
+<blockquote class="article-quote">
+<p>原则上，只要是正规医疗机构/体检中心出的报告，都具有一定参考价值，建议你：把最近 3–6 个月内做过的血液检查、心电图、影像检查全部带来或拍照存手机；是否“直接沿用”要看：时间：很多科室会以 3 个月内的血液检查、6 个月内的心电图 作为相对可靠的参考（具体以医院规定为准）；状态：如果你最近一段时间病情有明显变化（比如新发胸痛、气短、消瘦、反复感染等），即便有旧报告，也可能需要重新检查。</p>
+<p>医生的思路一般是：能合理利用可靠的既往检查，就尽量不重复；但如果旧检查太久远或者你近期状况有较大变化，为了安全，还是会建议补做。所以，来之前先把已有检查整理好带来，可以少走不少弯路。</p>
+</blockquote>
+<h3>如果术前检查发现血压、血糖或心电图不太正常，是不是就一定不能做无痛胃肠镜了？</h3>
+<blockquote class="article-quote">
+<p>不一定“直接取消”，而是要看异常的程度和性质：例如：血压稍高/稍低但没有明显症状：可以在医生指导下临时调整降压药或休息后复测，很多人仍可在当天检查；空腹血糖略高：先确认有没有低血糖风险、是否需要调整降糖药，再结合整体状态判断；心电图上出现一些轻度或已知的陈旧改变，通常会结合既往病史、症状和高危因素综合评估。真正需要暂缓或取消检查的情况通常是：极高或极低血压且难以短时间内纠正；明显心律失常、近期急性冠脉事件怀疑；严重电解质紊乱或感染未控制等。大多数轻〜中度异常，并不意味着“永远不能做”，而是：先把基础问题调整稳定，或在心内科/麻醉科评估后，选择更安全的镇静方式和监护环境，再来做检查。简单说，术前检查发现问题不是为了拒绝你，而是为了更安全地帮你完成检查。</p>
+</blockquote>
+  </div>
+</details>
+  </div>
+</details>
+<details class="article-item">
+  <summary>
+    <div class="learn-summary">
+      <div class="learn-summary-title">药物和慢性病相关问题</div>
+      <div class="learn-summary-meta">约 3 分钟阅读 · 5 小节</div>
+    </div>
+    <span class="learn-summary-action">阅读</span>
+  </summary>
+  <div class="article-sections">
+    <details class="article-section">
+  <summary>
+    <span class="section-title">抗凝 / 抗血小板药物管理</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>如果在吃阿司匹林/抗凝药（如华法林、NOAC），还能做无痛胃肠镜和切息肉吗？</h3>
+    <blockquote class="article-quote">
+<p>是否需要停药，取决于你服药的原因（心血管风险）＋预计操作的风险（是否要切大息肉/大活检）。一般原则：单纯阿司匹林 + 低风险活检/小息肉切除，很多医生认为可以不停或只短暂停药；抗凝药、多联抗血小板时，往往需要更仔细的个体化评估，并在心内科/神经科/麻醉科协助下决定停药时间、是否桥接。千万不要自行停药或擅自改变剂量，一定要把你目前所有药物带来给医生看。</p>
+    </blockquote>
+  </div>
+</details>
+<details class="article-section">
+  <summary>
+    <span class="section-title">2.糖尿病、高血压、冠心病用药</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>糖尿病患者做无痛胃肠镜，应注意什么？</h3>
+    <blockquote class="article-quote">
+因为要禁食＋喝洗肠药，低血糖和血糖波动是重点：胰岛素和口服降糖药常需要按医嘱减量或临时停用（尤其是早晨剂量）；检查当天请携带血糖仪，按护士或医生指示监测；建议提前把你的用药清单、平时血糖控制情况告诉我们，我们会给你一个个体化的“糖尿病检查日用药方案”。
+    </blockquote>
+<h3>高血压、冠心病患者，检查当天的降压药、心脏药要不要照常吃？</h3>
+<blockquote class="article-quote">
+大多数情况下，降压药、抗心绞痛药是要继续服用的，否则容易在检查过程中因为紧张、疼痛或停药导致血压飙升或心绞痛发作；通常建议用一小口清水按时送服（医生会提前告诉你哪些可以照常吃）；少数会影响血压、心率或与麻醉相互作用明显的药物（如某些抗心律失常药），会由心内科/麻醉科医生结合你的情况给出具体方案。结论：不要自己停药，一切按医生写给你的“检查日用药单”执行。
+</blockquote>
+  </div>
+</details>
+<details class="article-section">
+  <summary>
+    <span class="section-title">3.精神类药物（抗抑郁 / 安眠 / 抗焦虑）与麻醉</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>我长期在吃抗抑郁药、安眠药或抗焦虑药，会影响麻醉吗？需要停吗？</h3>
+    <blockquote class="article-quote">
+大部分现代抗抑郁药、安眠药、抗焦虑药与短效静脉麻醉药物是可以同时使用的，不需要因为做一次无痛胃肠镜就全部停掉；个别药物可能：轻微增加嗜睡或低血压的风险；或与其他药物联用时影响心电图（QT 间期等）。最重要的是：不要隐瞒你在吃精神科药物，这在医疗团队眼里并不可耻，反而是安全用药的关键信息；精神科用药的停/不停，一定要在精神科＋麻醉科＋消化科共同评估后决定，千万不要自己突然停药，以免引起情绪反弹或停药反应。
+    </blockquote>
+  </div>
+</details>
+<details class="article-section">
+  <summary>
+    <span class="section-title">4.激素、免疫抑制剂、生物制剂相关</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>如果在用激素、免疫抑制剂或生物制剂（比如类风湿、肠炎用药），能做无痛胃肠镜和息肉切除吗？</h3>
+    <blockquote class="article-quote">
+这类药物会不同程度地影响免疫功能和伤口愈合，但并不代表不能做内镜和治疗；一般做法是：明确你用药的种类、剂量和最近一次给药时间；对于计划切除较大息肉或进行大范围黏膜切除的情况，医生可能建议与你的风湿科/消化科/肾内科医生沟通，适当调整给药间隔或在相对“低药效窗”操作；普通的活检、小息肉切除在大多数情况下仍然是安全的，只是术后需要更注意感染、发热、伤口愈合等情况。
+    </blockquote>
+  </div>
+</details>
+<details class="article-section">
+  <summary>
+    <span class="section-title">5.肝肾功能不全及药物相互作用</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>检查用的药会不会跟我平时的药物有冲突？</h3>
+    <blockquote class="article-quote">
+常规使用的镇静药/麻醉药与绝大部分慢病药物（降压药、降脂药等）是可以兼容的。但某些特殊药物需要特别注意，例如：抗心律失常药、某些抗抑郁药服用者，心律波动风险可能稍高；服用长期阿片类止痛药者，镇静/呼吸抑制风险可能增加。所以请务必：带一份详细“用药清单”：药名、剂量、服用时间；在问诊时如实告知，不要漏掉保健品、草药、减肥药。
+    </blockquote>
+<h3>如果有慢性肝病或肾功能不好，用麻醉药会不会风险更大？</h3>
+<blockquote class="article-quote">
+部分镇静/麻醉药物需要在肝脏代谢或经肾脏排泄，所以在中重度肝、肾功能不全时，确实要更谨慎：可能需要减少剂量、延长给药间隔；检查过程中和之后，需要更密切监测血压、心率、神志和呼吸。所以如果你有肝硬化、肝炎、肾功能不全、透析史等，一定要：提前带上最近的化验单（肝功能、肌酐、eGFR 等）；告诉我们你是否有腹水、食管静脉曲张、透析时间等情况。在充分评估和调整用药后，绝大多数肝肾功能异常的患者仍然可以安全地完成检查。
+</blockquote>
+  </div>
+</details>
+  </div>
+</details>
+<details class="article-item">
+  <summary>
+    <div class="learn-summary">
+      <div class="learn-summary-title">费用与必要性</div>
+      <div class="learn-summary-meta">约 3 分钟阅读 · 4 小节</div>
+    </div>
+    <span class="learn-summary-action">阅读</span>
+  </summary>
+  <div class="article-sections">
+    <details class="article-section">
+  <summary>
+    <span class="section-title">1.无痛必要性、无症状体检筛查的必要性</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>无痛胃肠镜比普通胃肠镜贵很多，真的有必要吗？</h3>
+    <blockquote class="article-quote">
+无痛胃肠镜一般会多出一部分费用（麻醉医生、药物和监护设备），但带来的好处包括：减轻检查过程的痛苦和恐惧，很多人因此愿意完成“该做但一直拖延”的筛查；由于你比较放松、肌肉不紧张，有利于医生仔细观察、到达盲肠、完成治疗操作。<br><br>是否“值得”，取决于：1.你的焦虑程度和疼痛敏感度；<br><br>2.检查复杂程度（是否需要同时做胃＋肠，是否预期要治疗）；
+<p>我们不会强制要求无痛，而是充分说明利弊，由你自己选择。</p>
+    </blockquote>
+<h3>如果没有什么症状，只是体检建议做一次无痛胃肠镜，有必要吗？</h3>
+<blockquote class="article-quote">
+对于达到结直肠癌筛查年龄（如 ≥45 岁）的人群，即便目前没有症状，也建议进行筛查性结肠镜或其他替代筛查方式——因为早期甚至癌前病变通常没有明显症状。<br><br>胃镜方面：在胃癌高发地区，或有胃癌家族史、长期胃部不适的人群，适当的筛查性胃镜可以帮助在早期发现可治愈病变。<br><br>是否一定要“胃＋肠一起做”，可以与医生讨论：一次麻醉＋两项检查，对某些人来说是更“经济”的方式（在时间和心理成本上）；也可以分步完成。
+</blockquote>
+  </div>
+</details>
+<details class="article-section">
+  <summary>
+    <span class="section-title">2.费用及医保报销</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>无痛胃肠镜的费用医保能不能报销？是不是自费项目？</h3>
+    <blockquote class="article-quote">
+是否纳入医保报销、报销比例多少，与地区政策和医院级别有关，不同地方差别很大；<br><br>一般来说：普通胃肠镜多属于医保范围；无痛部分（麻醉费、药费）在很多地区也能按一定比例报销，但有的地方属于“部分自费”。<br><br>最靠谱的做法是：提前咨询本院收费处或医保办，了解自己所在地区的具体政策；根据个人经济情况和医保报销情况，和医生一起选择最合适的方案。
+    </blockquote>
+  </div>
+</details>
+<details class="article-section">
+  <summary>
+    <span class="section-title">3.经济有限时检查优先级与替代方案</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>如果经济压力比较大，想优先做一个检查，是先做胃镜好，还是先做肠镜好？</h3>
+    <blockquote class="article-quote">
+这要结合年龄、症状和家族史综合考虑：≥45 岁、无明显上腹症状、家族有结直肠癌史：
+<ol><li>优先考虑结肠镜，因为这是结直肠癌筛查的关键年龄段；</li><li>明显上腹痛、反酸、黑便、胃癌家族史等：胃镜的重要性就更高；</li><li>若年龄较大、既有慢性肠道症状，又处在筛查年龄，医生可能会建议你优先做结肠镜。</li></ol>
+如果暂时只能做一个，完全可以把你的经济情况和顾虑直接告诉医生，由医生结合指南帮你一起决定“哪一个优先更有价值”
+    </blockquote>
+<h3>胃肠镜这么贵，我能不能只做大便隐血或其他便检代替？差别大吗？</h3>
+<blockquote class="article-quote">
+<p>大便免疫法隐血（FIT）等粪便检测确实是一种更便宜、更简便的筛查方式：</p>
+<p>优点：无创、便宜、在家采样就行；</p>
+<p>缺点：对早期病变和小息肉的敏感度有限，阳性还需要再做结肠镜确认。</p>
+<p>对于平均风险、经济条件有限、短期内不方便做结肠镜的人，定期做 FIT 也是一种可接受的折中方案。但若：已经达到了结肠镜筛查年龄，或属于高危人群（家族史、遗传综合征、既往息肉等），那结肠镜仍然是目前最彻底、最直接的检查方式。</p>
+</blockquote>
+  </div>
+</details>
+<details class="article-section">
+  <summary>
+    <span class="section-title">4.常见认知误区（元气 / 免疫力、过度检查）</span>
+    <span class="learn-summary-action">展开</span>
+  </summary>
+  <div class="article-content">
+    <h3>做无痛胃肠镜会不会影响“免疫力”或身体“元气”？</h3>
+    <blockquote class="article-quote">
+从现有研究和临床经验看，一次规范的无痛胃肠镜并不会损害免疫系统或“元气”；检查过程中的镇静药是短效的，体内几小时内就代谢掉，正常肝肾功能的人不会有长期影响；真正可能影响健康的往往是拖延诊断，错过早期病变的治疗窗口。
+    </blockquote>
+<h3>医生让患者做胃镜、肠镜，还有其他检查，会不会是“过度检查”“为了创收”？</h3>
+<blockquote class="article-quote">
+<p>医生开检查的原则是：</p>
+<ol><li>有明确指征（症状、体征、家族史、年龄等）；</li><li>检查结果能实际改变你的诊断或治疗决策。</li></ol>
+对于没有明确指征或处于灰色地带的检查，医生会向你说明：做和不做各自的利弊；你完全有权选择“暂缓或暂不做”。你可以随时提问：“这项检查能帮我解决什么问题？如果不做会有什么后果？”一个负责任的团队，应该能清楚地解释为什么建议这么做，而不是“你先做了再说”。
+</blockquote>
+  </div>
+</details>
+  </div>
+</details>
+                <!-- ARTICLES_END -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="profile" class="view">
+        <div class="panel profile-guest" id="profile-guest">登录后查看</div>
+        <div class="grid profile-grid is-hidden" id="profile-content">
+          <div class="panel profile-summary">
+            <div class="panel-title">患者信息</div>
+            <div class="profile-header">
+              <div class="avatar large" id="profile-avatar">王</div>
+              <div>
+                <div class="profile-name" id="profile-name">待填写</div>
+                <div class="profile-meta" id="profile-meta">个人资料</div>
+              </div>
+            </div>
+            <div class="info-list">
+              <div class="info-item">
+                <span>账号</span>
+                <strong id="profile-account">待填写</strong>
+              </div>
+              <div class="info-item">
+                <span>出生年月</span>
+                <strong id="profile-birth">待填写</strong>
+              </div>
+              <div class="info-item">
+                <span>性别</span>
+                <strong id="profile-gender">待填写</strong>
+              </div>
+              <div class="info-item">
+                <span>学历</span>
+                <strong id="profile-education">待填写</strong>
+              </div>
+              <div class="info-item">
+                <span>电话号码</span>
+                <strong id="profile-phone">待填写</strong>
+              </div>
+            </div>
+          </div>
+
+          <details class="panel profile-form">
+            <summary class="profile-form-summary">
+              <div class="profile-form-text">
+                <div class="profile-form-title">填写资料</div>
+                <div class="profile-form-note">完善个人资料以便我们给出更好的答案。</div>
+              </div>
+            </summary>
+            <form class="form" id="profile-form">
+              <label class="field">
+                <span>姓名</span>
+                <input type="text" name="name" placeholder="请输入姓名" required />
+              </label>
+              <label class="field">
+                <span>出生年月</span>
+                <input type="month" name="birth" required />
+              </label>
+              <label class="field">
+                <span>性别</span>
+                <select name="gender" required>
+                  <option value="">请选择</option>
+                  <option>男</option>
+                  <option>女</option>
+                  <option>其他</option>
+                  <option>不便透露</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>学历</span>
+                <select name="education" required>
+                  <option value="">请选择</option>
+                  <option>初中及以下</option>
+                  <option>高中/中专</option>
+                  <option>大专</option>
+                  <option>本科</option>
+                  <option>研究生及以上</option>
+                  <option>其他</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>电话号码</span>
+                <input type="tel" name="phone" placeholder="请输入联系电话" required />
+              </label>
+              <div class="form-message" id="profile-message"></div>
+              <button type="submit" class="btn btn-primary full">保存资料</button>
+            </form>
+          </details>
+
+          <div class="panel">
+            <div class="panel-title">检查准备清单</div>
+            <ul class="checklist">
+              <li>
+                <div class="check"></div>
+                <div>
+                  <div class="check-title">确认禁食时间</div>
+                  <div class="check-desc">检查前8小时停止进食</div>
+                </div>
+              </li>
+              <li>
+                <div class="check"></div>
+                <div>
+                  <div class="check-title">携带身份证件</div>
+                  <div class="check-desc">用于挂号及身份核验</div>
+                </div>
+              </li>
+              <li>
+                <div class="check"></div>
+                <div>
+                  <div class="check-title">准备陪同人员</div>
+                  <div class="check-desc">麻醉后建议有人陪同回家</div>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title">随访记录</div>
+            <div class="note-card">
+              <div class="note-title">术后第1天</div>
+              <div class="note-desc">无明显不适，轻微咽喉不适属正常反应。</div>
+            </div>
+            <div class="note-card">
+              <div class="note-title">术后第2天</div>
+              <div class="note-desc">饮食恢复正常，未出现黑便或持续腹痛。</div>
+            </div>
+            <div class="note-card">
+              <div class="note-title">术后第3天</div>
+              <div class="note-desc">建议保持充足睡眠，继续观察。</div>
+            </div>
+          </div>
+
+          <div class="panel survey-entry">
+            <div class="panel-title">术后随访问卷</div>
+            <p class="survey-desc">请在检查后3天内填写，帮助我们优化术前教育与AI问答体验。</p>
+            <div class="survey-metrics">
+              <div class="metric">
+                <div class="metric-label">待填写</div>
+                <div class="metric-value">1 份</div>
+              </div>
+              <div class="metric">
+                <div class="metric-label">预计时间</div>
+                <div class="metric-value">3 分钟</div>
+              </div>
+            </div>
+            <button class="btn btn-primary full" data-view="survey">进入问卷</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="survey" class="view">
+        <div class="survey-header">
+          <div>
+            <div class="panel-title">术后随访问卷</div>
+            <div class="survey-sub">收集满意度、理解度、焦虑感变化与依从性等指标，用于持续优化AI系统的回答质量与互动效果。</div>
+          </div>
+          <div class="row">
+            <button class="btn btn-ghost" data-view="profile">返回我的信息</button>
+          </div>
+        </div>
+
+        <div class="grid survey-grid">
+          <form class="panel survey-form" id="survey-form">
+            <div class="survey-block">
+              <div class="survey-question">1. 术前教育整体满意度</div>
+              <div class="scale-group">
+                <div class="scale-option">
+                  <input type="radio" id="sat-1" name="satisfaction" required />
+                  <label for="sat-1">1</label>
+                </div>
+                <div class="scale-option">
+                  <input type="radio" id="sat-2" name="satisfaction" />
+                  <label for="sat-2">2</label>
+                </div>
+                <div class="scale-option">
+                  <input type="radio" id="sat-3" name="satisfaction" />
+                  <label for="sat-3">3</label>
+                </div>
+                <div class="scale-option">
+                  <input type="radio" id="sat-4" name="satisfaction" />
+                  <label for="sat-4">4</label>
+                </div>
+                <div class="scale-option">
+                  <input type="radio" id="sat-5" name="satisfaction" />
+                  <label for="sat-5">5</label>
+                </div>
+              </div>
+              <div class="scale-labels">
+                <span>非常不满意</span>
+                <span>非常满意</span>
+              </div>
+            </div>
+
+            <div class="survey-block">
+              <div class="survey-question">2. 对术前/术后知识的理解程度</div>
+              <div class="scale-group">
+                <div class="scale-option">
+                  <input type="radio" id="under-1" name="understanding" required />
+                  <label for="under-1">1</label>
+                </div>
+                <div class="scale-option">
+                  <input type="radio" id="under-2" name="understanding" />
+                  <label for="under-2">2</label>
+                </div>
+                <div class="scale-option">
+                  <input type="radio" id="under-3" name="understanding" />
+                  <label for="under-3">3</label>
+                </div>
+                <div class="scale-option">
+                  <input type="radio" id="under-4" name="understanding" />
+                  <label for="under-4">4</label>
+                </div>
+                <div class="scale-option">
+                  <input type="radio" id="under-5" name="understanding" />
+                  <label for="under-5">5</label>
+                </div>
+              </div>
+              <div class="scale-labels">
+                <span>理解较少</span>
+                <span>非常清晰</span>
+              </div>
+            </div>
+
+            <div class="survey-block">
+              <div class="survey-question">3. 术后焦虑感变化</div>
+              <div class="option-grid">
+                <label class="option-card">
+                  <input type="radio" name="anxiety" value="明显降低" required />
+                  <span class="option-text">明显降低</span>
+                </label>
+                <label class="option-card">
+                  <input type="radio" name="anxiety" value="略有降低" />
+                  <span class="option-text">略有降低</span>
+                </label>
+                <label class="option-card">
+                  <input type="radio" name="anxiety" value="无变化" />
+                  <span class="option-text">无变化</span>
+                </label>
+                <label class="option-card">
+                  <input type="radio" name="anxiety" value="略有增加" />
+                  <span class="option-text">略有增加</span>
+                </label>
+                <label class="option-card">
+                  <input type="radio" name="anxiety" value="明显增加" />
+                  <span class="option-text">明显增加</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="survey-block">
+              <div class="survey-question">4. 本次检查相关依从性情况（可多选）</div>
+              <div class="option-grid">
+                <label class="option-card">
+                  <input type="checkbox" name="compliance" value="遵守禁食禁饮" />
+                  <span class="option-text">遵守禁食禁饮</span>
+                </label>
+                <label class="option-card">
+                  <input type="checkbox" name="compliance" value="按医嘱用药" />
+                  <span class="option-text">按医嘱用药/泻药</span>
+                </label>
+                <label class="option-card">
+                  <input type="checkbox" name="compliance" value="按时随访" />
+                  <span class="option-text">按时随访</span>
+                </label>
+                <label class="option-card">
+                  <input type="checkbox" name="compliance" value="部分未遵守" />
+                  <span class="option-text">有部分未遵守</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="survey-block">
+              <div class="survey-question">5. AI问答对你最有帮助的部分</div>
+              <div class="option-grid">
+                <label class="option-card">
+                  <input type="radio" name="helpful" value="术前准备" required />
+                  <span class="option-text">术前准备说明</span>
+                </label>
+                <label class="option-card">
+                  <input type="radio" name="helpful" value="术后恢复" />
+                  <span class="option-text">术后恢复建议</span>
+                </label>
+                <label class="option-card">
+                  <input type="radio" name="helpful" value="异常处理" />
+                  <span class="option-text">异常症状处理</span>
+                </label>
+                <label class="option-card">
+                  <input type="radio" name="helpful" value="流程提醒" />
+                  <span class="option-text">流程提醒与注意事项</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="survey-block">
+              <div class="survey-question">6. 还有哪些建议或困惑需要我们改进？</div>
+              <textarea class="survey-textarea" placeholder="例如：希望加入更详细的饮食计划或随访提醒"></textarea>
+            </div>
+
+            <div class="survey-actions">
+              <button type="submit" class="btn btn-primary">提交问卷</button>
+              <button type="button" class="btn btn-ghost" data-view="profile">稍后填写</button>
+            </div>
+
+            <div class="survey-toast" id="survey-toast">感谢反馈，已收到您的随访信息。</div>
+          </form>
+
+          <aside class="panel survey-side">
+            <div class="panel-title">问卷说明</div>
+            <p class="survey-side-text">您的反馈将帮助我们优化AI回答的准确性、表达清晰度与互动体验。</p>
+            <div class="survey-side-block">
+              <div class="survey-side-label">关注维度</div>
+              <div class="survey-tags">
+                <span>满意度</span>
+                <span>理解度</span>
+                <span>焦虑变化</span>
+                <span>依从性</span>
+                <span>持续改进</span>
+              </div>
+            </div>
+            <div class="survey-side-block">
+              <div class="survey-side-label">隐私提示</div>
+              <div class="survey-side-text">信息仅用于医疗服务优化与随访管理，不对外公开。</div>
+            </div>
+          </aside>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js" defer></script>
+</body>
+</html>

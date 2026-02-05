@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>胃肠镜教育助手 | 注册与登录</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="page">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark">HX</span>
+        <div>
+          <div class="brand-title">胃肠镜教育助手</div>
+          <div class="brand-sub">术前教育 · 术后恢复 · 智能随访</div>
+        </div>
+      </div>
+      <div></div>
+      <a class="btn btn-primary" href="app.html">进入系统</a>
+    </header>
+
+    <main>
+      <section id="auth" class="view is-active">
+        <div class="grid auth-grid">
+          <div class="hero">
+            <div class="hero-badge">专业 · 温和 · 易懂</div>
+            <h1>胃肠镜检查前后，清晰且可信的指导</h1>
+            <p class="hero-text">
+              面向患者的术前教育与术后恢复建议系统，结合可视化流程与智能问答，帮助患者理解准备事项、风险提示与恢复计划。
+            </p>
+            <div class="hero-cards">
+              <div class="mini-card">
+                <div class="mini-title">术前准备</div>
+                <div class="mini-desc">清晰的饮食与用药禁忌提示</div>
+              </div>
+              <div class="mini-card">
+                <div class="mini-title">术后恢复</div>
+                <div class="mini-desc">症状监测与分级处理建议</div>
+              </div>
+              <div class="mini-card">
+                <div class="mini-title">智能问答</div>
+                <div class="mini-desc">24小时常见问题实时解答</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel auth-panel">
+            <div class="tab-header">
+              <button class="tab is-active" data-auth="login">登录</button>
+              <button class="tab" data-auth="register">注册</button>
+            </div>
+            <form class="form" id="login-form">
+              <label class="field">
+                <span>账号</span>
+                <input type="text" name="account" placeholder="请输入账号" autocomplete="username" required />
+              </label>
+              <label class="field">
+                <span>密码</span>
+                <div class="input-row">
+                  <input id="login-password" type="password" name="password" placeholder="输入密码" autocomplete="current-password" required />
+                  <button type="button" class="toggle" data-toggle="login-password">显示</button>
+                </div>
+              </label>
+              <div class="form-message" id="login-message"></div>
+              <button type="submit" class="btn btn-primary full">安全登录</button>
+            </form>
+
+            <form class="form is-hidden" id="register-form">
+              <label class="field">
+                <span>姓名</span>
+                <input type="text" name="name" placeholder="输入真实姓名" autocomplete="name" required />
+              </label>
+              <label class="field">
+                <span>账号</span>
+                <input type="text" name="account" placeholder="设置登录账号" autocomplete="username" required />
+              </label>
+              <label class="field">
+                <span>密码</span>
+                <div class="input-row">
+                  <input id="register-password" type="password" name="password" placeholder="设置登录密码" autocomplete="new-password" required />
+                  <button type="button" class="toggle" data-toggle="register-password">显示</button>
+                </div>
+              </label>
+              <label class="field">
+                <span>确认密码</span>
+                <div class="input-row">
+                  <input id="register-confirm" type="password" name="confirmPassword" placeholder="再次输入密码" autocomplete="new-password" required />
+                  <button type="button" class="toggle" data-toggle="register-confirm">显示</button>
+                </div>
+              </label>
+              <div class="form-message" id="register-message"></div>
+              <button type="submit" class="btn btn-primary full">创建账户</button>
+              <p class="form-note">注册即表示同意平台隐私与告知说明</p>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
