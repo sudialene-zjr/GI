@@ -28,6 +28,12 @@ const profilePhoneEl = document.getElementById("profile-phone");
 const profileGuestEl = document.getElementById("profile-guest");
 const profileContentEl = document.getElementById("profile-content");
 const logoutLink = document.getElementById("logout-link");
+const surveyStatusEl = document.getElementById("survey-status");
+const surveyProgressLabelEl = document.getElementById("survey-progress-label");
+const surveyProgressValueEl = document.getElementById("survey-progress-value");
+const surveyEntryButtonEl = document.getElementById("survey-entry-button");
+
+let surveyCached = null;
 
 let surveyToastTimer;
 
@@ -162,6 +168,48 @@ async function getJson(url, useAuth = false) {
     throw new Error(data.error || "请求失败");
   }
   return data;
+}
+
+function applySurveyToForm(survey) {
+  if (!surveyForm || !survey) return;
+  const setRadio = (name, value) => {
+    const input = surveyForm.querySelector(`input[name="${name}"][value="${value}"]`);
+    if (input) input.checked = true;
+  };
+  setRadio("satisfaction", String(survey.satisfaction));
+  setRadio("understanding", String(survey.understanding));
+  setRadio("anxiety", survey.anxiety);
+  setRadio("helpful", survey.helpful);
+
+  if (Array.isArray(survey.compliance)) {
+    surveyForm
+      .querySelectorAll('input[name="compliance"]')
+      .forEach((input) => {
+        input.checked = survey.compliance.includes(input.value);
+      });
+  }
+
+  const suggestionEl = surveyForm.querySelector('textarea[name="suggestion"]');
+  if (suggestionEl) {
+    suggestionEl.value = survey.suggestion || "";
+  }
+}
+
+function updateSurveyCard(survey) {
+  if (!surveyStatusEl || !surveyProgressLabelEl || !surveyProgressValueEl || !surveyEntryButtonEl) {
+    return;
+  }
+  if (survey) {
+    surveyStatusEl.textContent = "已完成问卷填写，可随时修改答案。";
+    surveyProgressLabelEl.textContent = "已完成";
+    surveyProgressValueEl.textContent = "1 份";
+    surveyEntryButtonEl.textContent = "修改问卷";
+  } else {
+    surveyStatusEl.textContent = "请在检查后3天内填写，帮助我们优化术前教育与AI问答体验。";
+    surveyProgressLabelEl.textContent = "待填写";
+    surveyProgressValueEl.textContent = "1 份";
+    surveyEntryButtonEl.textContent = "进入问卷";
+  }
 }
 
 if (loginForm) {
@@ -309,6 +357,27 @@ async function loadProfile() {
     if (profileGuestEl) profileGuestEl.classList.remove("is-hidden");
     if (profileContentEl) profileContentEl.classList.add("is-hidden");
     updateProfileDisplay({});
+  }
+}
+
+async function loadSurveyStatus() {
+  const token = getToken();
+  if (!token) {
+    updateSurveyCard(null);
+    return;
+  }
+  try {
+    const data = await getJson("/api/survey", true);
+    if (data?.survey) {
+      surveyCached = data.survey;
+      updateSurveyCard(surveyCached);
+      applySurveyToForm(surveyCached);
+    } else {
+      surveyCached = null;
+      updateSurveyCard(null);
+    }
+  } catch {
+    updateSurveyCard(null);
   }
 }
 
@@ -500,9 +569,11 @@ if (surveyForm) {
 
     setFormMessage(surveyForm, "");
     postJson("/api/survey", payload, true)
-      .then(() => {
+      .then((data) => {
+        surveyCached = data?.survey || payload;
+        updateSurveyCard(surveyCached);
         if (!surveyToast) return;
-        surveyToast.textContent = "感谢反馈，已收到您的随访信息。";
+        surveyToast.textContent = "感谢反馈，已保存您的随访信息。";
         surveyToast.classList.add("is-visible");
         clearTimeout(surveyToastTimer);
         surveyToastTimer = setTimeout(() => {
@@ -516,3 +587,4 @@ if (surveyForm) {
 }
 
 loadProfile();
+loadSurveyStatus();

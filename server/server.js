@@ -352,20 +352,46 @@ async function handleSaveSurvey(req, res) {
       return;
     }
 
-    await pool.query(
+    const result = await pool.query(
       `INSERT INTO survey_responses
-        (user_id, satisfaction, understanding, anxiety, compliance, helpful, suggestion)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+        (user_id, satisfaction, understanding, anxiety, compliance, helpful, suggestion, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, now(), now())
+       ON CONFLICT (user_id)
+       DO UPDATE SET
+         satisfaction = EXCLUDED.satisfaction,
+         understanding = EXCLUDED.understanding,
+         anxiety = EXCLUDED.anxiety,
+         compliance = EXCLUDED.compliance,
+         helpful = EXCLUDED.helpful,
+         suggestion = EXCLUDED.suggestion,
+         updated_at = now()
+       RETURNING satisfaction, understanding, anxiety, compliance, helpful, suggestion, created_at, updated_at`,
       [payload.sub, satisfaction, understanding, anxiety, JSON.stringify(compliance), helpful, suggestion || null]
     );
 
-    sendJson(res, 200, { ok: true });
+    sendJson(res, 200, { ok: true, survey: result.rows[0] });
   } catch (error) {
     if (error && (error.message === "Invalid JSON" || error.message === "Body too large")) {
       sendJson(res, 400, { ok: false, error: "请求格式有误" });
       return;
     }
     console.error("Save survey error:", error);
+    handleDbError(res, error);
+  }
+}
+
+async function handleGetSurvey(req, res) {
+  const payload = verifyToken(req, res);
+  if (!payload) return;
+  try {
+    const result = await pool.query(
+      `SELECT satisfaction, understanding, anxiety, compliance, helpful, suggestion, created_at, updated_at
+       FROM survey_responses WHERE user_id = $1`,
+      [payload.sub]
+    );
+    sendJson(res, 200, { ok: true, survey: result.rows[0] || null });
+  } catch (error) {
+    console.error("Get survey error:", error);
     handleDbError(res, error);
   }
 }
@@ -404,6 +430,10 @@ const server = http.createServer(async (req, res) => {
     }
     if (req.method === "POST" && req.url === "/api/survey") {
       await handleSaveSurvey(req, res);
+      return;
+    }
+    if (req.method === "GET" && req.url === "/api/survey") {
+      await handleGetSurvey(req, res);
       return;
     }
     if (req.method === "GET" && req.url === "/api/health") {

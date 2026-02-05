@@ -32,7 +32,9 @@ CREATE TABLE IF NOT EXISTS survey_responses (
   compliance jsonb,
   helpful text NOT NULL,
   suggestion text,
-  created_at timestamptz NOT NULL DEFAULT now()
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now(),
+  UNIQUE (user_id)
 );
 
 CREATE INDEX IF NOT EXISTS idx_users_account_lower ON users(account_lower);
