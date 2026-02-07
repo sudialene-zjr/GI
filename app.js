@@ -33,7 +33,10 @@ const surveyProgressLabelEl = document.getElementById("survey-progress-label");
 const surveyProgressValueEl = document.getElementById("survey-progress-value");
 const surveyEntryButtonEl = document.getElementById("survey-entry-button");
 
+const CHAT_API_URL = window.CHAT_API_URL || "http://127.0.0.1:8000/v1/chat";
+
 let surveyCached = null;
+let profileCached = null;
 
 let surveyToastTimer;
 
@@ -152,6 +155,71 @@ async function postJson(url, payload, useAuth = false) {
     throw new Error(data.error || "请求失败");
   }
   return data;
+}
+
+function escapeHtml(value) {
+  const map = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  };
+  return String(value || '').replace(/[&<>"']/g, (ch) => map[ch]);
+}
+
+function renderMarkdown(text) {
+  const raw = String(text || '');
+  if (window.marked) {
+    if (!window.marked._giConfigured) {
+      window.marked.setOptions({ breaks: true });
+      window.marked._giConfigured = true;
+    }
+    const html = window.marked.parse(raw);
+    if (window.DOMPurify) {
+      return window.DOMPurify.sanitize(html);
+    }
+    return html;
+  }
+  return escapeHtml(raw).replace(/\n/g, '<br>');
+}
+
+function buildChatPayload(question) {
+  const payload = { question };
+  const user = getStoredUser();
+  if (user) {
+    payload.user = {
+      id: user.id || undefined,
+      name: user.name || undefined,
+      account: user.account || undefined
+    };
+  }
+  if (profileCached) {
+    payload.profile = { ...profileCached };
+  }
+  if (surveyCached) {
+    payload.survey = { ...surveyCached };
+  }
+  return payload;
+}
+
+function updateBotMessage(messageEl, { title, text }) {
+  if (!messageEl) return;
+  const bubble = messageEl.querySelector('.bubble');
+  if (!bubble) return;
+  const textEl = messageEl.querySelector('.bubble-text');
+  if (textEl) {
+    textEl.innerHTML = renderMarkdown(text);
+  }
+  if (title) {
+    let titleEl = messageEl.querySelector('.bubble-title');
+    if (!titleEl) {
+      titleEl = document.createElement('div');
+      titleEl.className = 'bubble-title';
+      bubble.insertBefore(titleEl, bubble.firstChild);
+    }
+    titleEl.textContent = title;
+  }
 }
 
 async function getJson(url, useAuth = false) {
@@ -320,6 +388,7 @@ async function loadProfile() {
   if (profileGuestEl) profileGuestEl.classList.toggle("is-hidden", !isGuest);
   if (profileContentEl) profileContentEl.classList.toggle("is-hidden", isGuest);
   if (isGuest) {
+    profileCached = null;
     updateProfileDisplay({});
     return;
   }
@@ -339,6 +408,7 @@ async function loadProfile() {
       const profileData = await getJson("/api/profile", true);
       if (profileData?.profile) {
         const profile = profileData.profile;
+        profileCached = profile;
         if (profileForm.elements.name) profileForm.elements.name.value = profile.name || user.name || "";
         if (profileForm.elements.birth) profileForm.elements.birth.value = profile.birth || "";
         if (profileForm.elements.gender) profileForm.elements.gender.value = profile.gender || "";
@@ -346,12 +416,15 @@ async function loadProfile() {
         if (profileForm.elements.phone) profileForm.elements.phone.value = profile.phone || "";
         updateProfileDisplay({ ...profile, account: user.account });
       } else {
+        profileCached = null;
         updateProfileDisplay({ name: user.name || "", account: user.account });
       }
     } catch {
+      profileCached = null;
       updateProfileDisplay({ name: user.name || "", account: user.account });
     }
   } catch (error) {
+    profileCached = null;
     clearToken();
     clearStoredUser();
     if (profileGuestEl) profileGuestEl.classList.remove("is-hidden");
@@ -407,6 +480,7 @@ if (profileForm) {
     setFormMessage(profileForm, "");
     try {
       const data = await postJson("/api/profile", { profile }, true);
+      profileCached = data.profile || profile;
       updateProfileDisplay({ ...(data.profile || profile), account: user.account });
       setFormMessage(profileForm, "资料已保存", "success");
     } catch (error) {
@@ -430,33 +504,63 @@ function appendMessage({ role, text, title }) {
     message.innerHTML = `
       <div class="avatar">医</div>
       <div class="bubble">
-        ${title ? `<div class="bubble-title">${title}</div>` : ""}
-        <div class="bubble-text">${text}</div>
+        ${title ? `<div class="bubble-title"></div>` : ""}
+        <div class="bubble-text"></div>
         <div class="bubble-meta">刚刚</div>
       </div>
     `;
   } else {
     message.innerHTML = `
       <div class="bubble">
-        <div class="bubble-text">${text}</div>
+        <div class="bubble-text"></div>
         <div class="bubble-meta">刚刚</div>
       </div>
     `;
   }
 
+  const textEl = message.querySelector('.bubble-text');
+  if (textEl) {
+    if (role === 'bot') {
+      textEl.innerHTML = renderMarkdown(text);
+    } else {
+      textEl.textContent = text || '';
+    }
+  }
+  if (role === 'bot' && title) {
+    const titleEl = message.querySelector('.bubble-title');
+    if (titleEl) titleEl.textContent = title;
+  }
+
   chatWindow.appendChild(message);
   chatWindow.scrollTop = chatWindow.scrollHeight;
+  return message;
 }
 
-function sendMessage(text) {
-  if (!text.trim()) return;
-  appendMessage({ role: "user", text });
-  chatInput.value = "";
+async function sendMessage(text) {
+  const content = String(text || '').trim();
+  if (!content) return;
+  appendMessage({ role: 'user', text: content });
+  chatInput.value = '';
 
-  const reply = botReplies[Math.floor(Math.random() * botReplies.length)];
-  setTimeout(() => {
-    appendMessage({ role: "bot", title: "护理建议", text: reply });
-  }, 600);
+  const botMessage = appendMessage({ role: 'bot', title: '护理建议', text: '正在生成...' });
+
+  try {
+    const payload = buildChatPayload(content);
+    const response = await fetch(CHAT_API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw new Error(data.detail || data.error || '请求失败');
+    }
+    const answer = data.answer || '暂未获得回复，请稍后再试。';
+    const title = data.escalate ? '风险提示' : '护理建议';
+    updateBotMessage(botMessage, { title, text: answer });
+  } catch (error) {
+    updateBotMessage(botMessage, { title: '系统提示', text: error.message || '请求失败' });
+  }
 }
 
 if (chatForm) {

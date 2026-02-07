@@ -1,84 +1,102 @@
 # 胃肠镜教育助手（GI Edu）
 
-面向患者的胃肠镜术前教育与术后恢复建议系统，包含注册/登录、智能问答、学习中心、用户信息与随访问卷。后端使用 PostgreSQL + JWT。
-
-## 功能概览
-- 注册 / 登录（JWT 登录态）
-- 智能问答界面
-- 学习中心（视频 + 文章资料）
-- 用户信息与资料填写
-- 术后随访问卷
-
-## 技术栈
-- 前端：原生 HTML/CSS/JS
-- 后端：Node.js（内置 http）
-- 数据库：PostgreSQL
-- 登录态：JWT
+本仓库已整合 Web 前端 + 业务后端 + AI Agent，目标是为胃肠镜患者提供术前教育、术后支持与随访。
 
 ## 目录结构
 ```
 GI/
-  app.html
-  index.html
-  app.js
-  styles.css
-  server/
-    server.js
-    db/
-      init.sql
-      migrate_users.js
+  app.html / app.js / styles.css     # 前端（问答/学习中心/用户资料）
+  server/                            # Node.js + PostgreSQL 接口（用户/随访问卷）
+  agent/                             # Python FastAPI + Qwen（AI Agent）
+    app/                             # API、检索、提示词
+    data/                            # 知识库原始数据与术语
+    scripts/                         # 数据处理脚本
 ```
 
-## 本地运行
-### 1. 安装依赖
-```bash
-cd GI
-npm install
-```
+## 系统架构与数据流
+1. Web 端登录/资料/随访信息 -> 存入 PostgreSQL
+2. 用户提问时，Web 端把 `user/profile/survey` 一并发送到 `agent /v1/chat`
+3. Agent 端执行：红线优先拦截 -> FAQ 检索 -> Qwen 生成
+4. Web 端渲染 Markdown 回复
 
-### 2. 初始化数据库
-设置数据库与用户（如已有请跳过）：
+## 环境准备
+1. Node.js（建议 18+）
+2. Python（建议 3.11 或 3.12）
+3. PostgreSQL
+
+## 本地运行（完整流程）
+### 1) 初始化数据库（Web 端依赖）
 ```bash
 psql "postgresql://<superuser>@127.0.0.1:5432/postgres" -c "CREATE DATABASE gi_edu;"
 psql "postgresql://<superuser>@127.0.0.1:5432/gi_edu" -c "CREATE EXTENSION IF NOT EXISTS pgcrypto;"
 psql "postgresql://<superuser>@127.0.0.1:5432/gi_edu" -c "GRANT ALL ON SCHEMA public TO app_user;"
 psql "postgresql://<superuser>@127.0.0.1:5432/gi_edu" -c "GRANT ALL PRIVILEGES ON DATABASE gi_edu TO app_user;"
-```
-
-执行建表脚本：
-```bash
 psql "postgresql://app_user:huaxi@127.0.0.1:5432/gi_edu" -f server/db/init.sql
 ```
 
-### 3. 设置环境变量
+### 2) 构建 Agent 知识库
 ```bash
+cd agent
+python3 scripts/build_data.py
+```
+
+### 3) 安装 Agent 依赖
+```bash
+cd agent
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+```
+
+### 4) 启动 Agent（端口 8000）
+```bash
+cd agent
+source .venv/bin/activate
+export QWEN_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
+export QWEN_API_KEY=你的API_KEY
+export QWEN_MODEL=qwen3-max
+uvicorn app.main:app --reload --port 8000
+```
+
+### 5) 启动 Web 服务（端口 3000）
+```bash
+cd ..
 export DATABASE_URL="postgresql://app_user:huaxi@127.0.0.1:5432/gi_edu"
 export JWT_SECRET="请换成足够随机的字符串"
-```
-
-### 4. 启动服务
-```bash
+npm install
 npm run start
 ```
+访问：`http://localhost:3000`
 
-访问：
-```
-http://localhost:3000
-```
-
-## 数据迁移（可选）
-如需将旧 `users.json` 数据迁移到 PostgreSQL：
+## 快速测试
 ```bash
-DATABASE_URL="postgresql://app_user:huaxi@127.0.0.1:5432/gi_edu" node server/db/migrate_users.js
+curl http://127.0.0.1:8000/v1/health
+```
+```bash
+curl -X POST http://127.0.0.1:8000/v1/chat   -H "Content-Type: application/json"   -d '{"question":"做无痛胃肠镜检查，吃喝怎么准备？"}'
 ```
 
-## API 概览
-- `POST /api/register`
-- `POST /api/login`
-- `GET /api/me` （需 JWT）
-- `GET /api/profile` （需 JWT）
-- `POST /api/profile` （需 JWT）
+## Agent 接入后开发路线
+1. **术语解释**：接入 `agent/data/专有名词/` 作为术语库，先规则解释，再由 LLM 复述为患者语言。
+2. **提示词版本化**：增加 `PROMPT_VERSION` 与 v1/v2/v3 切换，支持 A/B 测试。
+3. **RAG 升级**：由当前轻量检索升级到混合检索（BM25 + 向量），并引入重排。
+4. **安全拦截**：红线规则优先，新增“高危药物/并发症”兜底模板。
+5. **个性化分层**：按教育程度、年龄、病史、随访结果输出不同深度解释。
+6. **动态学习**：对高频问题与低满意度问题做追踪与内容优化。
+7. **可观测性**：记录命中率、红线触发率、满意度等指标，支持版本对比。
 
-## 说明
-- 前端使用 `localStorage` 保存 JWT 与用户信息。
-- 生产环境请替换强随机 `JWT_SECRET` 并使用 HTTPS。
+## 评测方法
+**目标**：避免红线漏报、保证核心 FAQ 命中、提升满意度。
+
+1. 回归评测集：使用 `agent/data/评测集/*.xlsx` 作为问题集，统计指标包括红线命中率、召回率、低风险错误率。
+2. 人工抽检：每次更新提示词或知识库后，随机抽样 20-50 条对话评估正确性。
+3. 线上反馈：结合 `survey_responses` 的满意度/理解度指标做版本对比。
+
+## 常见问题
+- `pip install` 报 PEP 668：必须使用虚拟环境
+- `uvicorn` 看起来卡住：正常，服务在前台运行
+- 前端 404：确认 `/v1/chat` 指向 8000
+- 浏览器 CORS：默认允许 `http://localhost:3000` / `http://127.0.0.1:3000`，可用 `CORS_ORIGINS` 覆盖
+
+---
+如需分支协作，请优先修改 `agent/` 或 `server/` 下对应模块，并在 PR 中附带评测结果摘要。

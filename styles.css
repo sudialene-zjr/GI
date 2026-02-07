@@ -525,6 +525,40 @@ main {
   line-height: 1.5;
 }
 
+.bubble-text p {
+  margin: 0 0 6px;
+}
+
+.bubble-text ul,
+.bubble-text ol {
+  margin: 6px 0 6px 18px;
+  padding: 0;
+}
+
+.bubble-text li {
+  margin-bottom: 4px;
+}
+
+.bubble-text code {
+  font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  background: rgba(31, 107, 95, 0.1);
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.bubble-text pre {
+  background: rgba(31, 107, 95, 0.08);
+  padding: 8px 10px;
+  border-radius: 10px;
+  overflow-x: auto;
+  margin: 6px 0;
+}
+
+.bubble-text a {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
 .bubble-meta {
   font-size: 11px;
   color: rgba(255, 255, 255, 0.7);

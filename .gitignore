@@ -25,3 +25,23 @@ server/data/
 # IDE
 .vscode/
 .idea/
+
+# Python / Agent
+agent/.venv/
+agent/__pycache__/
+agent/**/*.pyc
+agent/.pytest_cache/
+agent/.mypy_cache/
+agent/.ruff_cache/
+agent/.env
+agent/.env.*
+!agent/.env.example
+agent/data/processed/
+agent/data/processed/**
+
+# Local artifacts
+agent/.DS_Store
+
+# Office temp
+.~*
+~$*
