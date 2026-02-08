@@ -58,11 +58,20 @@ export QWEN_MODEL=qwen3-max
 uvicorn app.main:app --reload --port 8000
 ```
 
-### 5) 启动 Web 服务（端口 3000）
+### 5) 临时环境变量
+```bash
+# Windows
+$env:DATABASE_URL = "postgresql://app_user:huaxi@127.0.0.1:5432/gi_edu"
+$env:JWT_SECRET = "请换成足够随机的字符串"
+
+# macOS, Linux
+export DATABASE_URL="postgresql://app_user:huaxi@127.0.0.1:5432/gi_edu"
+export JWT_SECRET= "请换成足够随机的字符串"
+```
+
+### 6) 启动 Web 服务（端口 3000）
 ```bash
 cd ..
-export DATABASE_URL="postgresql://app_user:huaxi@127.0.0.1:5432/gi_edu"
-export JWT_SECRET="请换成足够随机的字符串"
 npm install
 npm run start
 ```
