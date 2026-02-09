@@ -27,10 +27,22 @@ GI/
 ## 本地运行（完整流程）
 ### 1) 初始化数据库（Web 端依赖）
 ```bash
+# 需将<superuser>替换为数据库超级用户名, 默认为 postgres
+
+# 创建 gi_edu 数据库
 psql "postgresql://<superuser>@127.0.0.1:5432/postgres" -c "CREATE DATABASE gi_edu;"
+
+# 数据库安装拓展
 psql "postgresql://<superuser>@127.0.0.1:5432/gi_edu" -c "CREATE EXTENSION IF NOT EXISTS pgcrypto;"
+
+# 创建 app_user 用户, 密码为 huaxi
+psql "postgresql://<superuser>@127.0.0.1:5432/gi_edu" -c "CREATE USER app_user WITH PASSWORD 'huaxi';"
+
+# 赋予 app_user 权限
 psql "postgresql://<superuser>@127.0.0.1:5432/gi_edu" -c "GRANT ALL ON SCHEMA public TO app_user;"
 psql "postgresql://<superuser>@127.0.0.1:5432/gi_edu" -c "GRANT ALL PRIVILEGES ON DATABASE gi_edu TO app_user;"
+
+# 初始化数据库
 psql "postgresql://app_user:huaxi@127.0.0.1:5432/gi_edu" -f server/db/init.sql
 ```
 
@@ -41,10 +53,24 @@ python3 scripts/build_data.py
 ```
 
 ### 3) 安装 Agent 依赖
+
+#### 1. 创建虚拟环境
 ```bash
 cd agent
 python3 -m venv .venv
+```
+
+#### 2. 激活环境
+```bash
+# Windows
+.venv\Scripts\activate
+
+# Linux
 source .venv/bin/activate
+```
+
+#### 3. 安装依赖
+```bash
 python -m pip install -r requirements.txt
 ```
 
