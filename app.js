@@ -692,3 +692,89 @@ if (surveyForm) {
 
 loadProfile();
 loadSurveyStatus();
+
+// 视频播放器功能
+function initVideoPlayer() {
+  const videoContainer = document.querySelector('.video-container');
+  if (!videoContainer) return;
+
+  const mainVideo = document.getElementById('mainVideo');
+  const videoTitle = document.getElementById('videoTitle');
+  const videoItems = document.querySelectorAll('.video-item');
+
+  // 为每个视频项添加点击事件
+  videoItems.forEach(item => {
+    // 检查是否已经有 data-src 属性
+    if (item.dataset.src && item.dataset.title) {
+      const videoLink = item.querySelector('.video-link');
+      if (!videoLink) return;
+
+      const src = item.dataset.src;
+      const title = item.dataset.title;
+
+      videoLink.addEventListener('click', () => {
+        // 更新视频源
+        mainVideo.src = src;
+        mainVideo.play();
+
+        // 更新标题
+        videoTitle.textContent = title;
+
+        // 更新选中状态
+        videoItems.forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+      });
+    } else {
+      // 处理旧格式的视频项（尚未转换的）
+      const video = item.querySelector('video');
+      const videoDesc = item.querySelector('.video-desc');
+
+      if (video && videoDesc) {
+        const src = video.src;
+        const title = videoDesc.textContent;
+
+        if (!src || !title) return;
+
+        // 转换为新格式
+        item.dataset.src = src;
+        item.dataset.title = title;
+
+        // 移除 video 和 video-desc，添加 video-link
+        const videoLink = document.createElement('div');
+        videoLink.className = 'video-link';
+        videoLink.textContent = title;
+        item.innerHTML = '';
+        item.appendChild(videoLink);
+
+        // 添加点击事件
+        videoLink.addEventListener('click', () => {
+          mainVideo.src = src;
+          mainVideo.play();
+          videoTitle.textContent = title;
+          videoItems.forEach(i => i.classList.remove('active'));
+          item.classList.add('active');
+        });
+      }
+    }
+  });
+
+  // 默认选中第一个视频
+  const firstVideoItem = videoItems[0];
+  if (firstVideoItem) {
+    firstVideoItem.classList.add('active');
+    // 如果第一个视频是旧格式，转换它
+    if (!firstVideoItem.dataset.src && firstVideoItem.querySelector('video')) {
+      const video = firstVideoItem.querySelector('video');
+      const videoDesc = firstVideoItem.querySelector('.video-desc');
+      if (video && videoDesc) {
+        firstVideoItem.dataset.src = video.src;
+        firstVideoItem.dataset.title = videoDesc.textContent;
+      }
+    }
+  }
+}
+
+// 页面加载完成后初始化视频播放器
+document.addEventListener('DOMContentLoaded', () => {
+  initVideoPlayer();
+});

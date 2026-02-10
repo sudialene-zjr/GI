@@ -45,3 +45,6 @@ agent/.DS_Store
 # Office temp
 .~*
 ~$*
+
+# Static files
+static/

@@ -9,8 +9,11 @@ GI/
   server/                            # Node.js + PostgreSQL 接口（用户/随访问卷）
   agent/                             # Python FastAPI + Qwen（AI Agent）
     app/                             # API、检索、提示词
-    data/                            # 知识库原始数据与术语
     scripts/                         # 数据处理脚本
+  static/                            # 静态资源
+    data/                            # 知识库原始数据与术语
+    images/                          # 存储静态图片
+    videos/                          # 存储静态视频
 ```
 
 ## 系统架构与数据流
@@ -25,6 +28,10 @@ GI/
 3. PostgreSQL
 
 ## 本地运行（完整流程）
+### 静态数据准备
+#### 1. 下载静态数据压缩包, 分享在群里了(目前采用这个方式)
+#### 2. 解压静态数据在GI目录下, 文件夹名称为static, 内部直接包含 data, images, videos文件夹, 用于存储学习中心要用的视频和图片.
+
 ### 1) 初始化数据库（Web 端依赖）
 ```bash
 # 需将<superuser>替换为数据库超级用户名, 默认为 postgres
@@ -78,24 +85,32 @@ python -m pip install -r requirements.txt
 ```bash
 cd agent
 source .venv/bin/activate
-export QWEN_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
-export QWEN_API_KEY=你的API_KEY
+
+# Windows
+$env:QWEN_BASE_URL="https://dashscope.aliyuncs.com/compatible-mode/v1"
+$env:QWEN_API_KEY="你的API_KEY"
+$env:QWEN_MODEL="qwen3-max"
+
+# macOS, Linux
+export QWEN_BASE_URL="https://dashscope.aliyuncs.com/compatible-mode/v1"
+export QWEN_API_KEY="你的API_KEY"
 export QWEN_MODEL=qwen3-max
+
 uvicorn app.main:app --reload --port 8000
 ```
 
-### 5) 临时环境变量
+### 5) 启动 Web 服务（端口 3000）
+#### 1.新开一个终端, 设置环境变量
 ```bash
 # Windows
-$env:DATABASE_URL = "postgresql://app_user:huaxi@127.0.0.1:5432/gi_edu"
-$env:JWT_SECRET = "请换成足够随机的字符串"
+$env:DATABASE_URL="postgresql://app_user:huaxi@127.0.0.1:5432/gi_edu"
+$env:JWT_SECRET="请换成足够随机的字符串"
 
 # macOS, Linux
 export DATABASE_URL="postgresql://app_user:huaxi@127.0.0.1:5432/gi_edu"
-export JWT_SECRET= "请换成足够随机的字符串"
+export JWT_SECRET="请换成足够随机的字符串"
 ```
-
-### 6) 启动 Web 服务（端口 3000）
+#### 2.启动服务
 ```bash
 cd ..
 npm install

@@ -19,8 +19,10 @@ from typing import List, Dict, Any, Tuple
 from xml.etree import ElementTree as ET
 
 
-BASE_DIR = Path(__file__).resolve().parents[1]
-DATA_DIR = BASE_DIR / "data"
+# 当前脚本在 GI/agent/scripts/build_data.py
+BASE_DIR = Path(__file__).resolve().parents[2]  # 指向 GI/
+STATIC_DIR = BASE_DIR / "static"
+DATA_DIR = STATIC_DIR / "data"
 OUT_DIR = DATA_DIR / "processed"
 
 

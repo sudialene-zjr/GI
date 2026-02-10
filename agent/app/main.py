@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import os
+from pathlib import Path
 from typing import Optional, List, Dict, Any
 
 from fastapi import FastAPI, HTTPException
@@ -12,6 +13,9 @@ from app.llm import call_qwen
 from app.prompts import SYSTEM_PROMPT, REDLINE_TEMPLATE
 from app.search import KnowledgeBase
 
+# 路径
+BASE_DIR = Path(__file__).resolve().parents[2]  # GI/
+DEFAULT_DATA_DIR = BASE_DIR / "static" / "data" / "processed"
 
 app = FastAPI(title="GI Endoscopy Education API", version="0.1.0")
 
@@ -114,11 +118,14 @@ def build_user_prompt(req: ChatRequest) -> str:
         parts.append(f"用户信息：{user_info}")
     return "\n".join(parts)
 
-
 @app.on_event("startup")
 def _load_kb() -> None:
     global kb
-    data_dir = os.getenv("DATA_DIR", "data/processed")
+    data_dir = os.getenv("DATA_DIR")
+    if data_dir:
+        data_dir = Path(data_dir)
+    else:
+        data_dir = DEFAULT_DATA_DIR
     kb = KnowledgeBase.from_dir(data_dir)
 
 
