@@ -715,7 +715,8 @@ function initVideoPlayer() {
       videoLink.addEventListener('click', () => {
         // 更新视频源
         mainVideo.src = src;
-        mainVideo.play();
+        mainVideo.pause();
+        mainVideo.load();
 
         // 更新标题
         videoTitle.textContent = title;
@@ -749,7 +750,8 @@ function initVideoPlayer() {
         // 添加点击事件
         videoLink.addEventListener('click', () => {
           mainVideo.src = src;
-          mainVideo.play();
+          mainVideo.pause();
+          mainVideo.load();
           videoTitle.textContent = title;
           videoItems.forEach(i => i.classList.remove('active'));
           item.classList.add('active');

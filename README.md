@@ -5,15 +5,21 @@
 ## 目录结构
 ```
 GI/
-  app.html / app.js / styles.css     # 前端（问答/学习中心/用户资料）
-  server/                            # Node.js + PostgreSQL 接口（用户/随访问卷）
-  agent/                             # Python FastAPI + Qwen（AI Agent）
-    app/                             # API、检索、提示词
-    scripts/                         # 数据处理脚本
-  static/                            # 静态资源
-    data/                            # 知识库原始数据与术语
-    images/                          # 存储静态图片
-    videos/                          # 存储静态视频
+    app.html / app.js / styles.css     # 前端（问答/学习中心/用户资料）
+    server/                            # Node.js + PostgreSQL 接口（用户/随访问卷）
+    agent/                             # Python FastAPI + Qwen（AI Agent）
+        app/                             # API、检索、提示词
+        scripts/                         # 数据处理脚本
+    static/                            # 静态资源
+        data/                            # 知识库原始数据与术语
+            患者提问/
+            评测集/
+        images/                          # 存储静态图片
+            check-flow-01.png
+            ...
+        videos/                          # 存储静态视频
+            1.无痛消化内镜诊疗概述
+            ...
 ```
 
 ## 系统架构与数据流
@@ -28,9 +34,15 @@ GI/
 3. PostgreSQL
 
 ## 本地运行（完整流程）
+
 ### 静态数据准备
-#### 1. 下载静态数据压缩包, 分享在群里了(目前采用这个方式)
-#### 2. 解压静态数据在GI目录下, 文件夹名称为static, 内部直接包含 data, images, videos文件夹, 用于存储学习中心要用的视频和图片.
+#### 1. 下载静态数据压缩包, 分享在群里了
+(目前采用这个方式)
+有五个压缩包:
+static.zip, data.zip, images.zip, videos1.zip, videos2.zip
+#### 2. 解压
+按照 README.md (即本文件) 开头的目录结构，将静态数据解压到对应目录。
+
 
 ### 1) 初始化数据库（Web 端依赖）
 ```bash
