@@ -1003,11 +1003,19 @@ main {
   overflow: hidden;
   border: 1px solid rgba(0, 0, 0, 0.08);
   background: white;
+  width: 100%;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .article-figure img {
   width: 100%;
+  height: auto;
   display: block;
+  object-fit: contain;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
 }
 
 .article-caption {

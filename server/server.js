@@ -5,6 +5,11 @@ const crypto = require("crypto");
 const { Pool } = require("pg");
 const jwt = require("jsonwebtoken");
 
+// Node.js 18+ 内置 fetch，旧版本需要安装 node-fetch
+if (typeof fetch === 'undefined') {
+  global.fetch = require('node-fetch');
+}
+
 const PORT = process.env.PORT || 3000;
 const ROOT = path.resolve(__dirname, "..");
 const MAX_BODY_SIZE = 1e6; // 1MB
@@ -404,6 +409,24 @@ const server = http.createServer(async (req, res) => {
       "Access-Control-Allow-Methods": "GET, POST, OPTIONS"
     });
     res.end();
+    return;
+  }
+
+  // 代理 /v1/chat 到 agent 服务
+  if (req.method === "POST" && req.url === "/v1/chat") {
+    const AGENT_URL = process.env.AGENT_URL || "http://127.0.0.1:8000/v1/chat";
+    try {
+      const body = await parseJsonBody(req);
+      const agentRes = await fetch(AGENT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
+      const data = await agentRes.json().catch(() => ({}));
+      sendJson(res, agentRes.ok ? 200 : 502, data);
+    } catch (error) {
+      sendJson(res, 502, { ok: false, error: "AI 服务暂时不可用" });
+    }
     return;
   }
 

@@ -33,7 +33,7 @@ const surveyProgressLabelEl = document.getElementById("survey-progress-label");
 const surveyProgressValueEl = document.getElementById("survey-progress-value");
 const surveyEntryButtonEl = document.getElementById("survey-entry-button");
 
-const CHAT_API_URL = window.CHAT_API_URL || "http://127.0.0.1:8000/v1/chat";
+const CHAT_API_URL = window.CHAT_API_URL || "/v1/chat";
 
 let surveyCached = null;
 let profileCached = null;
@@ -546,17 +546,9 @@ async function sendMessage(text) {
 
   try {
     const payload = buildChatPayload(content);
-    const response = await fetch(CHAT_API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    const data = await response.json().catch(() => ({}));
-    if (!response.ok) {
-      throw new Error(data.detail || data.error || '请求失败');
-    }
-    const answer = data.answer || '暂未获得回复，请稍后再试。';
-    const title = data.escalate ? '风险提示' : '护理建议';
+    const response = await postJson(CHAT_API_URL, payload);
+    const answer = response.answer || '暂未获得回复，请稍后再试。';
+    const title = response.escalate ? '风险提示' : '护理建议';
     updateBotMessage(botMessage, { title, text: answer });
   } catch (error) {
     updateBotMessage(botMessage, { title: '系统提示', text: error.message || '请求失败' });
