@@ -17,9 +17,6 @@ GI/
         images/                          # 存储静态图片
             check-flow-01.png
             ...
-        videos/                          # 存储静态视频
-            1.无痛消化内镜诊疗概述
-            ...
 ```
 
 ## 系统架构与数据流
@@ -54,6 +51,10 @@ psql "postgresql://<superuser>@127.0.0.1:5432/gi_edu" -c "GRANT ALL PRIVILEGES O
 
 # 初始化数据库
 psql "postgresql://app_user:huaxi@127.0.0.1:5432/gi_edu" -f server/db/init.sql
+psql "postgresql://app_user:huaxi@127.0.0.1:5432/gi_edu" -f server/db/video_tables.sql
+
+# 向视频表单中导入已有的视频元数据
+node server/scripts/import_videos.js
 ```
 
 ### 2) 构建 Agent 知识库
@@ -86,9 +87,6 @@ python -m pip install -r requirements.txt
 
 ### 4) 启动 Agent（端口 8000）
 ```bash
-cd agent
-source .venv/bin/activate
-
 # Windows
 $env:QWEN_BASE_URL="https://dashscope.aliyuncs.com/compatible-mode/v1"
 $env:QWEN_API_KEY="你的API_KEY"
@@ -108,10 +106,21 @@ uvicorn app.main:app --reload --port 8000
 # Windows
 $env:DATABASE_URL="postgresql://app_user:huaxi@127.0.0.1:5432/gi_edu"
 $env:JWT_SECRET="请换成足够随机的字符串"
+$env:COS_SECRET_ID="你的API_ID"
+$env:COS_SECRET_KEY="你的API_KEY"
+$env:COS_BUCKET="你的对象存储桶名称"
+$env:COS_REGION="对象存储桶所在的区域"
+$env:COS_VIDEO_PREFIX="videos/" # 视频索引
 
 # macOS, Linux
 export DATABASE_URL="postgresql://app_user:huaxi@127.0.0.1:5432/gi_edu"
 export JWT_SECRET="请换成足够随机的字符串"
+export COS_SECRET_ID="你的API_ID"
+export COS_SECRET_KEY="你的API_KEY"
+export COS_BUCKET="你的对象存储桶名称"
+export COS_REGION="对象存储桶所在的区域"
+export COS_VIDEO_PREFIX="videos/" # 视频索引
+
 ```
 #### 2.启动服务
 ```bash
