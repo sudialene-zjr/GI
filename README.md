@@ -35,15 +35,6 @@ GI/
 
 ## 本地运行（完整流程）
 
-### 静态数据准备
-#### 1. 下载静态数据压缩包, 分享在群里了
-(目前采用这个方式)
-有五个压缩包:
-static.zip, data.zip, images.zip, videos1.zip, videos2.zip
-#### 2. 解压
-按照 README.md (即本文件) 开头的目录结构，将静态数据解压到对应目录。
-
-
 ### 1) 初始化数据库（Web 端依赖）
 ```bash
 # 需将<superuser>替换为数据库超级用户名, 默认为 postgres

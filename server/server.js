@@ -2,8 +2,10 @@ const http = require("http");
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
+require("dotenv").config({ path: path.join(__dirname, "../.env") });
 const { Pool } = require("pg");
 const jwt = require("jsonwebtoken");
+const COS = require("cos-nodejs-sdk-v5");
 
 // Node.js 18+ 内置 fetch，旧版本需要安装 node-fetch
 if (typeof fetch === 'undefined') {
@@ -31,6 +33,23 @@ const pool = new Pool({
   connectionString: DATABASE_URL,
   ssl: useSSL ? { rejectUnauthorized: false } : false
 });
+
+// COS 配置
+const COS_SECRET_ID = process.env.COS_SECRET_ID;
+const COS_SECRET_KEY = process.env.COS_SECRET_KEY;
+const COS_BUCKET = process.env.COS_BUCKET;
+const COS_REGION = process.env.COS_REGION || 'ap-guangzhou';
+const COS_VIDEO_PREFIX = process.env.COS_VIDEO_PREFIX || 'videos/';
+
+// 初始化 COS 客户端（如果配置了）
+let cos = null;
+if (COS_SECRET_ID && COS_SECRET_KEY && COS_BUCKET) {
+  cos = new COS({
+    SecretId: COS_SECRET_ID,
+    SecretKey: COS_SECRET_KEY,
+    Region: COS_REGION,
+  });
+}
 
 function hashPassword(password, salt = crypto.randomBytes(16).toString("hex")) {
   const hash = crypto.scryptSync(password, salt, 64).toString("hex");
@@ -401,6 +420,100 @@ async function handleGetSurvey(req, res) {
   }
 }
 
+// 获取视频列表
+async function handleGetVideos(req, res) {
+  try {
+    const result = await pool.query(`
+      SELECT
+        v.id,
+        v.code,
+        v.title,
+        s.id as section_id,
+        s.code as section_code,
+        s.title as section_title,
+        c.id as category_id,
+        c.code as category_code,
+        c.title as category_title,
+        v.sort_order
+      FROM videos v
+      JOIN video_sections s ON v.section_id = s.id
+      JOIN video_categories c ON s.category_id = c.id
+      WHERE v.is_active = true
+      ORDER BY c.sort_order, s.sort_order, v.sort_order
+    `);
+    sendJson(res, 200, { ok: true, videos: result.rows });
+  } catch (error) {
+    console.error("Get videos error:", error);
+    handleDbError(res, error);
+  }
+}
+
+// 获取视频预签名 URL
+async function handleGetVideoPresignedUrl(req, res) {
+  const url = new URL(req.url, `http://${req.headers.host}`);
+  const videoId = url.searchParams.get('id');
+
+  if (!videoId) {
+    sendJson(res, 400, { ok: false, error: "缺少视频 ID" });
+    return;
+  }
+
+  try {
+    // 检查缓存
+    const cachedResult = await pool.query(
+      `SELECT url, expires_at FROM presigned_url_cache WHERE video_id = $1 AND expires_at > now()`,
+      [videoId]
+    );
+
+    if (cachedResult.rows.length > 0) {
+      sendJson(res, 200, { ok: true, url: cachedResult.rows[0].url });
+      return;
+    }
+
+    // 查询视频信息
+    const videoResult = await pool.query(
+      'SELECT cos_key FROM videos WHERE id = $1 AND is_active = true',
+      [videoId]
+    );
+
+    if (videoResult.rows.length === 0) {
+      sendJson(res, 404, { ok: false, error: "视频不存在" });
+      return;
+    }
+
+    const cosKey = videoResult.rows[0].cos_key;
+
+    // 生成预签名 URL（有效期 2 小时）
+    const expiresIn = 7200;
+    const presignedUrl = await new Promise((resolve, reject) => {
+      cos.getObjectUrl({
+        Bucket: COS_BUCKET,
+        Region: COS_REGION,
+        Key: cosKey,
+        Sign: true,
+        Expires: expiresIn,
+      }, (err, data) => {
+        if (err) reject(err);
+        else resolve(data.Url);
+      });
+    });
+
+    // 缓存 URL
+    const expiresAt = new Date(Date.now() + expiresIn * 1000);
+    await pool.query(
+      `INSERT INTO presigned_url_cache (video_id, url, expires_at)
+       VALUES ($1, $2, $3)
+       ON CONFLICT (video_id) DO UPDATE SET url = $2, expires_at = $3`,
+      [videoId, presignedUrl, expiresAt]
+    );
+
+    sendJson(res, 200, { ok: true, url: presignedUrl });
+  } catch (error) {
+    console.error("Get presigned URL error:", error);
+    sendJson(res, 500, { ok: false, error: "生成预签名 URL 失败" });
+  }
+}
+
 const server = http.createServer(async (req, res) => {
   if (req.method === "OPTIONS") {
     res.writeHead(204, {
@@ -457,6 +570,14 @@ const server = http.createServer(async (req, res) => {
     }
     if (req.method === "GET" && req.url === "/api/survey") {
       await handleGetSurvey(req, res);
+      return;
+    }
+    if (req.method === "GET" && req.url === "/api/videos") {
+      await handleGetVideos(req, res);
+      return;
+    }
+    if (req.method === "GET" && req.url.startsWith("/api/videos/presigned-url")) {
+      await handleGetVideoPresignedUrl(req, res);
       return;
     }
     if (req.method === "GET" && req.url === "/api/health") {

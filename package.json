@@ -4,11 +4,15 @@
   "version": "0.1.0",
   "type": "commonjs",
   "scripts": {
-    "start": "node server/server.js"
+    "start": "node server/server.js",
+    "upload-videos": "node server/scripts/upload_videos_to_cos.js",
+    "export-video-data": "node server/scripts/export_video_data.js"
   },
   "dependencies": {
-    "pg": "^8.11.5",
+    "cos-nodejs-sdk-v5": "^2.12.3",
+    "dotenv": "^17.3.1",
     "jsonwebtoken": "^9.0.2",
-    "node-fetch": "^2.7.0"
+    "node-fetch": "^2.7.0",
+    "pg": "^8.11.5"
   }
 }

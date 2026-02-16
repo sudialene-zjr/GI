@@ -694,78 +694,88 @@ function initVideoPlayer() {
   const videoTitle = document.getElementById('videoTitle');
   const videoItems = document.querySelectorAll('.video-item');
 
-  // 为每个视频项添加点击事件
-  videoItems.forEach(item => {
-    // 检查是否已经有 data-src 属性
-    if (item.dataset.src && item.dataset.title) {
-      const videoLink = item.querySelector('.video-link');
-      if (!videoLink) return;
+  // 从 API 加载视频数据
+  async function loadVideosFromAPI() {
+    try {
+      const response = await fetch('/api/videos');
+      const data = await response.json();
 
-      const src = item.dataset.src;
-      const title = item.dataset.title;
+      if (!data.ok) {
+        console.error('加载视频列表失败:', data.error);
+        return;
+      }
 
-      videoLink.addEventListener('click', () => {
-        // 更新视频源
-        mainVideo.src = src;
-        mainVideo.pause();
-        mainVideo.load();
-
-        // 更新标题
-        videoTitle.textContent = title;
-
-        // 更新选中状态
-        videoItems.forEach(i => i.classList.remove('active'));
-        item.classList.add('active');
+      // 构建视频映射: code -> videoData
+      const videoMap = {};
+      data.videos.forEach(v => {
+        videoMap[v.code] = {
+          id: v.id,
+          code: v.code,
+          title: v.title,
+          sectionCode: v.section_code,
+          sectionTitle: v.section_title,
+          categoryCode: v.category_code,
+          categoryTitle: v.category_title
+        };
       });
-    } else {
-      // 处理旧格式的视频项（尚未转换的）
-      const video = item.querySelector('video');
-      const videoDesc = item.querySelector('.video-desc');
 
-      if (video && videoDesc) {
-        const src = video.src;
-        const title = videoDesc.textContent;
+      // 为每个视频项添加点击事件
+      videoItems.forEach(item => {
+        const videoLink = item.querySelector('.video-link');
+        if (!videoLink) return;
 
-        if (!src || !title) return;
+        // 从 data-video-code 获取视频编号
+        const videoCode = item.dataset.videoCode;
+        const title = item.dataset.title;
 
-        // 转换为新格式
-        item.dataset.src = src;
-        item.dataset.title = title;
+        if (!videoCode || !title) {
+          console.warn('视频项缺少 data-video-code 或 data-title', item);
+          return;
+        }
 
-        // 移除 video 和 video-desc，添加 video-link
-        const videoLink = document.createElement('div');
-        videoLink.className = 'video-link';
-        videoLink.textContent = title;
-        item.innerHTML = '';
-        item.appendChild(videoLink);
+        const videoData = videoMap[videoCode];
+        if (!videoData) {
+          console.warn('未找到视频数据:', videoCode);
+          return;
+        }
 
-        // 添加点击事件
-        videoLink.addEventListener('click', () => {
-          mainVideo.src = src;
-          mainVideo.pause();
-          mainVideo.load();
-          videoTitle.textContent = title;
-          videoItems.forEach(i => i.classList.remove('active'));
-          item.classList.add('active');
+        // 存储 video ID 用于获取预签名 URL
+        item.dataset.videoId = videoData.id;
+
+        videoLink.addEventListener('click', async () => {
+          try {
+            // 获取预签名 URL
+            const presignedResponse = await fetch(`/api/videos/presigned-url?id=${videoData.id}`);
+            const presignedData = await presignedResponse.json();
+
+            if (!presignedData.ok) {
+              console.error('获取预签名 URL 失败:', presignedData.error);
+              return;
+            }
+
+            // 更新视频源
+            mainVideo.src = presignedData.url;
+            mainVideo.pause();
+            mainVideo.load();
+
+            // 更新标题
+            videoTitle.textContent = title;
+
+            // 更新选中状态
+            videoItems.forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
+          } catch (error) {
+            console.error('播放视频失败:', error);
+          }
         });
-      }
-    }
-  });
-
-  // 默认选中第一个视频
-  const firstVideoItem = videoItems[0];
-  if (firstVideoItem) {
-    firstVideoItem.classList.add('active');
-    // 如果第一个视频是旧格式，转换它
-    if (!firstVideoItem.dataset.src && firstVideoItem.querySelector('video')) {
-      const video = firstVideoItem.querySelector('video');
-      const videoDesc = firstVideoItem.querySelector('.video-desc');
-      if (video && videoDesc) {
-        firstVideoItem.dataset.src = video.src;
-        firstVideoItem.dataset.title = videoDesc.textContent;
-      }
+      });
+    } catch (error) {
+      console.error('加载视频数据失败:', error);
     }
   }
+
+  // 加载视频数据
+  loadVideosFromAPI();
 }
 
 // 页面加载完成后初始化视频播放器
