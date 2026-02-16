@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const crypto = require('crypto');
 const { Pool } = require('pg');
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
@@ -18,196 +17,146 @@ const pool = new Pool({
   ssl: !/localhost|127\.0\.0\.1/.test(DATABASE_URL) ? { rejectUnauthorized: false } : false
 });
 
-// 视频目录
-const VIDEOS_DIR = process.env.VIDEOS_DIR || path.join(__dirname, '../videos');
-
-// 计算文件哈希
-function calculateFileHash(filePath) {
-  const hash = crypto.createHash('sha256');
-  const buffer = fs.readFileSync(filePath);
-  hash.update(buffer);
-  return hash.digest('hex');
-}
-
-// 获取文件大小
-function getFileSize(filePath) {
-  const stats = fs.statSync(filePath);
-  return stats.size;
-}
-
-// 解析文件名获取视频信息
-function parseVideoInfo(filename) {
-  // 移除 .mp4 扩展名
-  const name = filename.replace(/\.mp4$/i, '');
-
-  // 尝试匹配格式: "序号 标题" 或 "序号.子序号 标题"
-  const match = name.match(/^(\d+(?:\.\d+)*(?:\.\d+)?)\s+(.+)$/);
-
-  if (match) {
-    const code = match[1];
-    const title = match[2];
-
-    // 根据 code 分解分类、章节、视频
-    const parts = code.split('.');
-    let categoryCode = parts[0] || '';
-    let sectionCode = '';
-    let videoCode = code;
-
-    if (parts.length === 2) {
-      sectionCode = code;
-      videoCode = '';
-    } else if (parts.length >= 3) {
-      sectionCode = parts.slice(0, 2).join('.');
-      videoCode = code;
-    }
-
-    return {
-      code,
-      title,
-      categoryCode,
-      sectionCode,
-      videoCode
-    };
-  }
-
-  // 如果无法解析，使用完整文件名
-  return {
-    code: name,
-    title: name,
-    categoryCode: '',
-    sectionCode: '',
-    videoCode: name
-  };
-}
-
-// 扫描视频文件
-function scanVideoFiles(dir) {
-  const videos = [];
-
-  function scanDirectory(currentDir) {
-    const items = fs.readdirSync(currentDir);
-
-    for (const item of items) {
-      const fullPath = path.join(currentDir, item);
-      const stat = fs.statSync(fullPath);
-
-      if (stat.isDirectory()) {
-        scanDirectory(fullPath);
-      } else if (item.toLowerCase().endsWith('.mp4')) {
-        const relativePath = path.relative(dir, fullPath);
-        const hash = calculateFileHash(fullPath);
-        const size = getFileSize(fullPath);
-        const info = parseVideoInfo(item);
-
-        videos.push({
-          filename: item,
-          relativePath,
-          fullPath,
-          hash,
-          size,
-          ...info
-        });
-      }
-    }
-  }
-
-  scanDirectory(dir);
-  return videos;
-}
+// JSON 数据文件路径
+const DATA_FILE = process.env.VIDEO_DATA_FILE || path.join(__dirname, 'video_data_export.json');
 
 // 导入视频到数据库
-async function importVideos() {
+async function importVideosFromJSON() {
   try {
-    console.log('扫描视频文件...');
-    const videos = scanVideoFiles(VIDEOS_DIR);
+    console.log('读取视频数据文件...');
+    const data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
 
-    if (videos.length === 0) {
-      console.log('未找到视频文件');
+    if (!data.categories || data.categories.length === 0) {
+      console.log('未找到分类数据');
       return;
     }
 
-    console.log(`找到 ${videos.length} 个视频文件`);
+    console.log(`找到 ${data.categories.length} 个分类, ${data.total_videos} 个视频`);
 
-    // 查询或创建分类和章节
-    const categoryMap = new Map();
-    const sectionMap = new Map();
+    let importedCategories = 0;
+    let importedSections = 0;
+    let importedVideos = 0;
+    let skippedCategories = 0;
+    let skippedSections = 0;
+    let skippedVideos = 0;
 
-    for (const video of videos) {
-      // 查询分类
-      if (video.categoryCode && !categoryMap.has(video.categoryCode)) {
-        const categoryResult = await pool.query(
-          'SELECT id FROM video_categories WHERE code = $1',
-          [video.categoryCode]
+    // 遍历所有分类
+    for (const category of data.categories) {
+      // 检查分类是否已存在
+      const categoryResult = await pool.query(
+        'SELECT id FROM video_categories WHERE code = $1',
+        [category.category_code]
+      );
+
+      let categoryId;
+
+      if (categoryResult.rows.length > 0) {
+        categoryId = categoryResult.rows[0].id;
+        skippedCategories++;
+        console.log(`跳过分类: ${category.category_code} - ${category.category_title}`);
+      } else {
+        // 插入分类
+        const insertCategoryResult = await pool.query(
+          `INSERT INTO video_categories (code, title, sort_order)
+           VALUES ($1, $2, $3)
+           ON CONFLICT (code) DO NOTHING
+           RETURNING id`,
+          [category.category_code, category.category_title, category.category_sort_order]
         );
 
-        if (categoryResult.rows.length > 0) {
-          categoryMap.set(video.categoryCode, categoryResult.rows[0].id);
+        if (insertCategoryResult.rows.length > 0) {
+          categoryId = insertCategoryResult.rows[0].id;
+          importedCategories++;
+          console.log(`导入分类: ${category.category_code} - ${category.category_title}`);
+        } else {
+          categoryId = (await pool.query('SELECT id FROM video_categories WHERE code = $1', [category.category_code])).rows[0].id;
+          skippedCategories++;
         }
       }
 
-      // 查询章节
-      if (video.sectionCode && !sectionMap.has(video.sectionCode)) {
-        const sectionResult = await pool.query(
-          'SELECT id FROM video_sections WHERE code = $1',
-          [video.sectionCode]
-        );
+      // 遍历所有章节
+      if (category.sections) {
+        for (const section of category.sections) {
+          // 检查章节是否已存在
+          const sectionResult = await pool.query(
+            'SELECT id FROM video_sections WHERE code = $1',
+            [section.section_code]
+          );
 
-        if (sectionResult.rows.length > 0) {
-          sectionMap.set(video.sectionCode, sectionResult.rows[0].id);
+          let sectionId;
+
+          if (sectionResult.rows.length > 0) {
+            sectionId = sectionResult.rows[0].id;
+            skippedSections++;
+            console.log(`  跳过章节: ${section.section_code} - ${section.section_title}`);
+          } else {
+            // 插入章节
+            const insertSectionResult = await pool.query(
+              `INSERT INTO video_sections (category_id, code, title, sort_order)
+               VALUES ($1, $2, $3, $4)
+               ON CONFLICT (category_id, code) DO NOTHING
+               RETURNING id`,
+              [categoryId, section.section_code, section.section_title, section.section_sort_order]
+            );
+
+            if (insertSectionResult.rows.length > 0) {
+              sectionId = insertSectionResult.rows[0].id;
+              importedSections++;
+              console.log(`  导入章节: ${section.section_code} - ${section.section_title}`);
+            } else {
+              sectionId = (await pool.query('SELECT id FROM video_sections WHERE code = $1', [section.section_code])).rows[0].id;
+              skippedSections++;
+            }
+          }
+
+          // 遍历所有视频
+          if (section.videos) {
+            for (const video of section.videos) {
+              // 检查视频是否已存在（通过 ID 或哈希）
+              const videoResult = await pool.query(
+                `SELECT id FROM videos WHERE id = $1 OR file_hash = $2`,
+                [video.video_id, video.file_hash]
+              );
+
+              if (videoResult.rows.length > 0) {
+                skippedVideos++;
+                console.log(`    跳过视频: ${video.code} - ${video.title}`);
+                continue;
+              }
+
+              // 插入视频
+              await pool.query(
+                `INSERT INTO videos (id, section_id, code, title, original_filename, file_hash, cos_key, file_size, duration, mime_type, sort_order, is_active)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+                 ON CONFLICT (id) DO NOTHING`,
+                [
+                  video.video_id,
+                  sectionId,
+                  video.code,
+                  video.title,
+                  video.original_filename,
+                  video.file_hash,
+                  video.cos_key,
+                  video.file_size,
+                  video.duration,
+                  video.mime_type,
+                  video.sort_order,
+                  video.is_active
+                ]
+              );
+
+              importedVideos++;
+              console.log(`    导入视频: ${video.code} - ${video.title}`);
+            }
+          }
         }
       }
-    }
-
-    // 导入视频
-    let imported = 0;
-    let skipped = 0;
-
-    for (const video of videos) {
-      const sectionId = sectionMap.get(video.sectionCode);
-      const code = video.videoCode || video.code;
-
-      // 检查是否已存在
-      const existingResult = await pool.query(
-        'SELECT id FROM videos WHERE file_hash = $1',
-        [video.hash]
-      );
-
-      if (existingResult.rows.length > 0) {
-        console.log(`跳过: ${video.filename} (已存在)`);
-        skipped++;
-        continue;
-      }
-
-      // 插入视频记录
-      const insertResult = await pool.query(
-        `INSERT INTO videos (section_id, code, title, original_filename, file_hash, cos_key, file_size, mime_type, is_active)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, true)
-         ON CONFLICT (section_id, code) DO UPDATE
-         SET file_hash = EXCLUDED.file_hash,
-             cos_key = EXCLUDED.cos_key,
-             file_size = EXCLUDED.file_size,
-             original_filename = EXCLUDED.original_filename,
-             updated_at = now()
-         RETURNING id, code, title`,
-        [
-          sectionId || null,
-          code,
-          video.title,
-          video.filename,
-          video.hash,
-          `videos/${video.hash}`,
-          video.size,
-          'video/mp4'
-        ]
-      );
-
-      console.log(`导入: ${video.filename} -> ${code}: ${video.title}`);
-      imported++;
     }
 
     console.log(`\n导入完成!`);
-    console.log(`成功导入: ${imported}`);
-    console.log(`跳过: ${skipped}`);
+    console.log(`分类: 成功 ${importedCategories}, 跳过 ${skippedCategories}`);
+    console.log(`章节: 成功 ${importedSections}, 跳过 ${skippedSections}`);
+    console.log(`视频: 成功 ${importedVideos}, 跳过 ${skippedVideos}`);
 
   } catch (error) {
     console.error('导入失败:', error);
@@ -217,4 +166,4 @@ async function importVideos() {
 }
 
 // 执行导入
-importVideos();
+importVideosFromJSON();

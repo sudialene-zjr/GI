@@ -16,3 +16,21 @@ test_cos.js : 用于测试与 COS 服务器的连接
 update_app_html.js : 将导出的视频数据写入app.html, 用于更新前端
 
 upload_videos_to_cos.js : 将本地静态视频上传至 COS 存储, 并将视频元数据存入数据库
+
+# 更新流程
+
+## 1. 更新模块
+```bash
+npm install
+```
+
+## 2. 建表
+```bash
+psql "postgresql://app_user:huaxi@127.0.0.1:5432/gi_edu" -f server/db/video_tables.sql
+```
+
+## 3. 同步视频表单
+将 video_data_export.json 导入 gi_edu 数据库的视频表单
+```bash
+node server/scripts/import_videos.js
+```
