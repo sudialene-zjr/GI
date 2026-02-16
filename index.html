@@ -102,7 +102,6 @@
     </main>
   </div>
 
-  <script src="app.js" defer></script>
   <script>
     // 页面加载时检查登录状态，已登录则跳转到 app.html
     // 未登录用户可以选择直接进入系统（访客模式）
@@ -110,20 +109,169 @@
       try {
         const token = localStorage.getItem('gi_token');
         const user = localStorage.getItem('gi_user');
+        const hash = window.location.hash;
 
         if (token && user) {
           // 已登录，检查是否需要恢复之前的视图
-          const hash = window.location.hash;
           if (hash.startsWith('#view=')) {
             window.location.href = 'app.html' + hash;
           } else {
             window.location.href = 'app.html#view=chat';
+          }
+        } else {
+          // 未登录，只有当 hash 参数不仅仅是默认的 #view=chat 时才跳转
+          // 如果只是默认参数，留在 index.html 显示登录表单
+          if (hash.startsWith('#view=') && hash !== '#view=chat') {
+            window.location.href = 'app.html' + hash;
           }
         }
       } catch (e) {
         console.error('检查登录状态失败:', e);
       }
     })();
+
+    // 工具函数
+    function setFormMessage(form, message, type = 'error') {
+      if (!form) return;
+      const messageBox = form.querySelector('.form-message');
+      if (!messageBox) return;
+      messageBox.textContent = message || '';
+      messageBox.classList.remove('is-error', 'is-success');
+      if (message) {
+        messageBox.classList.add(type === 'success' ? 'is-success' : 'is-error');
+      }
+    }
+
+    function getToken() {
+      return localStorage.getItem('gi_token');
+    }
+
+    function storeToken(token) {
+      if (!token) return;
+      localStorage.setItem('gi_token', token);
+    }
+
+    function getStoredUser() {
+      try {
+        const raw = localStorage.getItem('gi_user');
+        return raw ? JSON.parse(raw) : null;
+      } catch {
+        return null;
+      }
+    }
+
+    function storeUser(user) {
+      if (!user) return;
+      localStorage.setItem('gi_user', JSON.stringify(user));
+    }
+
+    async function postJson(url, payload) {
+      const headers = { 'Content-Type': 'application/json' };
+      const response = await fetch(url, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(payload)
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || data.ok === false) {
+        throw new Error(data.error || '请求失败');
+      }
+      return data;
+    }
+
+    // 登录表单处理
+    const loginForm = document.getElementById('login-form');
+    if (loginForm) {
+      loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const account = loginForm.elements.account?.value.trim();
+        const password = loginForm.elements.password?.value;
+
+        if (!account || !password) {
+          setFormMessage(loginForm, '请输入账号和密码');
+          return;
+        }
+
+        try {
+          setFormMessage(loginForm, '');
+          const data = await postJson('/api/login', { account, password });
+          storeToken(data.token);
+          storeUser(data.user);
+          setFormMessage(loginForm, '登录成功！', 'success');
+          setTimeout(() => {
+            window.location.href = 'app.html#view=chat';
+          }, 500);
+        } catch (err) {
+          setFormMessage(loginForm, err.message || '登录失败，请检查账号密码');
+        }
+      });
+    }
+
+    // 注册表单处理
+    const registerForm = document.getElementById('register-form');
+    if (registerForm) {
+      registerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = registerForm.elements.name?.value.trim();
+        const account = registerForm.elements.account?.value.trim();
+        const password = registerForm.elements.password?.value;
+        const confirmPassword = registerForm.elements.confirmPassword?.value;
+
+        if (!name || !account || !password || !confirmPassword) {
+          setFormMessage(registerForm, '请填写所有必填项');
+          return;
+        }
+
+        if (password !== confirmPassword) {
+          setFormMessage(registerForm, '两次输入的密码不一致');
+          return;
+        }
+
+        try {
+          setFormMessage(registerForm, '');
+          const data = await postJson('/api/register', { name, account, password, confirmPassword });
+          setFormMessage(registerForm, '注册成功！', 'success');
+          setTimeout(() => {
+            // 切换到登录表单
+            document.querySelector('[data-auth="login"]').click();
+          }, 1000);
+        } catch (err) {
+          setFormMessage(registerForm, err.message || '注册失败，请稍后重试');
+        }
+      });
+    }
+
+    // 标签切换
+    const authTabs = document.querySelectorAll('[data-auth]');
+    authTabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        authTabs.forEach((t) => t.classList.remove('is-active'));
+        tab.classList.add('is-active');
+        const isLogin = tab.dataset.auth === 'login';
+        loginForm.classList.toggle('is-hidden', !isLogin);
+        registerForm.classList.toggle('is-hidden', isLogin);
+        if (loginForm) {
+          setFormMessage(loginForm, '');
+        }
+        if (registerForm) {
+          setFormMessage(registerForm, '');
+        }
+      });
+    });
+
+    // 密码显示/隐藏
+    const passwordToggles = document.querySelectorAll('[data-toggle]');
+    passwordToggles.forEach((toggle) => {
+      const targetId = toggle.dataset.toggle;
+      const input = document.getElementById(targetId);
+      if (!input) return;
+      toggle.addEventListener('click', () => {
+        const isPassword = input.type === 'password';
+        input.type = isPassword ? 'text' : 'password';
+        toggle.textContent = isPassword ? '隐藏' : '显示';
+        toggle.setAttribute('aria-pressed', String(isPassword));
+      });
+    });
   </script>
 </body>
 </html>
