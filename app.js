@@ -40,6 +40,49 @@ let profileCached = null;
 
 let surveyToastTimer;
 
+// 保存 URL 额外参数（如视频编号）
+let urlExtraParams = null;
+
+// URL 状态缓存
+function saveCurrentView(viewId, updateHash = true, extraData = {}) {
+  if (updateHash) {
+    const url = new URL(window.location);
+    const params = new URLSearchParams();
+    params.set('view', viewId);
+    // 添加额外的数据（如视频编号）
+    Object.entries(extraData).forEach(([key, value]) => {
+      params.set(key, value);
+    });
+    url.hash = '#' + params.toString();
+    window.history.replaceState({}, '', url);
+  }
+}
+
+function loadSavedView() {
+  const hash = window.location.hash;
+  if (hash.startsWith('#')) {
+    const params = new URLSearchParams(hash.slice(1));
+    const viewId = params.get('view');
+
+    if (viewId) {
+      // 保存额外参数供视频播放器使用
+      urlExtraParams = params;
+      setView(viewId, false); // 不更新 hash
+
+      // 如果是学习视图，恢复子视图（视频教学/常见疑问解答）
+      if (viewId === 'learn') {
+        const learnViewId = params.get('learn');
+        if (learnViewId) {
+          setLearnView(learnViewId);
+        }
+      }
+
+      return true;
+    }
+  }
+  return false;
+}
+
 const botReplies = [
   "术前建议禁食8小时、禁饮2小时。如为上午9点检查，建议前一晚23点后停止进食，早上7点后停止饮水。",
   "术后2-3小时可少量饮水，如无不适可进清淡流质，避免辛辣油腻。",
@@ -47,7 +90,7 @@ const botReplies = [
   "肠镜前泻药按医嘱分次服用，排出物清亮为佳。"
 ];
 
-function setView(viewId) {
+function setView(viewId, saveHash = true, extraData = {}) {
   const navTarget = viewId === "survey" ? "profile" : viewId;
   views.forEach((view) => {
     view.classList.toggle("is-active", view.id === viewId);
@@ -56,6 +99,11 @@ function setView(viewId) {
   navLinks.forEach((btn) => {
     btn.classList.toggle("is-active", btn.dataset.view === navTarget);
   });
+
+  // 保存当前视图到 URL hash
+  if (saveHash) {
+    saveCurrentView(viewId, true, extraData);
+  }
 }
 
 viewButtons.forEach((btn) => {
@@ -298,10 +346,14 @@ if (loginForm) {
       if (data?.user) {
         storeUser(data.user);
       }
-      setFormMessage(loginForm, "登录成功，正在进入系统...", "success");
+      setFormMessage(loginForm, "登录成功", "success");
+      // 延迟加载资料
       setTimeout(() => {
-        window.location.href = "app.html";
-      }, 800);
+        loadProfile();
+        loadSurveyStatus();
+        // 跳转到聊天页面
+        setView('chat');
+      }, 500);
     } catch (error) {
       setFormMessage(loginForm, error.message || "登录失败");
     }
@@ -337,10 +389,12 @@ if (registerForm) {
       if (data?.user) {
         storeUser(data.user);
       }
-      setFormMessage(registerForm, "注册成功，正在进入系统...", "success");
+      setFormMessage(registerForm, "注册成功", "success");
       setTimeout(() => {
-        window.location.href = "app.html";
-      }, 900);
+        loadProfile();
+        loadSurveyStatus();
+        setView('chat');
+      }, 500);
     } catch (error) {
       setFormMessage(registerForm, error.message || "注册失败");
     }
@@ -577,6 +631,9 @@ function setLearnView(viewId) {
   learnTabs.forEach((tab) => {
     tab.classList.toggle("is-active", tab.dataset.learn === viewId);
   });
+
+  // 保存当前视图到 URL hash
+  saveCurrentView('learn', true, { learn: viewId });
 }
 
 learnTabs.forEach((tab) => {
@@ -682,8 +739,30 @@ if (surveyForm) {
   });
 }
 
-loadProfile();
-loadSurveyStatus();
+// 检查是否已登录，如果已登录则显示主界面
+function checkLoginStatus() {
+  const token = getToken();
+  const user = getStoredUser();
+
+  if (token && user) {
+    // 已登录，加载资料
+    loadProfile();
+    loadSurveyStatus();
+  }
+  // 无论是否登录，都尝试恢复之前保存的视图
+  // 如果没有保存的视图，默认显示聊天页面
+  if (!loadSavedView()) {
+    setView('chat');
+  }
+}
+
+// 页面加载时检查登录状态
+document.addEventListener('DOMContentLoaded', () => {
+  // 先检查登录状态并恢复视图，获取 URL 参数
+  checkLoginStatus();
+  // 然后初始化所有事件监听器和视频播放器
+  initVideoPlayer();
+});
 
 // 视频播放器功能
 function initVideoPlayer() {
@@ -742,8 +821,12 @@ function initVideoPlayer() {
         // 存储 video ID 用于获取预签名 URL
         item.dataset.videoId = videoData.id;
 
-        videoLink.addEventListener('click', async () => {
+        // 暴露点击函数以便外部调用
+        item.playVideo = async () => {
           try {
+            // 保存当前视频编号到 URL
+            saveCurrentView('learn', true, { video: videoCode });
+
             // 获取预签名 URL
             const presignedResponse = await fetch(`/api/videos/presigned-url?id=${videoData.id}`);
             const presignedData = await presignedResponse.json();
@@ -767,8 +850,24 @@ function initVideoPlayer() {
           } catch (error) {
             console.error('播放视频失败:', error);
           }
+        };
+
+        videoLink.addEventListener('click', async () => {
+          await item.playVideo();
         });
       });
+
+      // 恢复保存的视频
+      if (urlExtraParams && urlExtraParams.get) {
+        const savedVideoCode = urlExtraParams.get('video');
+        if (savedVideoCode) {
+          const savedItem = Array.from(videoItems).find(i => i.dataset.videoCode === savedVideoCode);
+          if (savedItem && savedItem.playVideo) {
+            // 延迟执行以确保视频数据已加载
+            setTimeout(() => savedItem.playVideo(), 100);
+          }
+        }
+      }
     } catch (error) {
       console.error('加载视频数据失败:', error);
     }
@@ -777,8 +876,3 @@ function initVideoPlayer() {
   // 加载视频数据
   loadVideosFromAPI();
 }
-
-// 页面加载完成后初始化视频播放器
-document.addEventListener('DOMContentLoaded', () => {
-  initVideoPlayer();
-});

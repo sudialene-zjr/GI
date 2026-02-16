@@ -103,5 +103,27 @@
   </div>
 
   <script src="app.js" defer></script>
+  <script>
+    // 页面加载时检查登录状态，已登录则跳转到 app.html
+    // 未登录用户可以选择直接进入系统（访客模式）
+    (function checkLogin() {
+      try {
+        const token = localStorage.getItem('gi_token');
+        const user = localStorage.getItem('gi_user');
+
+        if (token && user) {
+          // 已登录，检查是否需要恢复之前的视图
+          const hash = window.location.hash;
+          if (hash.startsWith('#view=')) {
+            window.location.href = 'app.html' + hash;
+          } else {
+            window.location.href = 'app.html#view=chat';
+          }
+        }
+      } catch (e) {
+        console.error('检查登录状态失败:', e);
+      }
+    })();
+  </script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 {
-  "exported_at": "2026-02-16T11:28:12.424Z",
-  "total_videos": 29,
-  "total_categories": 6,
+  "exported_at": "2026-02-16T15:53:21.969Z",
+  "total_videos": 30,
+  "total_categories": 7,
   "categories": [
     {
       "category_code": "1",
@@ -16,19 +16,19 @@
           "section_id": "ff105214-7593-4283-85dc-81d2e1802873",
           "videos": [
             {
-              "video_id": "41d765fd-c649-427b-bf86-03ff9cf7138e",
-              "code": "1.1.3",
-              "title": "常规内镜与无痛内镜的差异对比",
-              "original_filename": "1.1.3 常规内镜与无痛内镜的差异对比.mp4",
-              "file_hash": "c9cbcf183d2a06bae59b203cdaedf6945d0d5bc1145edeb592999c3fb8c7da5d",
-              "cos_key": "videos/c9cbcf183d2a06bae59b203cdaedf6945d0d5bc1145edeb592999c3fb8c7da5d",
-              "file_size": "34025770",
+              "video_id": "344c4c8d-133d-4aa0-9eb1-48b82da45b71",
+              "code": "1.1.2",
+              "title": "“无痛”技术的麻醉学内涵",
+              "original_filename": "1.1.2“无痛”技术的麻醉学内涵.mp4",
+              "file_hash": "46420d495cd1f4978ace956ebcb9b9ef229702fae9c4e6dad7aabf1854bdebb3",
+              "cos_key": "videos/46420d495cd1f4978ace956ebcb9b9ef229702fae9c4e6dad7aabf1854bdebb3",
+              "file_size": "2230273",
               "duration": null,
               "mime_type": "video/mp4",
               "sort_order": 0,
               "is_active": true,
-              "created_at": "2026-02-16T11:11:35.596Z",
-              "updated_at": "2026-02-16T11:11:35.596Z"
+              "created_at": "2026-02-16T11:11:31.343Z",
+              "updated_at": "2026-02-16T11:11:31.343Z"
             },
             {
               "video_id": "2fb58f94-d084-49e8-828d-f9b395ca9484",
@@ -61,19 +61,19 @@
               "updated_at": "2026-02-16T11:11:30.587Z"
             },
             {
-              "video_id": "344c4c8d-133d-4aa0-9eb1-48b82da45b71",
-              "code": "1.1.2",
-              "title": "“无痛”技术的麻醉学内涵",
-              "original_filename": "1.1.2“无痛”技术的麻醉学内涵.mp4",
-              "file_hash": "46420d495cd1f4978ace956ebcb9b9ef229702fae9c4e6dad7aabf1854bdebb3",
-              "cos_key": "videos/46420d495cd1f4978ace956ebcb9b9ef229702fae9c4e6dad7aabf1854bdebb3",
-              "file_size": "2230273",
+              "video_id": "41d765fd-c649-427b-bf86-03ff9cf7138e",
+              "code": "1.1.3",
+              "title": "常规内镜与无痛内镜的差异对比",
+              "original_filename": "1.1.3 常规内镜与无痛内镜的差异对比.mp4",
+              "file_hash": "c9cbcf183d2a06bae59b203cdaedf6945d0d5bc1145edeb592999c3fb8c7da5d",
+              "cos_key": "videos/c9cbcf183d2a06bae59b203cdaedf6945d0d5bc1145edeb592999c3fb8c7da5d",
+              "file_size": "34025770",
               "duration": null,
               "mime_type": "video/mp4",
               "sort_order": 0,
               "is_active": true,
-              "created_at": "2026-02-16T11:11:31.343Z",
-              "updated_at": "2026-02-16T11:11:31.343Z"
+              "created_at": "2026-02-16T11:11:35.596Z",
+              "updated_at": "2026-02-16T11:11:35.596Z"
             }
           ]
         },
@@ -214,19 +214,19 @@
           "section_id": "6f916fa3-fb56-4d58-9cd9-a02a88fad02f",
           "videos": [
             {
-              "video_id": "94f5ec81-bd07-49c4-9259-23fb47b9b5ee",
-              "code": "3.2.3",
-              "title": "肠道清洁度达标的判断标准（波士顿量表）",
-              "original_filename": "3.2.3  肠道清洁度达标的判断标准（波士顿量表）.mp4",
-              "file_hash": "af157af9e1a831dba171816abc91981e5b90ee465c0ceb76417be387f5ece36a",
-              "cos_key": "videos/af157af9e1a831dba171816abc91981e5b90ee465c0ceb76417be387f5ece36a",
-              "file_size": "54724900",
+              "video_id": "1bd7dbd2-715a-4fd8-983c-63ce54d9d854",
+              "code": "3.2.4",
+              "title": "口服泻药后如何缓解恶心呕吐",
+              "original_filename": "3.2.4  口服泻药后如何缓解恶心呕吐.mp4",
+              "file_hash": "a8c61c04f298d4fed8d70ac9b5dae5eec8853215bab6b80e5738a030a4274480",
+              "cos_key": "videos/a8c61c04f298d4fed8d70ac9b5dae5eec8853215bab6b80e5738a030a4274480",
+              "file_size": "35481775",
               "duration": null,
               "mime_type": "video/mp4",
               "sort_order": 0,
               "is_active": true,
-              "created_at": "2026-02-16T11:12:50.412Z",
-              "updated_at": "2026-02-16T11:12:50.412Z"
+              "created_at": "2026-02-16T11:12:55.649Z",
+              "updated_at": "2026-02-16T11:12:55.649Z"
             },
             {
               "video_id": "51e03da3-1713-4876-b169-894a28abcdd2",
@@ -259,19 +259,19 @@
               "updated_at": "2026-02-16T11:12:42.995Z"
             },
             {
-              "video_id": "1bd7dbd2-715a-4fd8-983c-63ce54d9d854",
-              "code": "3.2.4",
-              "title": "口服泻药后如何缓解恶心呕吐",
-              "original_filename": "3.2.4  口服泻药后如何缓解恶心呕吐.mp4",
-              "file_hash": "a8c61c04f298d4fed8d70ac9b5dae5eec8853215bab6b80e5738a030a4274480",
-              "cos_key": "videos/a8c61c04f298d4fed8d70ac9b5dae5eec8853215bab6b80e5738a030a4274480",
-              "file_size": "35481775",
+              "video_id": "94f5ec81-bd07-49c4-9259-23fb47b9b5ee",
+              "code": "3.2.3",
+              "title": "肠道清洁度达标的判断标准（波士顿量表）",
+              "original_filename": "3.2.3  肠道清洁度达标的判断标准（波士顿量表）.mp4",
+              "file_hash": "af157af9e1a831dba171816abc91981e5b90ee465c0ceb76417be387f5ece36a",
+              "cos_key": "videos/af157af9e1a831dba171816abc91981e5b90ee465c0ceb76417be387f5ece36a",
+              "file_size": "54724900",
               "duration": null,
               "mime_type": "video/mp4",
               "sort_order": 0,
               "is_active": true,
-              "created_at": "2026-02-16T11:12:55.649Z",
-              "updated_at": "2026-02-16T11:12:55.649Z"
+              "created_at": "2026-02-16T11:12:50.412Z",
+              "updated_at": "2026-02-16T11:12:50.412Z"
             }
           ]
         },
@@ -331,6 +331,37 @@
       ]
     },
     {
+      "category_code": "4",
+      "category_title": "麻醉流程与术中监护",
+      "category_sort_order": 4,
+      "category_id": "aff45051-006c-446e-832d-5529c9610a90",
+      "sections": [
+        {
+          "section_code": "4.1",
+          "section_title": "概述",
+          "section_sort_order": 0,
+          "section_id": "20bf37b4-5d2c-49be-823a-70d4b1dc357e",
+          "videos": [
+            {
+              "video_id": "a47fd453-1cc1-4c38-bfde-1398eba82433",
+              "code": "4.1",
+              "title": "麻醉流程与术中监护",
+              "original_filename": "4.1 麻醉流程与术中监护.mp4",
+              "file_hash": "40436b7840cb230b5fc02c39b37ca48f6144e02bcf321f22db7b44376719e0a2",
+              "cos_key": "videos/40436b7840cb230b5fc02c39b37ca48f6144e02bcf321f22db7b44376719e0a2",
+              "file_size": "44849974",
+              "duration": null,
+              "mime_type": "video/mp4",
+              "sort_order": 0,
+              "is_active": true,
+              "created_at": "2026-02-16T11:33:07.639Z",
+              "updated_at": "2026-02-16T11:33:07.639Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "category_code": "5",
       "category_title": "内镜操作技术与影像演示",
       "category_sort_order": 5,
@@ -342,21 +373,6 @@
           "section_sort_order": 0,
           "section_id": "8fcbf940-1bf2-4031-b946-f76d89dea5c4",
           "videos": [
-            {
-              "video_id": "fda6f155-7c36-46c4-bdf0-7efaf8edbf75",
-              "code": "5.1.2",
-              "title": "体位摆放与入室配合2",
-              "original_filename": "5.1.2 体位摆放与入室配合2.mp4",
-              "file_hash": "42ee75fd792485c80537d775f5d4be71aba16d1d364dca2a026c27f7aef91a0f",
-              "cos_key": "videos/42ee75fd792485c80537d775f5d4be71aba16d1d364dca2a026c27f7aef91a0f",
-              "file_size": "47761178",
-              "duration": null,
-              "mime_type": "video/mp4",
-              "sort_order": 0,
-              "is_active": true,
-              "created_at": "2026-02-16T11:13:13.898Z",
-              "updated_at": "2026-02-16T11:13:13.898Z"
-            },
             {
               "video_id": "bca01e29-6e85-4535-8518-9639d164bf3d",
               "code": "5.1.3",
@@ -386,6 +402,21 @@
               "is_active": true,
               "created_at": "2026-02-16T11:13:01.676Z",
               "updated_at": "2026-02-16T11:13:01.676Z"
+            },
+            {
+              "video_id": "fda6f155-7c36-46c4-bdf0-7efaf8edbf75",
+              "code": "5.1.2",
+              "title": "体位摆放与入室配合2",
+              "original_filename": "5.1.2 体位摆放与入室配合2.mp4",
+              "file_hash": "42ee75fd792485c80537d775f5d4be71aba16d1d364dca2a026c27f7aef91a0f",
+              "cos_key": "videos/42ee75fd792485c80537d775f5d4be71aba16d1d364dca2a026c27f7aef91a0f",
+              "file_size": "47761178",
+              "duration": null,
+              "mime_type": "video/mp4",
+              "sort_order": 0,
+              "is_active": true,
+              "created_at": "2026-02-16T11:13:13.898Z",
+              "updated_at": "2026-02-16T11:13:13.898Z"
             }
           ]
         },
@@ -466,29 +497,6 @@
       "category_id": "ed9c4f71-0ff6-4eec-b53b-af0b372a77a5",
       "sections": [
         {
-          "section_code": "6.1",
-          "section_title": "概述",
-          "section_sort_order": 0,
-          "section_id": "3291db68-0dec-4f07-a8f6-a096b734f3bf",
-          "videos": [
-            {
-              "video_id": "a25f3f79-6c42-4e4c-9bc7-04ea3e91baae",
-              "code": "6.1",
-              "title": "复苏期观察",
-              "original_filename": "6.1 复苏期观察.mp4",
-              "file_hash": "0d178e771d49a75e2585544f7db7ba875388eb3227b0fe79144f99f1c51a5155",
-              "cos_key": "videos/0d178e771d49a75e2585544f7db7ba875388eb3227b0fe79144f99f1c51a5155",
-              "file_size": "39871418",
-              "duration": null,
-              "mime_type": "video/mp4",
-              "sort_order": 0,
-              "is_active": true,
-              "created_at": "2026-02-16T11:15:58.284Z",
-              "updated_at": "2026-02-16T11:15:58.284Z"
-            }
-          ]
-        },
-        {
           "section_code": "6.2",
           "section_title": "概述",
           "section_sort_order": 0,
@@ -508,6 +516,29 @@
               "is_active": true,
               "created_at": "2026-02-16T11:16:08.140Z",
               "updated_at": "2026-02-16T11:16:08.140Z"
+            }
+          ]
+        },
+        {
+          "section_code": "6.1",
+          "section_title": "概述",
+          "section_sort_order": 0,
+          "section_id": "3291db68-0dec-4f07-a8f6-a096b734f3bf",
+          "videos": [
+            {
+              "video_id": "a25f3f79-6c42-4e4c-9bc7-04ea3e91baae",
+              "code": "6.1",
+              "title": "复苏期观察",
+              "original_filename": "6.1 复苏期观察.mp4",
+              "file_hash": "0d178e771d49a75e2585544f7db7ba875388eb3227b0fe79144f99f1c51a5155",
+              "cos_key": "videos/0d178e771d49a75e2585544f7db7ba875388eb3227b0fe79144f99f1c51a5155",
+              "file_size": "39871418",
+              "duration": null,
+              "mime_type": "video/mp4",
+              "sort_order": 0,
+              "is_active": true,
+              "created_at": "2026-02-16T11:15:58.284Z",
+              "updated_at": "2026-02-16T11:15:58.284Z"
             }
           ]
         }
