@@ -39,6 +39,13 @@ agent/.env.*
 agent/data/processed/
 agent/data/processed/**
 
+# Python virtual environments
+venv/
+server/venv~/
+
+# nohup logs
+agent/nohup.out
+
 # Local artifacts
 agent/.DS_Store
 
