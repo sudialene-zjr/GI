@@ -39,3 +39,7 @@ FROM survey_responses s
 LEFT JOIN users u ON u.id = s.user_id
 ORDER BY s.created_at DESC;
 ```
+
+# 数据库更改建议
+如果有增删改表的需求，先在服务器调用导出脚本备份数据库
+在更改了数据库的表格之后，记得更新导出/导入脚本以适配最新的数据库结构。

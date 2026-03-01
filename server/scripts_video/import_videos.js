@@ -18,7 +18,33 @@ const pool = new Pool({
 });
 
 // JSON 数据文件路径
-const DATA_FILE = process.env.VIDEO_DATA_FILE || path.join(__dirname, 'video_data_export.json');
+function getLatestDataFile() {
+  const dataDir = path.join(__dirname, 'data');
+
+  if (!fs.existsSync(dataDir)) {
+    return null;
+  }
+
+  const files = fs.readdirSync(dataDir)
+    .filter(f => f.match(/^\d{4}_\d{4}_\d{4}\.json$/));
+
+  if (files.length === 0) {
+    return null;
+  }
+
+  // 按文件名排序（时间戳），取最新的
+  files.sort().reverse();
+  return path.join(dataDir, files[0]);
+}
+
+const DATA_FILE = process.env.VIDEO_DATA_FILE || getLatestDataFile();
+
+if (!DATA_FILE) {
+  console.error('未找到数据文件。请先运行 export_video_data.js 导出数据，或设置 VIDEO_DATA_FILE 环境变量。');
+  process.exit(1);
+}
+
+console.log(`使用数据文件: ${DATA_FILE}`);
 
 // 导入视频到数据库
 async function importVideosFromJSON() {

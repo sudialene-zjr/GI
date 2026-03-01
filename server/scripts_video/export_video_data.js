@@ -95,7 +95,20 @@ async function exportVideoData() {
     };
 
     // 写入 JSON 文件
-    const outputPath = path.join(__dirname, 'video_data_export.json');
+    const outputDir = path.join(__dirname, 'data');
+    if (!fs.existsSync(outputDir)) {
+      fs.mkdirSync(outputDir, { recursive: true });
+    }
+
+    // 生成文件名：YYYY_MMDD_HHMM.json
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const filename = `${year}_${month}${day}_${hours}${minutes}.json`;
+    const outputPath = path.join(outputDir, filename);
     fs.writeFileSync(outputPath, JSON.stringify(exportData, null, 2), 'utf-8');
 
     console.log(`✅ 导出成功!`);

@@ -6,10 +6,16 @@
 ```
 GI/
     app.html / app.js / styles.css     # 前端（问答/学习中心/用户资料）
+
     server/                            # Node.js + PostgreSQL 接口（用户/随访问卷）
+        db/                             # sql程序
+        scripts_users/                  # 用户数据的导出/导入脚本
+        scripts_video/                  # 视频元数据的导出/导入脚本
+
     agent/                             # Python FastAPI + Qwen（AI Agent）
         app/                             # API、检索、提示词
         scripts/                         # 数据处理脚本
+        
     static/                            # 静态资源
         data/                            # 知识库原始数据与术语
             患者提问/

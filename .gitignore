@@ -48,3 +48,10 @@ agent/.DS_Store
 
 # Static files
 static/
+
+# Users datas
+server/scripts_users/data/
+server/scripts_users/data/**
+
+# 视频元数据
+server/scripts_video/data
