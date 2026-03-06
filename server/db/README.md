@@ -40,6 +40,19 @@ LEFT JOIN users u ON u.id = s.user_id
 ORDER BY s.created_at DESC;
 ```
 
-# 数据库更改建议
-如果有增删改表的需求，先在服务器调用导出脚本备份数据库
-在更改了数据库的表格之后，记得更新导出/导入脚本以适配最新的数据库结构。
+## 聊天历史
+```sql
+SELECT user_id, role, title, risk_level, content, created_at
+FROM chat_messages
+ORDER BY created_at DESC
+LIMIT 200;
+```
+
+按用户查看最近提问：
+```sql
+SELECT role, content, title, risk_level, created_at
+FROM chat_messages
+WHERE user_id = '<用户ID>'
+ORDER BY created_at DESC
+LIMIT 50;
+```

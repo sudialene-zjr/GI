@@ -9,6 +9,9 @@ const registerForm = document.getElementById("register-form");
 const chatForm = document.getElementById("chat-form");
 const chatInput = document.getElementById("chat-text");
 const chatWindow = document.getElementById("chat-window");
+const chatHistoryListEl = document.getElementById("chat-history-list");
+const chatHistoryEmptyEl = document.getElementById("chat-history-empty");
+const clearChatHistoryButton = document.getElementById("clear-chat-history");
 const promptButtons = document.querySelectorAll("[data-prompt]");
 const surveyForm = document.getElementById("survey-form");
 const surveyToast = document.getElementById("survey-toast");
@@ -33,64 +36,24 @@ const surveyProgressLabelEl = document.getElementById("survey-progress-label");
 const surveyProgressValueEl = document.getElementById("survey-progress-value");
 const surveyEntryButtonEl = document.getElementById("survey-entry-button");
 
-const CHAT_API_URL = window.CHAT_API_URL || "/v1/chat";
+const CHAT_API_URL = window.CHAT_API_URL || "http://127.0.0.1:8000/v1/chat";
+const CHAT_GUEST_STORAGE_KEY = "gi_chat_history_guest_v1";
+const CHAT_MAX_ITEMS = 120;
+const CHAT_CONTEXT_WINDOW = 12;
+const DEFAULT_BOT_MESSAGE = {
+  role: "assistant",
+  title: "术前教育提示",
+  content: "检查前需遵循禁食禁饮要求，具体时长请告知检查时间，我可以帮你生成个性化方案。",
+  riskLevel: "normal"
+};
 
 let surveyCached = null;
 let profileCached = null;
+let chatRecords = [];
 
 let surveyToastTimer;
 
-// 保存 URL 额外参数（如视频编号）
-let urlExtraParams = null;
-
-// URL 状态缓存
-function saveCurrentView(viewId, updateHash = true, extraData = {}) {
-  if (updateHash) {
-    const url = new URL(window.location);
-    const params = new URLSearchParams();
-    params.set('view', viewId);
-    // 添加额外的数据（如视频编号）
-    Object.entries(extraData).forEach(([key, value]) => {
-      params.set(key, value);
-    });
-    url.hash = '#' + params.toString();
-    window.history.replaceState({}, '', url);
-  }
-}
-
-function loadSavedView() {
-  const hash = window.location.hash;
-  if (hash.startsWith('#')) {
-    const params = new URLSearchParams(hash.slice(1));
-    const viewId = params.get('view');
-
-    if (viewId) {
-      // 保存额外参数供视频播放器使用
-      urlExtraParams = params;
-      setView(viewId, false); // 不更新 hash
-
-      // 如果是学习视图，恢复子视图（视频教学/常见疑问解答）
-      if (viewId === 'learn') {
-        const learnViewId = params.get('learn');
-        if (learnViewId) {
-          setLearnView(learnViewId);
-        }
-      }
-
-      return true;
-    }
-  }
-  return false;
-}
-
-const botReplies = [
-  "术前建议禁食8小时、禁饮2小时。如为上午9点检查，建议前一晚23点后停止进食，早上7点后停止饮水。",
-  "术后2-3小时可少量饮水，如无不适可进清淡流质，避免辛辣油腻。",
-  "若出现持续腹痛、黑便或发热，请及时联系就医或就诊。",
-  "肠镜前泻药按医嘱分次服用，排出物清亮为佳。"
-];
-
-function setView(viewId, saveHash = true, extraData = {}) {
+function setView(viewId) {
   const navTarget = viewId === "survey" ? "profile" : viewId;
   views.forEach((view) => {
     view.classList.toggle("is-active", view.id === viewId);
@@ -99,11 +62,6 @@ function setView(viewId, saveHash = true, extraData = {}) {
   navLinks.forEach((btn) => {
     btn.classList.toggle("is-active", btn.dataset.view === navTarget);
   });
-
-  // 保存当前视图到 URL hash
-  if (saveHash) {
-    saveCurrentView(viewId, true, extraData);
-  }
 }
 
 viewButtons.forEach((btn) => {
@@ -185,6 +143,51 @@ function clearToken() {
   window.localStorage.removeItem("gi_token");
 }
 
+function getGuestChatHistory() {
+  try {
+    const raw = window.localStorage.getItem(CHAT_GUEST_STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function setGuestChatHistory(records) {
+  const list = Array.isArray(records) ? records.slice(-CHAT_MAX_ITEMS) : [];
+  window.localStorage.setItem(CHAT_GUEST_STORAGE_KEY, JSON.stringify(list));
+}
+
+function normalizeChatRecord(record) {
+  const role = String(record?.role || "").toLowerCase();
+  const normalizedRole = role === "assistant" || role === "bot" ? "assistant" : "user";
+  const content = String(record?.content || record?.text || "").trim();
+  if (!content) return null;
+  return {
+    role: normalizedRole,
+    content,
+    title: record?.title ? String(record.title).trim() : "",
+    riskLevel: record?.riskLevel
+      ? String(record.riskLevel).trim()
+      : (record?.risk_level ? String(record.risk_level).trim() : "normal"),
+    createdAt: record?.createdAt || record?.created_at || new Date().toISOString()
+  };
+}
+
+function toAgentHistory(records) {
+  return records
+    .slice(-CHAT_CONTEXT_WINDOW)
+    .map((item) => {
+      const normalized = normalizeChatRecord(item);
+      if (!normalized) return null;
+      return {
+        role: normalized.role,
+        content: normalized.content
+      };
+    })
+    .filter(Boolean);
+}
+
 async function postJson(url, payload, useAuth = false) {
   const headers = { "Content-Type": "application/json" };
   if (useAuth) {
@@ -232,8 +235,12 @@ function renderMarkdown(text) {
   return escapeHtml(raw).replace(/\n/g, '<br>');
 }
 
-function buildChatPayload(question) {
+function buildChatPayload(question, historyRecords = []) {
   const payload = { question };
+  const history = toAgentHistory(historyRecords);
+  if (history.length > 0) {
+    payload.history = history;
+  }
   const user = getStoredUser();
   if (user) {
     payload.user = {
@@ -346,14 +353,10 @@ if (loginForm) {
       if (data?.user) {
         storeUser(data.user);
       }
-      setFormMessage(loginForm, "登录成功", "success");
-      // 延迟加载资料
+      setFormMessage(loginForm, "登录成功，正在进入系统...", "success");
       setTimeout(() => {
-        loadProfile();
-        loadSurveyStatus();
-        // 跳转到聊天页面
-        setView('chat');
-      }, 500);
+        window.location.href = "app.html";
+      }, 800);
     } catch (error) {
       setFormMessage(loginForm, error.message || "登录失败");
     }
@@ -389,12 +392,10 @@ if (registerForm) {
       if (data?.user) {
         storeUser(data.user);
       }
-      setFormMessage(registerForm, "注册成功", "success");
+      setFormMessage(registerForm, "注册成功，正在进入系统...", "success");
       setTimeout(() => {
-        loadProfile();
-        loadSurveyStatus();
-        setView('chat');
-      }, 500);
+        window.location.href = "app.html";
+      }, 900);
     } catch (error) {
       setFormMessage(registerForm, error.message || "注册失败");
     }
@@ -508,6 +509,107 @@ async function loadSurveyStatus() {
   }
 }
 
+function renderHistorySummary() {
+  if (!chatHistoryListEl || !chatHistoryEmptyEl) return;
+  const recentQuestions = chatRecords
+    .filter((item) => item.role === "user")
+    .slice(-6)
+    .reverse();
+  chatHistoryListEl.innerHTML = "";
+  if (recentQuestions.length === 0) {
+    chatHistoryEmptyEl.classList.remove("is-hidden");
+    return;
+  }
+  chatHistoryEmptyEl.classList.add("is-hidden");
+  recentQuestions.forEach((item) => {
+    const li = document.createElement("li");
+    li.textContent = item.content;
+    chatHistoryListEl.appendChild(li);
+  });
+}
+
+function renderChatRecords() {
+  if (!chatWindow) return;
+  chatWindow.innerHTML = "";
+  const records = chatRecords.map((item) => ({
+    role: item.role === "assistant" ? "bot" : "user",
+    title: item.title || (item.role === "assistant" ? "医疗建议" : ""),
+    text: item.content
+  }));
+  if (records.length === 0) {
+    records.push({
+      role: "bot",
+      title: DEFAULT_BOT_MESSAGE.title,
+      text: DEFAULT_BOT_MESSAGE.content
+    });
+  }
+  records.forEach((item) => appendMessage(item));
+}
+
+function applyChatRecords(records, shouldRender = true) {
+  chatRecords = records
+    .map((item) => normalizeChatRecord(item))
+    .filter(Boolean)
+    .slice(-CHAT_MAX_ITEMS);
+  renderHistorySummary();
+  if (shouldRender) {
+    renderChatRecords();
+  }
+}
+
+function appendChatRecord(record, options = { persist: true }) {
+  const normalized = normalizeChatRecord(record);
+  if (!normalized) return;
+  chatRecords = [...chatRecords, normalized].slice(-CHAT_MAX_ITEMS);
+  renderHistorySummary();
+  if (getToken()) {
+    if (options.persist) {
+      postJson(
+        "/api/chat/history",
+        {
+          role: normalized.role,
+          content: normalized.content,
+          title: normalized.title || undefined,
+          riskLevel: normalized.riskLevel || "normal"
+        },
+        true
+      ).catch(() => {});
+    }
+    return;
+  }
+  setGuestChatHistory(chatRecords);
+}
+
+async function loadChatHistory() {
+  if (!chatWindow) return;
+  const token = getToken();
+  if (!token) {
+    applyChatRecords(getGuestChatHistory());
+    return;
+  }
+  try {
+    const data = await getJson("/api/chat/history?limit=120", true);
+    applyChatRecords(Array.isArray(data?.messages) ? data.messages : []);
+  } catch {
+    applyChatRecords([]);
+  }
+}
+
+async function clearChatHistory() {
+  if (!chatWindow) return;
+  applyChatRecords([]);
+  const token = getToken();
+  if (token) {
+    try {
+      await postJson("/api/chat/history/clear", {}, true);
+    } catch {
+      // Keep UI responsive even if clear fails; history can be reloaded later.
+    }
+    return;
+  }
+  setGuestChatHistory([]);
+}
+
 if (profileForm) {
   profileForm.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -551,6 +653,7 @@ if (logoutLink) {
 }
 
 function appendMessage({ role, text, title }) {
+  if (!chatWindow) return null;
   const message = document.createElement("div");
   message.className = `message ${role}`;
 
@@ -592,20 +695,35 @@ function appendMessage({ role, text, title }) {
 
 async function sendMessage(text) {
   const content = String(text || '').trim();
-  if (!content) return;
+  if (!content || !chatWindow) return;
+  const historySnapshot = chatRecords.slice(-CHAT_CONTEXT_WINDOW);
+
   appendMessage({ role: 'user', text: content });
+  appendChatRecord({ role: "user", content });
   chatInput.value = '';
 
-  const botMessage = appendMessage({ role: 'bot', title: '护理建议', text: '正在生成...' });
+  const botMessage = appendMessage({ role: 'bot', title: '医疗建议', text: '正在生成...' });
 
   try {
-    const payload = buildChatPayload(content);
-    const response = await postJson(CHAT_API_URL, payload);
-    const answer = response.answer || '暂未获得回复，请稍后再试。';
-    const title = response.escalate ? '风险提示' : '护理建议';
+    const payload = buildChatPayload(content, historySnapshot);
+    const response = await fetch(CHAT_API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw new Error(data.detail || data.error || '请求失败');
+    }
+    const answer = data.answer || '暂未获得回复，请稍后再试。';
+    const title = data.escalate ? '风险提示' : '医疗建议';
+    const riskLevel = String(data.risk_level || (data.escalate ? "sensitive" : "normal"));
     updateBotMessage(botMessage, { title, text: answer });
+    appendChatRecord({ role: "assistant", content: answer, title, riskLevel });
   } catch (error) {
-    updateBotMessage(botMessage, { title: '系统提示', text: error.message || '请求失败' });
+    const message = error.message || '请求失败';
+    updateBotMessage(botMessage, { title: '系统提示', text: message });
+    appendChatRecord({ role: "assistant", content: message, title: "系统提示", riskLevel: "system" });
   }
 }
 
@@ -613,6 +731,12 @@ if (chatForm) {
   chatForm.addEventListener("submit", (event) => {
     event.preventDefault();
     sendMessage(chatInput.value);
+  });
+}
+
+if (clearChatHistoryButton) {
+  clearChatHistoryButton.addEventListener("click", () => {
+    clearChatHistory();
   });
 }
 
@@ -631,9 +755,6 @@ function setLearnView(viewId) {
   learnTabs.forEach((tab) => {
     tab.classList.toggle("is-active", tab.dataset.learn === viewId);
   });
-
-  // 保存当前视图到 URL hash
-  saveCurrentView('learn', true, { learn: viewId });
 }
 
 learnTabs.forEach((tab) => {
@@ -739,140 +860,6 @@ if (surveyForm) {
   });
 }
 
-// 检查是否已登录，如果已登录则显示主界面
-function checkLoginStatus() {
-  const token = getToken();
-  const user = getStoredUser();
-
-  if (token && user) {
-    // 已登录，加载资料
-    loadProfile();
-    loadSurveyStatus();
-  }
-  // 无论是否登录，都尝试恢复之前保存的视图
-  // 如果没有保存的视图，默认显示聊天页面
-  if (!loadSavedView()) {
-    setView('chat');
-  }
-}
-
-// 页面加载时检查登录状态
-document.addEventListener('DOMContentLoaded', () => {
-  // 先检查登录状态并恢复视图，获取 URL 参数
-  checkLoginStatus();
-  // 然后初始化所有事件监听器和视频播放器
-  initVideoPlayer();
-});
-
-// 视频播放器功能
-function initVideoPlayer() {
-  const videoContainer = document.querySelector('.video-container');
-  if (!videoContainer) return;
-
-  const mainVideo = document.getElementById('mainVideo');
-  const videoTitle = document.getElementById('videoTitle');
-  const videoItems = document.querySelectorAll('.video-item');
-
-  // 从 API 加载视频数据
-  async function loadVideosFromAPI() {
-    try {
-      const response = await fetch('/api/videos');
-      const data = await response.json();
-
-      if (!data.ok) {
-        console.error('加载视频列表失败:', data.error);
-        return;
-      }
-
-      // 构建视频映射: code -> videoData
-      const videoMap = {};
-      data.videos.forEach(v => {
-        videoMap[v.code] = {
-          id: v.id,
-          code: v.code,
-          title: v.title,
-          sectionCode: v.section_code,
-          sectionTitle: v.section_title,
-          categoryCode: v.category_code,
-          categoryTitle: v.category_title
-        };
-      });
-
-      // 为每个视频项添加点击事件
-      videoItems.forEach(item => {
-        const videoLink = item.querySelector('.video-link');
-        if (!videoLink) return;
-
-        // 从 data-video-code 获取视频编号
-        const videoCode = item.dataset.videoCode;
-        const title = item.dataset.title;
-
-        if (!videoCode || !title) {
-          console.warn('视频项缺少 data-video-code 或 data-title', item);
-          return;
-        }
-
-        const videoData = videoMap[videoCode];
-        if (!videoData) {
-          console.warn('未找到视频数据:', videoCode);
-          return;
-        }
-
-        // 存储 video ID 用于获取预签名 URL
-        item.dataset.videoId = videoData.id;
-
-        // 暴露点击函数以便外部调用
-        item.playVideo = async () => {
-          try {
-            // 保存当前视频编号到 URL
-            saveCurrentView('learn', true, { video: videoCode });
-
-            // 获取预签名 URL
-            const presignedResponse = await fetch(`/api/videos/presigned-url?id=${videoData.id}`);
-            const presignedData = await presignedResponse.json();
-
-            if (!presignedData.ok) {
-              console.error('获取预签名 URL 失败:', presignedData.error);
-              return;
-            }
-
-            // 更新视频源
-            mainVideo.src = presignedData.url;
-            mainVideo.pause();
-            mainVideo.load();
-
-            // 更新标题
-            videoTitle.textContent = title;
-
-            // 更新选中状态
-            videoItems.forEach(i => i.classList.remove('active'));
-            item.classList.add('active');
-          } catch (error) {
-            console.error('播放视频失败:', error);
-          }
-        };
-
-        videoLink.addEventListener('click', async () => {
-          await item.playVideo();
-        });
-      });
-
-      // 恢复保存的视频
-      if (urlExtraParams && urlExtraParams.get) {
-        const savedVideoCode = urlExtraParams.get('video');
-        if (savedVideoCode) {
-          const savedItem = Array.from(videoItems).find(i => i.dataset.videoCode === savedVideoCode);
-          if (savedItem && savedItem.playVideo) {
-            // 延迟执行以确保视频数据已加载
-            setTimeout(() => savedItem.playVideo(), 100);
-          }
-        }
-      }
-    } catch (error) {
-      console.error('加载视频数据失败:', error);
-    }
-  }
-
-  // 加载视频数据
-  loadVideosFromAPI();
-}
+loadProfile();
+loadSurveyStatus();
+loadChatHistory();

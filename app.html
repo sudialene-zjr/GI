@@ -49,26 +49,19 @@
               </div>
               <div class="progress-text">完成度 72%</div>
             </div>
+            <div class="side-card history-card">
+              <div class="side-card-title row between">
+                <span>最近提问</span>
+                <button class="link" type="button" id="clear-chat-history">清空</button>
+              </div>
+              <div class="history-empty" id="chat-history-empty">暂无历史提问</div>
+              <ul class="history-list" id="chat-history-list"></ul>
+            </div>
           </aside>
 
           <section class="panel chat-panel">
             <div class="panel-title">智能问答</div>
-            <div class="chat-window" id="chat-window">
-              <div class="message bot">
-                <div class="avatar">医</div>
-                <div class="bubble">
-                  <div class="bubble-title">术前教育提示</div>
-                  <div class="bubble-text">检查前需遵循禁食禁饮要求，具体时长请告知检查时间，我可以帮你生成个性化方案。</div>
-                  <div class="bubble-meta">刚刚</div>
-                </div>
-              </div>
-              <div class="message user">
-                <div class="bubble">
-                  <div class="bubble-text">我是上午9点的胃镜，需要几点开始禁食？</div>
-                  <div class="bubble-meta">刚刚</div>
-                </div>
-              </div>
-            </div>
+            <div class="chat-window" id="chat-window"></div>
             <form class="chat-input" id="chat-form">
               <input type="text" id="chat-text" placeholder="输入你的问题，例如：术后腹胀是否正常？" />
               <button type="submit" class="btn btn-primary">发送</button>
@@ -120,292 +113,55 @@
 
           <div class="learn-body">
             <div class="learn-view" data-learn-view="video">
-              <div class="video-container">
-                <!-- 左侧视频列表侧边栏 -->
-                <div class="video-sidebar">
-                  <div class="video-list">
-                <!-- 第1章：无痛消化内镜诊疗概述 -->
+              <div class="video-list">
                 <details open>
                   <summary>
                     <div class="learn-summary">
-                      <div class="learn-summary-title">1. 无痛消化内镜诊疗概述</div>
-                      <div class="learn-summary-meta">6 个视频 · 基础认知</div>
+                      <div class="learn-summary-title">胃镜检查流程概览</div>
+                      <div class="learn-summary-meta">时长 03:12 · 基础流程</div>
                     </div>
                     <span class="learn-summary-action">观看</span>
                   </summary>
                   <div class="video-detail">
-                    <div class="video-sublist">
-                      <details>
-                        <summary>
-                          <div class="learn-summary">
-                            <div class="learn-summary-title">1.1 概念界定与术式区分</div>
-                            <div class="learn-summary-meta">4 个视频</div>
-                          </div>
-                        </summary>
-                        <div class="video-detail">
-                          <div class="video-item" data-video-code="1.1.1" data-title="胃镜、肠镜检查的区别">
-                            <div class="video-link">胃镜、肠镜检查的区别</div>
-                          </div>
-                          <div class="video-item" data-video-code="1.1.2" data-title="“无痛”技术的麻醉学内涵">
-                            <div class="video-link">“无痛”技术的麻醉学内涵</div>
-                          </div>
-                          <div class="video-item" data-video-code="1.1.3" data-title="常规内镜与无痛内镜的差异对比">
-                            <div class="video-link">常规内镜与无痛内镜的差异对比</div>
-                          </div>
-                          <div class="video-item" data-video-code="1.1.4" data-title="胃、肠镜必须一起做吗">
-                            <div class="video-link">胃、肠镜必须一起做吗</div>
-                          </div>
-                        </div>
-                      </details>
-                      <details>
-                        <summary>
-                          <div class="learn-summary">
-                            <div class="learn-summary-title">1.2 适应证与禁忌证</div>
-                            <div class="learn-summary-meta">2 个视频</div>
-                          </div>
-                        </summary>
-                        <div class="video-detail">
-                          <div class="video-item" data-video-code="1.2.1" data-title="检查指征：临床症状与筛查建议">
-                            <div class="video-link">检查指征：临床症状与筛查建议</div>
-                          </div>
-                          <div class="video-item" data-video-code="1.2.2" data-title="检查禁忌">
-                            <div class="video-link">检查禁忌</div>
-                          </div>
-                        </div>
-                      </details>
+                    <div class="video-player">
+                      <span class="video-play">▶</span>
+                      <span class="video-tip">点击播放（示意）</span>
                     </div>
+                    <div class="video-desc">从预约、准备到检查结束的全流程说明，帮助患者建立整体认知。</div>
                   </div>
                 </details>
-
-                <!-- 第2章：术前评估与用药管理 -->
                 <details>
                   <summary>
                     <div class="learn-summary">
-                      <div class="learn-summary-title">2. 术前评估与用药管理</div>
-                      <div class="learn-summary-meta">4 个视频 · 术前准备</div>
+                      <div class="learn-summary-title">肠镜前饮食与泻药安排</div>
+                      <div class="learn-summary-meta">时长 04:05 · 清肠准备</div>
                     </div>
                     <span class="learn-summary-action">观看</span>
                   </summary>
                   <div class="video-detail">
-                    <div class="video-sublist">
-                      <details>
-                        <summary>
-                          <div class="learn-summary">
-                            <div class="learn-summary-title">2.1 术前医学检查</div>
-                            <div class="learn-summary-meta">2 个视频</div>
-                          </div>
-                        </summary>
-                        <div class="video-detail">
-                          <div class="video-item" data-video-code="2.1.1" data-title="术前检验、检查项目及其目的">
-                            <div class="video-link">术前检验、检查项目及其目的</div>
-                          </div>
-                          <div class="video-item" data-video-code="2.1.2" data-title="术前麻醉评估">
-                            <div class="video-link">术前麻醉评估</div>
-                          </div>
-                        </div>
-                      </details>
-                      <details>
-                        <summary>
-                          <div class="learn-summary">
-                            <div class="learn-summary-title">2.2 既往用药调整策略</div>
-                            <div class="learn-summary-meta">2 个视频</div>
-                          </div>
-                        </summary>
-                        <div class="video-detail">
-                          <div class="video-item" data-video-code="2.21" data-title="抗凝与抗血小板药物的停药原则">
-                            <div class="video-link">抗凝与抗血小板药物的停药原则</div>
-                          </div>
-                          <div class="video-item" data-video-code="2.2.2" data-title="慢性病药物的围术期管理.">
-                            <div class="video-link">慢性病药物的围术期管理.</div>
-                          </div>
-                        </div>
-                      </details>
+                    <div class="video-player">
+                      <span class="video-play">▶</span>
+                      <span class="video-tip">点击播放（示意）</span>
                     </div>
+                    <div class="video-desc">饮食过渡、清肠步骤与常见注意事项，降低准备过程的不确定感。</div>
                   </div>
                 </details>
-
-                <!-- 第3章：肠道准备与饮食控制 -->
                 <details>
                   <summary>
                     <div class="learn-summary">
-                      <div class="learn-summary-title">3. 肠道准备与饮食控制</div>
-                      <div class="learn-summary-meta">7 个视频 · 清肠准备</div>
+                      <div class="learn-summary-title">术后恢复注意事项</div>
+                      <div class="learn-summary-meta">时长 02:48 · 恢复期</div>
                     </div>
                     <span class="learn-summary-action">观看</span>
                   </summary>
                   <div class="video-detail">
-                    <div class="video-sublist">
-                      <details>
-                        <summary>
-                          <div class="learn-summary">
-                            <div class="learn-summary-title">3.1 饮食限制与时机</div>
-                            <div class="learn-summary-meta">3 个视频</div>
-                          </div>
-                        </summary>
-                        <div class="video-detail">
-                          <div class="video-item" data-video-code="3.1.1" data-title="胃肠镜术前的饮食注意事项 1.">
-                            <div class="video-link">胃肠镜术前的饮食注意事项 1.</div>
-                          </div>
-                          <div class="video-item" data-video-code="3.1.2" data-title="胃肠镜术前的饮食注意事项2">
-                            <div class="video-link">胃肠镜术前的饮食注意事项2</div>
-                          </div>
-                          <div class="video-item" data-video-code="3.1.3" data-title="胃肠镜术前的饮食注意事项 3">
-                            <div class="video-link">胃肠镜术前的饮食注意事项 3</div>
-                          </div>
-                        </div>
-                      </details>
-                      <details>
-                        <summary>
-                          <div class="learn-summary">
-                            <div class="learn-summary-title">3.2 胃肠道清洁方案</div>
-                            <div class="learn-summary-meta">4 个视频</div>
-                          </div>
-                        </summary>
-                        <div class="video-detail">
-                          <div class="video-item" data-video-code="3.2.1" data-title="胃镜术前口服祛泡剂">
-                            <div class="video-link">胃镜术前口服祛泡剂</div>
-                          </div>
-                          <div class="video-item" data-video-code="3.2.2" data-title="肠镜术前口服泻药">
-                            <div class="video-link">肠镜术前口服泻药</div>
-                          </div>
-                          <div class="video-item" data-video-code="3.2.3" data-title="肠道清洁度达标的判断标准（波士顿量表）">
-                            <div class="video-link">肠道清洁度达标的判断标准（波士顿量表）</div>
-                          </div>
-                          <div class="video-item" data-video-code="3.2.4" data-title="口服泻药后如何缓解恶心呕吐">
-                            <div class="video-link">口服泻药后如何缓解恶心呕吐</div>
-                          </div>
-                        </div>
-                      </details>
+                    <div class="video-player">
+                      <span class="video-play">▶</span>
+                      <span class="video-tip">点击播放（示意）</span>
                     </div>
+                    <div class="video-desc">麻醉恢复、饮食与观察要点，适合术后24-48小时随时查看。</div>
                   </div>
                 </details>
-
-                <!-- 第4章：麻醉流程与术中监护 -->
-                <details>
-                  <summary>
-                    <div class="learn-summary">
-                      <div class="learn-summary-title">4. 麻醉流程与术中监护</div>
-                      <div class="learn-summary-meta">1 个视频 · 麻醉安全</div>
-                    </div>
-                    <span class="learn-summary-action">观看</span>
-                  </summary>
-                  <div class="video-detail">
-                    <div class="video-item" data-video-code="4.1" data-title="麻醉流程与术中监护">
-                      <div class="video-link">麻醉流程与术中监护</div>
-                    </div>
-                  </div>
-                </details>
-
-                <!-- 第5章：内镜操作技术与影像演示 -->
-                <details>
-                  <summary>
-                    <div class="learn-summary">
-                      <div class="learn-summary-title">5. 内镜操作技术与影像演示</div>
-                      <div class="learn-summary-meta">7 个视频 · 操作演示</div>
-                    </div>
-                    <span class="learn-summary-action">观看</span>
-                  </summary>
-                  <div class="video-detail">
-                    <div class="video-sublist">
-                      <details>
-                        <summary>
-                          <div class="learn-summary">
-                            <div class="learn-summary-title">5.1 标准化检查过程</div>
-                            <div class="learn-summary-meta">3 个视频</div>
-                          </div>
-                        </summary>
-                        <div class="video-detail">
-                          <div class="video-item" data-video-code="5.1.1" data-title="体位摆放与入室配合1">
-                            <div class="video-link">体位摆放与入室配合1</div>
-                          </div>
-                          <div class="video-item" data-video-code="5.1.2" data-title="体位摆放与入室配合2">
-                            <div class="video-link">体位摆放与入室配合2</div>
-                          </div>
-                          <div class="video-item" data-video-code="5.1.3" data-title="胃肠镜检查操作流程">
-                            <div class="video-link">胃肠镜检查操作流程</div>
-                          </div>
-                        </div>
-                      </details>
-                      <details>
-                        <summary>
-                          <div class="learn-summary">
-                            <div class="learn-summary-title">5.2 镜下治疗与操作演示</div>
-                            <div class="learn-summary-meta">4 个视频</div>
-                          </div>
-                        </summary>
-                        <div class="video-detail">
-                          <div class="video-item" data-video-code="5.21" data-title="胃镜真实操作及动画影像资料展示">
-                            <div class="video-link">胃镜真实操作及动画影像资料展示</div>
-                          </div>
-                          <div class="video-item" data-video-code="5.22" data-title="肠镜真实操作及动画影像资料展示">
-                            <div class="video-link">肠镜真实操作及动画影像资料展示</div>
-                          </div>
-                          <div class="video-item" data-video-code="5.23" data-title="哪些情况需要活检取样">
-                            <div class="video-link">哪些情况需要活检取样</div>
-                          </div>
-                          <div class="video-item" data-video-code="5.24" data-title="镜下息肉切除">
-                            <div class="video-link">镜下息肉切除</div>
-                          </div>
-                        </div>
-                      </details>
-                    </div>
-                  </div>
-                </details>
-
-                <!-- 第6章：术后复苏与饮食指导 -->
-                <details>
-                  <summary>
-                    <div class="learn-summary">
-                      <div class="learn-summary-title">6. 术后复苏与饮食指导</div>
-                      <div class="learn-summary-meta">2 个视频 · 恢复期</div>
-                    </div>
-                    <span class="learn-summary-action">观看</span>
-                  </summary>
-                  <div class="video-detail">
-                    <div class="video-item" data-video-code="6.1" data-title="复苏期观察">
-                      <div class="video-link">复苏期观察</div>
-                    </div>
-                    <div class="video-item" data-video-code="6.2" data-title="术后饮食恢复">
-                      <div class="video-link">术后饮食恢复</div>
-                    </div>
-                  </div>
-                </details>
-
-                <!-- 第7章：结果解读与随访管理 -->
-                <details>
-                  <summary>
-                    <div class="learn-summary">
-                      <div class="learn-summary-title">7. 结果解读与随访管理</div>
-                      <div class="learn-summary-meta">3 个视频 · 随访管理</div>
-                    </div>
-                    <span class="learn-summary-action">观看</span>
-                  </summary>
-                  <div class="video-detail">
-                    <div class="video-item" data-video-code="7.1" data-title="内镜报告解读">
-                      <div class="video-link">内镜报告解读</div>
-                    </div>
-                    <div class="video-item" data-video-code="7.2" data-title="复查周期建议">
-                      <div class="video-link">复查周期建议</div>
-                    </div>
-                    <div class="video-item" data-video-code="7.3" data-title="费用参考">
-                      <div class="video-link">费用参考</div>
-                    </div>
-                  </div>
-                </details>
-
-              </div>
-                </div>
-
-                <!-- 右侧视频播放器 -->
-                <div class="video-player-container">
-                  <div class="video-player-wrapper">
-                    <video id="mainVideo" controls preload="metadata" class="main-video"></video>
-                  </div>
-                  <div class="video-info">
-                    <h3 id="videoTitle" class="video-title">1.1.1 胃镜、肠镜检查的区别</h3>
-                    <p class="video-hint">请从左侧列表选择要观看的视频</p>
-                  </div>
-                </div>
               </div>
             </div>
 
@@ -602,7 +358,7 @@
     <h3>做检查前，我最好提前准备/带些什么信息给医生？</h3>
     <blockquote class="article-quote">
 建议你在来院前准备好这些内容，能大大提高沟通效率、减少风险；<br><br>病史信息：现在最困扰你的症状：部位、持续时间、加重/缓解因素；过去是否做过胃肠镜、CT、B 超，是否有相关病理报告。<br><br>用药清单：把你目前在吃的所有药（处方药、非处方药、中成药、保健品）写在纸上或拍照，包括剂量和用药频率；<br><br>特别标出：抗凝药、抗血小板药、降糖药、心律药等。<br><br>过敏史和手术史：是否对某些药物或食物过敏；是否做过心脏支架、瓣膜置换、腹部/胸部手术等。<br><br>紧急联系人信息：留一位家属或朋友的手机号，以便需要时联系。
-<figure class="article-figure"><img src="static/images/psych-prep-01.png" alt="资料准备清单" /><figcaption class="article-caption">图示</figcaption></figure>
+<figure class="article-figure"><img src="/Users/apple/Desktop/患者提问整理后/media_out/心理准备_隐私与就诊体验/media/image1.png" style="width:2.00579in;height:2.67447in" /><figcaption class="article-caption">图示</figcaption></figure>
     </blockquote>
 <h3>如果患者检查前几天突然感冒、发烧或急性拉肚子，还能照常做无痛胃肠镜吗？</h3>
 <blockquote class="article-quote">
@@ -628,7 +384,7 @@
 <p>一般流程是：</p>
 <ol><li>到医院的病案/资料室或窗口，按规定填写申请，缴纳少量复印或刻盘费用；</li><li>拿到资料后，可以去其他科室或其他医院的门诊，让医生结合你带来的材料再做一次评估。</li></ol>
 <p>合理的医生团队不会因为你想“多问一个医生”而生气，相反，我们希望你在弄明白、想清楚之后再做下一步决定。</p>
-<figure class="article-figure"><img src="static/images/psych-prep-02.png" alt="医患沟通示例" /><figcaption class="article-caption">图示</figcaption></figure>
+<figure class="article-figure"><img src="/Users/apple/Desktop/患者提问整理后/media_out/心理准备_隐私与就诊体验/media/image2.png" style="width:2.24788in;height:2.99726in" alt="图形用户界面 AI 生成的内容可能不正确。" /><figcaption class="article-caption">图示</figcaption></figure>
 </blockquote>
   </div>
 </details>
@@ -735,7 +491,7 @@
 <p>当天确认禁食时间、肠道准备情况，签署知情同意书。</p>
 <p>进内镜室：上监护（血压、心电图、血氧监测），建立静脉通道；</p>
 <p>麻醉医生给药，几分钟内进入睡眠状态。</p>
-<figure class="article-figure"><img src="static/images/check-flow-01.png" alt="检查流程图" /><figcaption class="article-caption">图示</figcaption></figure>
+<figure class="article-figure"><img src="/Users/apple/Desktop/患者提问整理后/media_out/检查流程和时间/media/image1.png" style="width:5.76806in;height:3.24306in" alt="图示 AI 生成的内容可能不正确。" /><figcaption class="article-caption">图示</figcaption></figure>
     </blockquote>
 <h3>做无痛胃肠镜大概要花多长时间？</h3>
 <blockquote class="article-quote">
@@ -1048,7 +804,7 @@
 <p>胃镜：固体食物：检查前 8 小时内不吃东西；清流质（白水、运动饮料、淡茶等）：可在检查前 2 小时内适量饮用，之后完全禁饮。</p>
 <p>结肠镜：检查前 1 天，按照医嘱吃低渣/低纤维饮食，避免粗纤维、蔬菜瓜果、带籽食物；按</p>
 <p>照处方服用“洗肠药”（肠道准备药物），严格按照时间分次服用。做联合检查时，一般优先满足肠镜的准备要求，医生会给你详细的小纸条或说明书，一定要照做，否则可能因为肠道不干净导致检查不完整。</p>
-<figure class="article-figure"><img src="static/images/diet-prep-01.png" alt="饮食准备指南" /><figcaption class="article-caption">图示</figcaption></figure>
+<figure class="article-figure"><img src="/Users/apple/Desktop/患者提问整理后/media_out/禁食与肠道准备与术前检查/media/image1.png" style="width:2.23328in;height:2.97779in" /><figcaption class="article-caption">图示</figcaption></figure>
     </blockquote>
 <h3>肠道准备药喝起来很难受，可以少喝点或者换成别的吗？</h3>
 <blockquote class="article-quote">
@@ -1058,7 +814,7 @@
 <blockquote class="article-quote">
 <p>清流质是指可以看得见“透过去”、没有明显残渣、颜色不过深的液体，例如：白开水、矿泉水；运动饮料、淡茶（不加奶、不加豆浆）；颜色较浅、无果肉的透明饮料。</p>
 <p>一般不推荐：牛奶、酸奶、豆浆（都是“浑浊液体”）；带果肉或颜色很深的果汁、蔬菜汁；含大量颜色的饮料（比如深红、深紫），可能影响内镜下判断。简单记忆：能清清楚楚地透过去看见光的，才叫清流质。</p>
-<figure class="article-figure"><img src="static/images/diet-prep-02.png" alt="清流质示例" /><figcaption class="article-caption">图示</figcaption></figure>
+<figure class="article-figure"><img src="/Users/apple/Desktop/患者提问整理后/media_out/禁食与肠道准备与术前检查/media/image2.png" style="width:3.54291in;height:4.72402in" alt="图片包含 应用程序 AI 生成的内容可能不正确。" /><figcaption class="article-caption">图示</figcaption></figure>
 <p>如果我已经喝完洗肠药，大便还是不干净（有渣、有颜色），怎么办？</p>
 理想的肠道准备是：排出的大便几乎全是清水或淡黄色透明液体，几乎没有固体块状物。如果你发现：排出仍有大量渣滓、成形或半成形大便；或大便颜色非常深、量很少；请尽快电话联系或线上联系医院/科室：部分情况下可以按医生建议追加一部分洗肠药或改为同日方案；若实在达不到标准，医生可能会建议改期，以免白受罪又检查不彻底。不要硬“装糊涂”去做检查，不合格的准备很容易导致漏诊和重复检查。
 </blockquote>

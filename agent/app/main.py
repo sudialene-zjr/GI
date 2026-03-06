@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import os
-from pathlib import Path
+import re
 from typing import Optional, List, Dict, Any
 
 from fastapi import FastAPI, HTTPException
@@ -11,11 +11,10 @@ from pydantic import BaseModel, Field
 
 from app.llm import call_qwen
 from app.prompts import SYSTEM_PROMPT, REDLINE_TEMPLATE
+from app.safety import detect_sensitive_signal, build_sensitive_reply
 from app.search import KnowledgeBase
+from app.text_processing import correct_question_text
 
-# 路径
-BASE_DIR = Path(__file__).resolve().parents[2]  # GI/
-DEFAULT_DATA_DIR = BASE_DIR / "static" / "data" / "processed"
 
 app = FastAPI(title="GI Endoscopy Education API", version="0.1.0")
 
@@ -29,6 +28,8 @@ app.add_middleware(
 )
 
 kb: Optional[KnowledgeBase] = None
+MAX_HISTORY_MESSAGES = 12
+FORCE_CHINESE_OUTPUT = os.getenv("FORCE_CHINESE_OUTPUT", "1") != "0"
 
 
 class UserAccount(BaseModel):
@@ -73,8 +74,17 @@ class ChatResponse(BaseModel):
     matched_redline: Optional[str] = None
 
 
-def build_user_prompt(req: ChatRequest) -> str:
-    parts = [f"用户问题：{req.question}"]
+def build_user_prompt(
+    req: ChatRequest,
+    effective_question: str,
+    original_question: str,
+    corrections: Optional[List[str]] = None,
+) -> str:
+    parts = [f"用户问题：{effective_question}"]
+    if original_question and original_question != effective_question:
+        parts.append(f"用户原始输入：{original_question}")
+    if corrections:
+        parts.append(f"识别到的纠错：{'; '.join(corrections)}")
     if req.procedure_type:
         parts.append(f"检查类型：{req.procedure_type}")
     if req.scheduled_date:
@@ -118,14 +128,62 @@ def build_user_prompt(req: ChatRequest) -> str:
         parts.append(f"用户信息：{user_info}")
     return "\n".join(parts)
 
+
+def build_history_messages(history: Optional[List[Dict[str, str]]]) -> List[Dict[str, str]]:
+    if not history:
+        return []
+    messages: List[Dict[str, str]] = []
+    for item in history[-MAX_HISTORY_MESSAGES:]:
+        if not isinstance(item, dict):
+            continue
+        raw_role = str(item.get("role", "")).strip().lower()
+        if raw_role in {"assistant", "bot"}:
+            role = "assistant"
+        elif raw_role == "user":
+            role = "user"
+        else:
+            continue
+        content = str(item.get("content") or item.get("text") or "").strip()
+        if not content:
+            continue
+        messages.append({"role": role, "content": content[:2000]})
+    return messages
+
+
+def _contains_latin_text(text: str) -> bool:
+    cleaned = str(text or "").replace("GastroAI", "")
+    return bool(re.search(r"[A-Za-z]", cleaned))
+
+
+def _normalize_to_chinese(text: str) -> str:
+    answer = str(text or "").strip()
+    if not answer or not FORCE_CHINESE_OUTPUT:
+        return answer
+    if not _contains_latin_text(answer):
+        return answer
+
+    normalize_messages = [
+        {
+            "role": "system",
+            "content": (
+                "你是医学文本改写助手。请在不改变原意和风险等级的前提下，把输入内容改写为纯中文。"
+                "不要出现英文单词、英文缩写或中英混写。专有名称 GastroAI 可以保留。"
+                "只输出改写后的中文正文。"
+            ),
+        },
+        {"role": "user", "content": f"请改写为全中文：\n{answer}"},
+    ]
+    try:
+        rewritten = call_qwen(normalize_messages).strip()
+        return rewritten or answer
+    except Exception:
+        return answer
+
+
 @app.on_event("startup")
 def _load_kb() -> None:
     global kb
-    data_dir = os.getenv("DATA_DIR")
-    if data_dir:
-        data_dir = Path(data_dir)
-    else:
-        data_dir = DEFAULT_DATA_DIR
+    data_dir = os.getenv("DATA_DIR", "data/processed")
     kb = KnowledgeBase.from_dir(data_dir)
 
 
@@ -139,14 +197,28 @@ def chat(req: ChatRequest) -> ChatResponse:
     if kb is None:
         raise HTTPException(status_code=500, detail="Knowledge base not loaded")
 
-    q = req.question.strip()
-    if not q:
+    original_q = req.question.strip()
+    if not original_q:
         raise HTTPException(status_code=400, detail="Empty question")
 
-    redline = kb.match_redline(q)
+    corrected_q, corrections = correct_question_text(original_q)
+    effective_q = corrected_q or original_q
+
+    sensitive_signal = detect_sensitive_signal(effective_q)
+    if sensitive_signal:
+        answer = _normalize_to_chinese(build_sensitive_reply(sensitive_signal))
+        return ChatResponse(
+            answer=answer,
+            risk_level="sensitive",
+            escalate=True,
+            sources=[f"safety:{sensitive_signal.signal_id}"],
+            matched_redline=f"sensitive_{sensitive_signal.signal_id}",
+        )
+
+    redline = kb.match_redline(effective_q)
     if redline:
         first_line = redline.get("first_line") or "存在高风险情况。"
-        answer = REDLINE_TEMPLATE.format(first_line=first_line)
+        answer = _normalize_to_chinese(REDLINE_TEMPLATE.format(first_line=first_line))
         return ChatResponse(
             answer=answer,
             risk_level="redline",
@@ -155,7 +227,7 @@ def chat(req: ChatRequest) -> ChatResponse:
             matched_redline=redline.get("id"),
         )
 
-    hits = kb.search_faqs(q, top_k=4)
+    hits = kb.search_faqs(effective_q, top_k=4)
     context = kb.build_context(hits)
     sources = [h.item.get("source", "") for h in hits if h.item.get("source")]
 
@@ -164,14 +236,27 @@ def chat(req: ChatRequest) -> ChatResponse:
     else:
         system = f"{SYSTEM_PROMPT}\n\n参考资料：无（仅作一般性教育提示）"
 
-    messages = [
-        {"role": "system", "content": system},
-        {"role": "user", "content": build_user_prompt(req)},
-    ]
+    messages = [{"role": "system", "content": system}]
+    messages.extend(build_history_messages(req.history))
+    messages.append(
+        {
+            "role": "user",
+            "content": build_user_prompt(
+                req,
+                effective_question=effective_q,
+                original_question=original_q,
+                corrections=corrections,
+            ),
+        }
+    )
 
     try:
         answer = call_qwen(messages)
-    except Exception as e:
-        answer = f"当前模型服务不可用，请稍后再试或联系医护人员。错误：{e}"
+    except Exception:
+        answer = "当前模型服务不可用，请稍后再试或联系医护人员。"
 
+    if effective_q != original_q:
+        answer = f"我先按“{effective_q}”理解你的问题。\n\n{answer}"
+
+    answer = _normalize_to_chinese(answer)
     return ChatResponse(answer=answer, risk_level="normal", escalate=False, sources=sources)

@@ -37,6 +37,17 @@ CREATE TABLE IF NOT EXISTS survey_responses (
   UNIQUE (user_id)
 );
 
+CREATE TABLE IF NOT EXISTS chat_messages (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  role text NOT NULL CHECK (role IN ('user', 'assistant')),
+  content text NOT NULL,
+  title text,
+  risk_level text NOT NULL DEFAULT 'normal',
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+
 CREATE INDEX IF NOT EXISTS idx_users_account_lower ON users(account_lower);
 CREATE INDEX IF NOT EXISTS idx_profiles_phone ON user_profiles(phone);
 CREATE INDEX IF NOT EXISTS idx_survey_user_id ON survey_responses(user_id);
+CREATE INDEX IF NOT EXISTS idx_chat_messages_user_time ON chat_messages(user_id, created_at DESC);

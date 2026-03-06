@@ -21,9 +21,9 @@ from xml.etree import ElementTree as ET
 
 # 当前脚本在 GI/agent/scripts/build_data.py
 BASE_DIR = Path(__file__).resolve().parents[2]  # 指向 GI/
-STATIC_DIR = BASE_DIR / "static"
-DATA_DIR = STATIC_DIR / "data"
-OUT_DIR = DATA_DIR / "processed"
+AGENT_DIR = BASE_DIR / "agent"
+DATA_DIR = AGENT_DIR / "data"  # 输入数据目录
+OUT_DIR = DATA_DIR / "processed"  # 输出目录，生成到 agent/data/processed/
 
 
 def read_docx_paras(path: Path) -> List[str]:
@@ -247,7 +247,7 @@ def main() -> None:
         for item in faqs:
             f.write(json.dumps(item, ensure_ascii=False) + "\n")
 
-    redline_path = DATA_DIR / "评测集" / "7. 紧急红线.xlsx"
+    redline_path = DATA_DIR / "7. 紧急红线.xlsx"
     redlines = build_redlines(redline_path)
     redlines_path = OUT_DIR / "redlines.json"
     with redlines_path.open("w", encoding="utf-8") as f:
