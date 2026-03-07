@@ -9,7 +9,68 @@ const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://app_user:huaxi@12
 const pool = new Pool({ connectionString: DATABASE_URL.replace(/^postgresql\+psycopg:\/\//, 'postgresql://') });
 
 // 表列表
-const TABLES = ['users', 'user_profiles', 'survey_responses'];
+const TABLES = ['users', 'user_profiles', 'survey_responses', 'chat_messages'];
+
+// 脱敏字段配置
+const SENSITIVE_FIELDS = {
+  users: ['account', 'account_lower', 'password_hash', 'password_salt'],
+  user_profiles: ['phone'],
+  survey_responses: [],
+  chat_messages: ['user_id']
+};
+
+// 脱敏函数
+function maskValue(value, fieldName) {
+  if (!value) return value;
+
+  // 对账号进行脱敏：保留前后各1-2位，中间用*代替
+  if (fieldName === 'account' || fieldName === 'account_lower') {
+    const str = String(value);
+    if (str.length <= 4) {
+      return str[0] + '*'.repeat(str.length - 1);
+    }
+    return str[0] + '*'.repeat(str.length - 2) + str[str.length - 1];
+  }
+
+  // 对密码相关字段完全隐藏
+  if (fieldName === 'password_hash' || fieldName === 'password_salt') {
+    return '***HIDDEN***';
+  }
+
+  // 对手机号进行脱敏：保留前3位和后4位
+  if (fieldName === 'phone') {
+    const str = String(value);
+    if (str.length === 11) {
+      return str.substring(0, 3) + '****' + str.substring(7);
+    }
+    return '***';
+  }
+
+  // 对用户ID进行脱敏：保留前8位，中间部分替换
+  if (fieldName === 'user_id') {
+    const str = String(value);
+    if (str.length === 36) { // UUID 格式: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+      return str.substring(0, 8) + '-****-****-****-' + str.substring(24);
+    }
+    return '***';
+  }
+
+  return value;
+}
+
+// 对记录进行脱敏处理
+function maskRecord(record, tableName) {
+  const sensitiveFields = SENSITIVE_FIELDS[tableName] || [];
+  const maskedRecord = { ...record };
+
+  for (const field of sensitiveFields) {
+    if (maskedRecord.hasOwnProperty(field)) {
+      maskedRecord[field] = maskValue(maskedRecord[field], field);
+    }
+  }
+
+  return maskedRecord;
+}
 
 // 生成时间戳目录名：YYYY_MMDD_HHMM
 function generateTimestampDir() {
@@ -77,11 +138,14 @@ async function exportUserData() {
 
       const result = await pool.query(`SELECT * FROM ${tableName} ORDER BY ${orderBy} ASC`);
 
+      // 对记录进行脱敏处理
+      const maskedRecords = result.rows.map(row => maskRecord(row, tableName));
+
       const exportData = {
         exported_at: new Date().toISOString(),
         table_name: tableName,
         total_records: result.rows.length,
-        records: result.rows
+        records: maskedRecords
       };
 
       const filePath = path.join(outputDir, `${tableName}.json`);
