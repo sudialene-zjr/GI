@@ -2,8 +2,15 @@ const http = require("http");
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
+require("dotenv").config({ path: path.join(__dirname, "../.env") });
 const { Pool } = require("pg");
 const jwt = require("jsonwebtoken");
+const COS = require("cos-nodejs-sdk-v5");
+
+// Node.js 18+ 内置 fetch，旧版本需要安装 node-fetch
+if (typeof fetch === 'undefined') {
+  global.fetch = require('node-fetch');
+}
 
 const PORT = process.env.PORT || 3000;
 const ROOT = path.resolve(__dirname, "..");
@@ -27,6 +34,23 @@ const pool = new Pool({
   connectionString: DATABASE_URL,
   ssl: useSSL ? { rejectUnauthorized: false } : false
 });
+
+// COS 配置
+const COS_SECRET_ID = process.env.COS_SECRET_ID;
+const COS_SECRET_KEY = process.env.COS_SECRET_KEY;
+const COS_BUCKET = process.env.COS_BUCKET;
+const COS_REGION = process.env.COS_REGION || 'ap-guangzhou';
+const COS_VIDEO_PREFIX = process.env.COS_VIDEO_PREFIX || 'videos/';
+
+// 初始化 COS 客户端（如果配置了）
+let cos = null;
+if (COS_SECRET_ID && COS_SECRET_KEY && COS_BUCKET) {
+  cos = new COS({
+    SecretId: COS_SECRET_ID,
+    SecretKey: COS_SECRET_KEY,
+    Region: COS_REGION,
+  });
+}
 
 function hashPassword(password, salt = crypto.randomBytes(16).toString("hex")) {
   const hash = crypto.scryptSync(password, salt, 64).toString("hex");
@@ -87,7 +111,7 @@ function getContentType(filePath) {
 
 function serveStatic(req, res) {
   const urlPath = decodeURI(req.url.split("?")[0]);
-  const resolvedPath = urlPath === "/" ? "/index.html" : urlPath;
+  const resolvedPath = urlPath === "/" ? "/app.html" : urlPath;
   const filePath = path.join(ROOT, resolvedPath);
   if (!filePath.startsWith(ROOT)) {
     sendText(res, 403, "Forbidden");
@@ -134,6 +158,17 @@ function normalizeAccount(account) {
   return account.trim().toLowerCase();
 }
 
+function normalizeChatRole(role) {
+  const normalized = String(role || "").trim().toLowerCase();
+  if (normalized === "assistant" || normalized === "bot") {
+    return "assistant";
+  }
+  if (normalized === "user") {
+    return "user";
+  }
+  return "user";
+}
+
 function handleDbError(res, error) {
   if (error && error.code === "42P01") {
     sendJson(res, 500, { ok: false, error: "数据库未初始化，请先执行 init.sql" });
@@ -172,13 +207,6 @@ function verifyToken(req, res) {
     sendJson(res, 401, { ok: false, error: "登录已过期" });
     return null;
   }
-}
-
-function normalizeChatRole(role) {
-  const raw = String(role || "").trim().toLowerCase();
-  if (raw === "assistant" || raw === "bot") return "assistant";
-  if (raw === "user") return "user";
-  return "";
 }
 
 async function handleRegister(req, res) {
@@ -404,9 +432,10 @@ async function handleGetSurvey(req, res) {
   }
 }
 
-async function handleGetChatHistory(req, res, requestUrl) {
+async function handleGetChatHistory(req, res) {
   const payload = verifyToken(req, res);
   if (!payload) return;
+  const requestUrl = new URL(req.url, `http://${req.headers.host}`);
   const rawLimit = Number(requestUrl.searchParams.get("limit"));
   const limit = Number.isFinite(rawLimit) && rawLimit > 0 ? Math.min(Math.floor(rawLimit), 200) : 80;
   try {
@@ -473,10 +502,101 @@ async function handleClearChatHistory(req, res) {
   }
 }
 
-const server = http.createServer(async (req, res) => {
-  const requestUrl = new URL(req.url, `http://${req.headers.host || `localhost:${PORT}`}`);
-  const pathname = requestUrl.pathname;
+// 获取视频列表
+async function handleGetVideos(req, res) {
+  try {
+    const result = await pool.query(`
+      SELECT
+        v.id,
+        v.code,
+        v.title,
+        s.id as section_id,
+        s.code as section_code,
+        s.title as section_title,
+        c.id as category_id,
+        c.code as category_code,
+        c.title as category_title,
+        v.sort_order
+      FROM videos v
+      JOIN video_sections s ON v.section_id = s.id
+      JOIN video_categories c ON s.category_id = c.id
+      WHERE v.is_active = true
+      ORDER BY c.sort_order, s.sort_order, v.sort_order
+    `);
+    sendJson(res, 200, { ok: true, videos: result.rows });
+  } catch (error) {
+    console.error("Get videos error:", error);
+    handleDbError(res, error);
+  }
+}
 
+// 获取视频预签名 URL
+async function handleGetVideoPresignedUrl(req, res) {
+  const url = new URL(req.url, `http://${req.headers.host}`);
+  const videoId = url.searchParams.get('id');
+
+  if (!videoId) {
+    sendJson(res, 400, { ok: false, error: "缺少视频 ID" });
+    return;
+  }
+
+  try {
+    // 检查缓存
+    const cachedResult = await pool.query(
+      `SELECT url, expires_at FROM presigned_url_cache WHERE video_id = $1 AND expires_at > now()`,
+      [videoId]
+    );
+
+    if (cachedResult.rows.length > 0) {
+      sendJson(res, 200, { ok: true, url: cachedResult.rows[0].url });
+      return;
+    }
+
+    // 查询视频信息
+    const videoResult = await pool.query(
+      'SELECT cos_key FROM videos WHERE id = $1 AND is_active = true',
+      [videoId]
+    );
+
+    if (videoResult.rows.length === 0) {
+      sendJson(res, 404, { ok: false, error: "视频不存在" });
+      return;
+    }
+
+    const cosKey = videoResult.rows[0].cos_key;
+
+    // 生成预签名 URL（有效期 2 小时）
+    const expiresIn = 7200;
+    const presignedUrl = await new Promise((resolve, reject) => {
+      cos.getObjectUrl({
+        Bucket: COS_BUCKET,
+        Region: COS_REGION,
+        Key: cosKey,
+        Sign: true,
+        Expires: expiresIn,
+      }, (err, data) => {
+        if (err) reject(err);
+        else resolve(data.Url);
+      });
+    });
+
+    // 缓存 URL
+    const expiresAt = new Date(Date.now() + expiresIn * 1000);
+    await pool.query(
+      `INSERT INTO presigned_url_cache (video_id, url, expires_at)
+       VALUES ($1, $2, $3)
+       ON CONFLICT (video_id) DO UPDATE SET url = $2, expires_at = $3`,
+      [videoId, presignedUrl, expiresAt]
+    );
+
+    sendJson(res, 200, { ok: true, url: presignedUrl });
+  } catch (error) {
+    console.error("Get presigned URL error:", error);
+    sendJson(res, 500, { ok: false, error: "生成预签名 URL 失败" });
+  }
+}
+
+const server = http.createServer(async (req, res) => {
   if (req.method === "OPTIONS") {
     res.writeHead(204, {
       "Access-Control-Allow-Origin": "*",
@@ -487,48 +607,74 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  if (pathname.startsWith("/api/")) {
-    if (req.method === "POST" && pathname === "/api/register") {
+  // 代理 /v1/chat 到 agent 服务
+  if (req.method === "POST" && req.url === "/v1/chat") {
+    const AGENT_URL = process.env.AGENT_URL || "http://127.0.0.1:8000/v1/chat";
+    try {
+      const body = await parseJsonBody(req);
+      const agentRes = await fetch(AGENT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
+      const data = await agentRes.json().catch(() => ({}));
+      sendJson(res, agentRes.ok ? 200 : 502, data);
+    } catch (error) {
+      sendJson(res, 502, { ok: false, error: "AI 服务暂时不可用" });
+    }
+    return;
+  }
+
+  if (req.url.startsWith("/api/")) {
+    if (req.method === "POST" && req.url === "/api/register") {
       await handleRegister(req, res);
       return;
     }
-    if (req.method === "POST" && pathname === "/api/login") {
+    if (req.method === "POST" && req.url === "/api/login") {
       await handleLogin(req, res);
       return;
     }
-    if (req.method === "GET" && pathname === "/api/me") {
+    if (req.method === "GET" && req.url === "/api/me") {
       await handleMe(req, res);
       return;
     }
-    if (req.method === "GET" && pathname === "/api/profile") {
+    if (req.method === "GET" && req.url.startsWith("/api/profile")) {
       await handleGetProfile(req, res);
       return;
     }
-    if (req.method === "POST" && pathname === "/api/profile") {
+    if (req.method === "POST" && req.url === "/api/profile") {
       await handleSaveProfile(req, res);
       return;
     }
-    if (req.method === "POST" && pathname === "/api/survey") {
+    if (req.method === "POST" && req.url === "/api/survey") {
       await handleSaveSurvey(req, res);
       return;
     }
-    if (req.method === "GET" && pathname === "/api/survey") {
+    if (req.method === "GET" && req.url === "/api/survey") {
       await handleGetSurvey(req, res);
       return;
     }
-    if (req.method === "GET" && pathname === "/api/chat/history") {
-      await handleGetChatHistory(req, res, requestUrl);
+    if (req.method === "GET" && req.url === "/api/videos") {
+      await handleGetVideos(req, res);
       return;
     }
-    if (req.method === "POST" && pathname === "/api/chat/history") {
+    if (req.method === "GET" && req.url.startsWith("/api/videos/presigned-url")) {
+      await handleGetVideoPresignedUrl(req, res);
+      return;
+    }
+    if (req.method === "GET" && req.url.startsWith("/api/chat/history")) {
+      await handleGetChatHistory(req, res);
+      return;
+    }
+    if (req.method === "POST" && req.url === "/api/chat/history") {
       await handleSaveChatMessage(req, res);
       return;
     }
-    if (req.method === "POST" && pathname === "/api/chat/history/clear") {
+    if (req.method === "POST" && req.url === "/api/chat/history/clear") {
       await handleClearChatHistory(req, res);
       return;
     }
-    if (req.method === "GET" && pathname === "/api/health") {
+    if (req.method === "GET" && req.url === "/api/health") {
       sendJson(res, 200, { ok: true, status: "ok" });
       return;
     }

@@ -20,7 +20,7 @@
         </div>
       </div>
       <div></div>
-      <a class="btn btn-primary" href="app.html">进入系统</a>
+      <a class="btn btn-primary" href="app.html">以访客模式浏览页面</a>
     </header>
 
     <main>
@@ -199,7 +199,7 @@
           storeUser(data.user);
           setFormMessage(loginForm, '登录成功！', 'success');
           setTimeout(() => {
-            window.location.href = 'app.html#view=chat';
+            window.location.href = 'app.html';
           }, 500);
         } catch (err) {
           setFormMessage(loginForm, err.message || '登录失败，请检查账号密码');

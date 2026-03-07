@@ -921,11 +921,19 @@ main {
   overflow: hidden;
   border: 1px solid rgba(0, 0, 0, 0.08);
   background: white;
+  width: 100%;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .article-figure img {
   width: 100%;
+  height: auto;
   display: block;
+  object-fit: contain;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
 }
 
 .article-caption {
@@ -1382,3 +1390,97 @@ main {
     min-height: 420px;
   }
 }
+
+.video-container {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.video-sidebar {
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  padding: 16px;
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+}
+
+.video-player-container {
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  padding: 20px;
+}
+
+.video-player-wrapper {
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+  margin-bottom: 16px;
+}
+
+.main-video {
+  width: 100%;
+  display: block;
+  max-height: 500px;
+}
+
+.video-placeholder {
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f0f0f0;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+}
+
+.video-placeholder p {
+  font-size: 16px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.video-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--ink);
+}
+
+.video-hint {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.video-item {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.video-link {
+  display: block;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  font-size: 14px;
+  color: var(--ink);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.video-link:hover {
+  background: rgba(31, 107, 95, 0.08);
+  border-color: var(--border);
+}
+
+.video-item.active .video-link {
+  background: rgba(31, 107, 95, 0.12);
+  border-color: var(--primary);
+  color: var(--primary);
+  font-weight: 500;
+}
+

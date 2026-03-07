@@ -36,7 +36,7 @@ const surveyProgressLabelEl = document.getElementById("survey-progress-label");
 const surveyProgressValueEl = document.getElementById("survey-progress-value");
 const surveyEntryButtonEl = document.getElementById("survey-entry-button");
 
-const CHAT_API_URL = window.CHAT_API_URL || "http://127.0.0.1:8000/v1/chat";
+const CHAT_API_URL = window.CHAT_API_URL || "/v1/chat";
 const CHAT_GUEST_STORAGE_KEY = "gi_chat_history_guest_v1";
 const CHAT_MAX_ITEMS = 120;
 const CHAT_CONTEXT_WINDOW = 12;
@@ -53,7 +53,7 @@ let chatRecords = [];
 
 let surveyToastTimer;
 
-function setView(viewId) {
+function setView(viewId, updateUrl = true) {
   const navTarget = viewId === "survey" ? "profile" : viewId;
   views.forEach((view) => {
     view.classList.toggle("is-active", view.id === viewId);
@@ -62,6 +62,17 @@ function setView(viewId) {
   navLinks.forEach((btn) => {
     btn.classList.toggle("is-active", btn.dataset.view === navTarget);
   });
+
+  // 如果切换离开视频学习页面，暂停视频
+  const mainVideo = document.getElementById('mainVideo');
+  if (viewId !== 'learn' && mainVideo && !mainVideo.paused) {
+    mainVideo.pause();
+  }
+
+  // 更新 URL hash
+  if (updateUrl) {
+    saveCurrentView(viewId, false);
+  }
 }
 
 viewButtons.forEach((btn) => {
@@ -69,9 +80,28 @@ viewButtons.forEach((btn) => {
     const viewId = btn.dataset.view;
     if (viewId) {
       setView(viewId);
+      btn.blur();
     }
   });
 });
+
+// 防止 hash 变化导致页面滚动
+let scrollRestorationEnabled = true;
+window.addEventListener('hashchange', () => {
+  if (!scrollRestorationEnabled) {
+    window.scrollTo(0, 0);
+  }
+});
+
+// 在更新 URL hash 时暂时禁用滚动
+const originalSetItem = history.pushState;
+history.pushState = function(...args) {
+  scrollRestorationEnabled = false;
+  originalSetItem.apply(this, args);
+  setTimeout(() => {
+    scrollRestorationEnabled = true;
+  }, 100);
+};
 
 authTabs.forEach((tab) => {
   tab.addEventListener("click", () => {
@@ -646,10 +676,28 @@ if (profileForm) {
 }
 
 if (logoutLink) {
-  logoutLink.addEventListener("click", () => {
-    clearToken();
-    clearStoredUser();
-  });
+  // 根据登录状态设置链接
+  const updateLogoutLink = () => {
+    const token = getToken();
+    if (token) {
+      // 已登录，显示退出登录
+      logoutLink.href = "#";
+      logoutLink.textContent = "退出登录";
+      logoutLink.onclick = (e) => {
+        e.preventDefault();
+        clearToken();
+        clearStoredUser();
+        updateLogoutLink();
+        loadChatHistory();
+      };
+    } else {
+      // 未登录，显示登录
+      logoutLink.href = "index.html";
+      logoutLink.textContent = "登录";
+      logoutLink.onclick = null;
+    }
+  };
+  updateLogoutLink();
 }
 
 function appendMessage({ role, text, title }) {
@@ -755,6 +803,12 @@ function setLearnView(viewId) {
   learnTabs.forEach((tab) => {
     tab.classList.toggle("is-active", tab.dataset.learn === viewId);
   });
+
+  // 如果切换到常见疑问解答，暂停视频
+  const mainVideo = document.getElementById('mainVideo');
+  if (viewId !== 'video' && mainVideo && !mainVideo.paused) {
+    mainVideo.pause();
+  }
 }
 
 learnTabs.forEach((tab) => {
@@ -860,6 +914,235 @@ if (surveyForm) {
   });
 }
 
-loadProfile();
-loadSurveyStatus();
-loadChatHistory();
+// 检查是否已登录，如果已登录则显示主界面
+function checkLoginStatus() {
+  const token = getToken();
+  const user = getStoredUser();
+
+  if (token && user) {
+    // 已登录，加载资料
+    loadProfile();
+    loadSurveyStatus();
+  }
+  // 无论是否登录，都尝试恢复之前保存的视图
+  loadSavedView();
+}
+
+// 解析 URL 查询参数
+function getUrlParams() {
+  try {
+    const hash = window.location.hash;
+    const queryStart = hash.indexOf('?');
+    if (queryStart === -1) return null;
+
+    const queryString = hash.slice(queryStart + 1);
+    const params = new URLSearchParams(queryString);
+    return {
+      get: (key) => params.get(key)
+    };
+  } catch (error) {
+    console.error('解析 URL 参数失败:', error);
+    return null;
+  }
+}
+
+// 保存当前视图到 URL hash
+function saveCurrentView(viewId, saveToStorage = false, extraData = {}) {
+  let hash = `#${viewId}`;
+
+  if (saveToStorage && extraData && Object.keys(extraData).length > 0) {
+    const params = new URLSearchParams();
+    Object.entries(extraData).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        params.set(key, String(value));
+      }
+    });
+    if (params.toString()) {
+      hash += `?${params.toString()}`;
+    }
+  }
+
+  // 禁用滚动，防止 hash 变化导致页面自动滚动
+  scrollRestorationEnabled = false;
+  window.location.hash = hash;
+  setTimeout(() => {
+    scrollRestorationEnabled = true;
+  }, 100);
+
+  if (saveToStorage) {
+    const viewData = {
+      viewId,
+      timestamp: Date.now(),
+      ...extraData
+    };
+    window.sessionStorage.setItem('gi_current_view', JSON.stringify(viewData));
+  }
+}
+
+// 加载保存的视图
+function loadSavedView() {
+  try {
+    const hash = window.location.hash.slice(1);
+    if (hash) {
+      const queryStart = hash.indexOf('?');
+      const viewId = queryStart === -1 ? hash : hash.slice(0, queryStart);
+      setView(viewId, false);
+      return true;
+    }
+  } catch (error) {
+    console.error('加载保存的视图失败:', error);
+  }
+  return false;
+}
+
+// 视频播放器功能
+function initVideoPlayer() {
+  const mainVideo = document.getElementById('mainVideo');
+  const videoTitle = document.getElementById('videoTitle');
+  const videoPlaceholder = document.getElementById('videoPlaceholder');
+  const videoPlayerWrapper = document.getElementById('videoPlayerWrapper');
+  const videoItems = document.querySelectorAll('.video-item');
+
+  if (!mainVideo || !videoTitle || !videoPlaceholder || !videoPlayerWrapper) {
+    console.error('视频播放器元素未找到');
+    return;
+  }
+
+  if (videoItems.length === 0) {
+    console.error('未找到视频项');
+    return;
+  }
+
+  // 从 API 加载视频数据
+  async function loadVideosFromAPI() {
+    try {
+      const response = await fetch('/api/videos');
+      const data = await response.json();
+
+      if (!data.ok) {
+        console.error('加载视频列表失败:', data.error);
+        return;
+      }
+
+      // 构建视频映射: code -> videoData
+      const videoMap = {};
+      data.videos.forEach(v => {
+        videoMap[v.code] = {
+          id: v.id,
+          code: v.code,
+          title: v.title,
+          sectionCode: v.section_code,
+          sectionTitle: v.section_title,
+          categoryCode: v.category_code,
+          categoryTitle: v.category_title
+        };
+      });
+
+      // 为每个视频项添加点击事件
+      videoItems.forEach(item => {
+        const videoLink = item.querySelector('.video-link');
+        if (!videoLink) return;
+
+        // 从 data-video-code 获取视频编号
+        const videoCode = item.dataset.videoCode;
+        const title = item.dataset.title;
+
+        if (!videoCode || !title) {
+          console.warn('视频项缺少 data-video-code 或 data-title', item);
+          return;
+        }
+
+        console.log('初始化视频项:', { videoCode, title, videoData: videoMap[videoCode] });
+
+        const videoData = videoMap[videoCode];
+        if (!videoData) {
+          console.warn('未找到视频数据:', videoCode);
+          return;
+        }
+
+        // 存储 video ID 用于获取预签名 URL
+        item.dataset.videoId = videoData.id;
+
+        // 暴露点击函数以便外部调用
+        item.playVideo = async () => {
+          try {
+            console.log('开始播放视频:', { videoCode, title, videoData });
+
+            // 保存当前视频编号到 URL
+            saveCurrentView('learn', true, { video: videoCode });
+
+            // 获取预签名 URL
+            const presignedResponse = await fetch(`/api/videos/presigned-url?id=${videoData.id}`);
+            const presignedData = await presignedResponse.json();
+
+            console.log('预签名 URL 响应:', presignedData);
+
+            if (!presignedData.ok) {
+              console.error('获取预签名 URL 失败:', presignedData.error);
+              return;
+            }
+
+            // 显示视频播放器，隐藏占位符
+            videoPlaceholder.style.display = 'none';
+            videoPlayerWrapper.style.display = 'block';
+
+            // 更新视频源
+            mainVideo.src = presignedData.url;
+            mainVideo.pause();
+            mainVideo.load();
+
+            console.log('视频源已设置:', presignedData.url);
+
+            // 更新标题
+            videoTitle.textContent = title;
+
+            // 更新选中状态
+            videoItems.forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
+          } catch (error) {
+            console.error('播放视频失败:', error);
+          }
+        };
+
+        videoLink.addEventListener('click', async (event) => {
+          event.preventDefault();
+          console.log('视频链接被点击:', { videoCode, title });
+          await item.playVideo();
+        });
+      });
+
+      // 恢复保存的视频
+      const urlExtraParams = getUrlParams();
+      if (urlExtraParams && urlExtraParams.get) {
+        const savedVideoCode = urlExtraParams.get('video');
+        if (savedVideoCode) {
+          const savedItem = Array.from(videoItems).find(i => i.dataset.videoCode === savedVideoCode);
+          if (savedItem && savedItem.playVideo) {
+            // 延迟执行以确保视频数据已加载
+            setTimeout(() => savedItem.playVideo(), 100);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('加载视频数据失败:', error);
+    }
+  }
+
+  // 加载视频数据
+  loadVideosFromAPI();
+}
+
+// 页面加载时初始化
+document.addEventListener('DOMContentLoaded', () => {
+  // 先检查登录状态并加载用户数据
+  checkLoginStatus();
+  // 尝试恢复之前保存的视图
+  if (!loadSavedView()) {
+    // 如果没有保存的视图，默认显示聊天页面
+    setView('chat');
+  }
+  // 然后初始化视频播放器
+  initVideoPlayer();
+  // 最后初始化加载聊天历史记录
+  loadChatHistory();
+});
