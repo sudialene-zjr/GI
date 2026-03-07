@@ -159,46 +159,59 @@ async function handleGetSurveyStats(req, res) {
   }
 
   try {
-    // 满意度统计
-    const satisfactionResult = await pool.query(`
-      SELECT
-        satisfaction,
-        COUNT(*) as count
-      FROM survey_responses
-      WHERE satisfaction IS NOT NULL
-      GROUP BY satisfaction
-      ORDER BY satisfaction
-    `);
-
-    // 理解度统计
-    const understandingResult = await pool.query(`
-      SELECT
-        understanding,
-        COUNT(*) as count
-      FROM survey_responses
-      WHERE understanding IS NOT NULL
-      GROUP BY understanding
-      ORDER BY understanding
-    `);
-
-    // 焦虑程度统计
-    const anxietyResult = await pool.query(`
-      SELECT
-        anxiety,
-        COUNT(*) as count
-      FROM survey_responses
-      WHERE anxiety IS NOT NULL
-      GROUP BY anxiety
-      ORDER BY anxiety
-    `);
-
-    // 总体统计
+    // 总体统计（先获取总调查数作为占比分母）
     const totalResult = await pool.query(`
       SELECT
         COUNT(*) as total_surveys,
         AVG(satisfaction) as avg_satisfaction,
         AVG(understanding) as avg_understanding
       FROM survey_responses
+    `);
+    const totalSurveys = parseInt(totalResult.rows[0].total_surveys) || 0;
+
+    // 满意度统计（按总调查数计算占比）
+    const satisfactionResult = await pool.query(`
+      SELECT
+        satisfaction,
+        COUNT(*) as count,
+        CASE 
+          WHEN ${totalSurveys} > 0 THEN ROUND((COUNT(*) * 100.0 / ${totalSurveys}), 2)
+          ELSE 0 
+        END as percentage
+      FROM survey_responses
+      WHERE satisfaction IS NOT NULL
+      GROUP BY satisfaction
+      ORDER BY satisfaction
+    `);
+
+    // 理解度统计（按总调查数计算占比）
+    const understandingResult = await pool.query(`
+      SELECT
+        understanding,
+        COUNT(*) as count,
+        CASE 
+          WHEN ${totalSurveys} > 0 THEN ROUND((COUNT(*) * 100.0 / ${totalSurveys}), 2)
+          ELSE 0 
+        END as percentage
+      FROM survey_responses
+      WHERE understanding IS NOT NULL
+      GROUP BY understanding
+      ORDER BY understanding
+    `);
+
+    // 焦虑程度统计（按总调查数计算占比）
+    const anxietyResult = await pool.query(`
+      SELECT
+        anxiety,
+        COUNT(*) as count,
+        CASE 
+          WHEN ${totalSurveys} > 0 THEN ROUND((COUNT(*) * 100.0 / ${totalSurveys}), 2)
+          ELSE 0 
+        END as percentage
+      FROM survey_responses
+      WHERE anxiety IS NOT NULL
+      GROUP BY anxiety
+      ORDER BY anxiety
     `);
 
     // 最近30天趋势
@@ -214,22 +227,28 @@ async function handleGetSurveyStats(req, res) {
       ORDER BY date DESC
     `);
 
-    // 年龄分布
+    // 年龄分布（包含未填写出生日期的记录，百分比按总调查数计算）
     const ageDistributionResult = await pool.query(`
       SELECT
         CASE
+          WHEN UP.birth_month IS NULL OR UP.birth_month = '' OR UP.birth_month !~ '^[0-9]{4}-[0-9]{2}$' THEN '未填写'
           WHEN (EXTRACT(YEAR FROM NOW()) - EXTRACT(YEAR FROM TO_DATE(UP.birth_month, 'YYYY-MM'))) < 30 THEN '30岁以下'
           WHEN (EXTRACT(YEAR FROM NOW()) - EXTRACT(YEAR FROM TO_DATE(UP.birth_month, 'YYYY-MM'))) BETWEEN 30 AND 39 THEN '30-39岁'
           WHEN (EXTRACT(YEAR FROM NOW()) - EXTRACT(YEAR FROM TO_DATE(UP.birth_month, 'YYYY-MM'))) BETWEEN 40 AND 49 THEN '40-49岁'
           WHEN (EXTRACT(YEAR FROM NOW()) - EXTRACT(YEAR FROM TO_DATE(UP.birth_month, 'YYYY-MM'))) BETWEEN 50 AND 59 THEN '50-59岁'
           ELSE '60岁及以上'
         END as age_range,
-        COUNT(*) as count
+        COUNT(*) as count,
+        CASE 
+          WHEN ${totalSurveys} > 0 THEN ROUND((COUNT(*) * 100.0 / ${totalSurveys}), 2)
+          ELSE 0 
+        END as percentage
       FROM survey_responses SR
-      JOIN user_profiles UP ON SR.user_id = UP.user_id
+      LEFT JOIN user_profiles UP ON SR.user_id = UP.user_id
       WHERE SR.created_at IS NOT NULL
       GROUP BY
         CASE
+          WHEN UP.birth_month IS NULL OR UP.birth_month = '' OR UP.birth_month !~ '^[0-9]{4}-[0-9]{2}$' THEN '未填写'
           WHEN (EXTRACT(YEAR FROM NOW()) - EXTRACT(YEAR FROM TO_DATE(UP.birth_month, 'YYYY-MM'))) < 30 THEN '30岁以下'
           WHEN (EXTRACT(YEAR FROM NOW()) - EXTRACT(YEAR FROM TO_DATE(UP.birth_month, 'YYYY-MM'))) BETWEEN 30 AND 39 THEN '30-39岁'
           WHEN (EXTRACT(YEAR FROM NOW()) - EXTRACT(YEAR FROM TO_DATE(UP.birth_month, 'YYYY-MM'))) BETWEEN 40 AND 49 THEN '40-49岁'
@@ -238,6 +257,7 @@ async function handleGetSurveyStats(req, res) {
         END
       ORDER BY
         CASE
+          WHEN UP.birth_month IS NULL OR UP.birth_month = '' OR UP.birth_month !~ '^[0-9]{4}-[0-9]{2}$' THEN '未填写'
           WHEN (EXTRACT(YEAR FROM NOW()) - EXTRACT(YEAR FROM TO_DATE(UP.birth_month, 'YYYY-MM'))) < 30 THEN '30岁以下'
           WHEN (EXTRACT(YEAR FROM NOW()) - EXTRACT(YEAR FROM TO_DATE(UP.birth_month, 'YYYY-MM'))) BETWEEN 30 AND 39 THEN '30-39岁'
           WHEN (EXTRACT(YEAR FROM NOW()) - EXTRACT(YEAR FROM TO_DATE(UP.birth_month, 'YYYY-MM'))) BETWEEN 40 AND 49 THEN '40-49岁'

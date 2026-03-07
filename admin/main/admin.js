@@ -229,7 +229,7 @@ function renderDashboard(data) {
   // 满意度图表
   console.log('满意度数据:', data.satisfaction);
   if (data.satisfaction && data.satisfaction.length > 0) {
-    renderPieChart('satisfaction-chart', data.satisfaction, 'satisfaction');
+    renderPieChart('satisfaction-chart', data.satisfaction, 'satisfaction', data.overview.total_surveys);
   } else {
     document.getElementById('satisfaction-chart').innerHTML = '<div style="text-align:center;color:#999;padding:20px;">暂无数据</div>';
   }
@@ -237,7 +237,7 @@ function renderDashboard(data) {
   // 理解度图表
   console.log('理解度数据:', data.understanding);
   if (data.understanding && data.understanding.length > 0) {
-    renderPieChart('understanding-chart', data.understanding, 'understanding');
+    renderPieChart('understanding-chart', data.understanding, 'understanding', data.overview.total_surveys);
   } else {
     document.getElementById('understanding-chart').innerHTML = '<div style="text-align:center;color:#999;padding:20px;">暂无数据</div>';
   }
@@ -245,7 +245,7 @@ function renderDashboard(data) {
   // 焦虑程度图表
   console.log('焦虑数据:', data.anxiety);
   if (data.anxiety && data.anxiety.length > 0) {
-    renderPieChart('anxiety-chart', data.anxiety, 'anxiety');
+    renderPieChart('anxiety-chart', data.anxiety, 'anxiety', data.overview.total_surveys);
   } else {
     document.getElementById('anxiety-chart').innerHTML = '<div style="text-align:center;color:#999;padding:20px;">暂无数据</div>';
   }
@@ -253,7 +253,7 @@ function renderDashboard(data) {
   // 年龄分布图表
   console.log('年龄分布数据:', data.ageDistribution);
   if (data.ageDistribution && data.ageDistribution.length > 0) {
-    renderPieChart('age-chart', data.ageDistribution, 'age_range');
+    renderPieChart('age-chart', data.ageDistribution, 'age_range', data.overview.total_surveys);
   } else {
     document.getElementById('age-chart').innerHTML = '<div style="text-align:center;color:#999;padding:20px;">暂无数据</div>';
   }
@@ -282,14 +282,15 @@ function renderBarChart(containerId, data, unit) {
 }
 
 // 渲染饼图
-function renderPieChart(containerId, data, labelField) {
+function renderPieChart(containerId, data, labelField, totalSurveys = null) {
   const container = document.getElementById(containerId);
   if (!data || data.length === 0) {
     container.innerHTML = '<div style="text-align:center;color:#999;padding:20px;">暂无数据</div>';
     return;
   }
 
-  const total = data.reduce((sum, item) => sum + item.count, 0);
+  // 使用总调查数作为分母，如果没有传入则使用分组数据之和
+  const total = totalSurveys !== null ? totalSurveys : data.reduce((sum, item) => sum + item.count, 0);
 
   // 颜色数组
   const colors = [
