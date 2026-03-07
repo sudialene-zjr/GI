@@ -479,6 +479,21 @@ async function handleSaveChatMessage(req, res) {
        RETURNING role, content, title, risk_level, created_at`,
       [payload.sub, role, content, title || null, riskLevel]
     );
+
+    // 同时保存到 gi_messages 表（脱敏存储）
+    try {
+      console.log('正在保存到 gi_messages:', { userId: payload.sub, role, contentLength: content.length });
+      await pool.query(
+        `INSERT INTO gi_messages (user_id, is_guest, role, content, title, risk_level)
+         VALUES ($1, false, $2, $3, $4, $5)`,
+        [payload.sub, role, content, title || null, riskLevel]
+      );
+      console.log('成功保存到 gi_messages');
+    } catch (giError) {
+      console.error("Failed to save to gi_messages:", giError);
+      // 不影响主流程，只记录错误
+    }
+
     sendJson(res, 200, { ok: true, message: result.rows[0] });
   } catch (error) {
     if (error && (error.message === "Invalid JSON" || error.message === "Body too large")) {
@@ -498,6 +513,44 @@ async function handleClearChatHistory(req, res) {
     sendJson(res, 200, { ok: true });
   } catch (error) {
     console.error("Clear chat history error:", error);
+    handleDbError(res, error);
+  }
+}
+
+// 保存访客消息到 gi_messages
+async function handleSaveGuestMessage(req, res) {
+  try {
+    const body = await parseJsonBody(req);
+    const role = normalizeChatRole(body.role);
+    const content = String(body.content || "").trim();
+    const title = String(body.title || "").trim();
+    const riskLevel = String(body.riskLevel || "normal").trim() || "normal";
+    const sessionId = String(body.sessionId || "").trim();
+
+    if (!role || !content) {
+      sendJson(res, 400, { ok: false, error: "消息内容不完整" });
+      return;
+    }
+    if (content.length > MAX_CHAT_CONTENT) {
+      sendJson(res, 400, { ok: false, error: "单条消息过长" });
+      return;
+    }
+
+    console.log('正在保存访客消息到 gi_messages:', { sessionId, role, contentLength: content.length });
+    const result = await pool.query(
+      `INSERT INTO gi_messages (session_id, is_guest, role, content, title, risk_level)
+       VALUES ($1, true, $2, $3, $4, $5)
+       RETURNING id, role, content, created_at`,
+      [sessionId || null, role, content, title || null, riskLevel]
+    );
+    console.log('成功保存访客消息到 gi_messages');
+    sendJson(res, 200, { ok: true, message: result.rows[0] });
+  } catch (error) {
+    if (error && (error.message === "Invalid JSON" || error.message === "Body too large")) {
+      sendJson(res, 400, { ok: false, error: "请求格式有误" });
+      return;
+    }
+    console.error("Save guest message error:", error);
     handleDbError(res, error);
   }
 }
@@ -672,6 +725,10 @@ const server = http.createServer(async (req, res) => {
     }
     if (req.method === "POST" && req.url === "/api/chat/history/clear") {
       await handleClearChatHistory(req, res);
+      return;
+    }
+    if (req.method === "POST" && req.url === "/api/guest/message") {
+      await handleSaveGuestMessage(req, res);
       return;
     }
     if (req.method === "GET" && req.url === "/api/health") {

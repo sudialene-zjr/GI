@@ -1,0 +1,991 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>胃肠镜教育助手 | 管理员面板</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f5f5f5;
+    }
+
+    .login-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .login-box {
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .login-title {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #333;
+      font-size: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      color: #555;
+      font-weight: 500;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 16px;
+      transition: border-color 0.3s;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity 0.3s;
+    }
+
+    .login-btn:hover {
+      opacity: 0.9;
+    }
+
+    .login-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .error-message {
+      color: #e74c3c;
+      text-align: center;
+      margin-top: 15px;
+      font-size: 14px;
+    }
+
+    /* 主页面样式 */
+    .admin-layout {
+      display: none;
+      min-height: 100vh;
+    }
+
+    .admin-layout.active {
+      display: flex;
+    }
+
+    .admin-sidebar {
+      width: 250px;
+      background: #2c3e50;
+      color: white;
+      padding: 20px;
+    }
+
+    .admin-logo {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 40px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #3d566e;
+    }
+
+    .admin-nav-item {
+      padding: 12px 16px;
+      margin-bottom: 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .admin-nav-item:hover,
+    .admin-nav-item.active {
+      background: #34495e;
+    }
+
+    .admin-content {
+      flex: 1;
+      padding: 30px;
+      overflow-y: auto;
+    }
+
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .admin-title {
+      font-size: 28px;
+      color: #2c3e50;
+    }
+
+    .logout-btn {
+      padding: 10px 20px;
+      background: #e74c3c;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .stat-value {
+      font-size: 36px;
+      font-weight: bold;
+      color: #3498db;
+    }
+
+    .stat-label {
+      color: #7f8c8d;
+      margin-top: 8px;
+    }
+
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .chart-card {
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .chart-title {
+      font-size: 18px;
+      color: #2c3e50;
+      margin-bottom: 20px;
+    }
+
+    .bar-chart {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .pie-chart {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .pie-container {
+      position: relative;
+      width: 200px;
+      height: 200px;
+    }
+
+    .pie-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      color: #555;
+    }
+
+    .legend-color {
+      width: 16px;
+      height: 16px;
+      border-radius: 3px;
+    }
+
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .bar-label {
+      width: 60px;
+      text-align: right;
+      font-size: 14px;
+      color: #555;
+    }
+
+    .bar-container {
+      flex: 1;
+      background: #f0f0f0;
+      height: 30px;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #3498db, #2ecc71);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 8px;
+      color: white;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .data-table-container {
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .data-table th,
+    .data-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+
+    .data-table th {
+      background: #f8f9fa;
+      font-weight: 600;
+      color: #2c3e50;
+    }
+
+    .data-table tr:hover {
+      background: #f8f9fa;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #7f8c8d;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+  <!-- 登录页面 -->
+  <div id="login-container" class="login-container">
+    <div class="login-box">
+      <h1 class="login-title">管理员登录</h1>
+      <form id="login-form">
+        <div class="form-group">
+          <label class="form-label">用户名</label>
+          <input type="text" id="username" class="form-input" placeholder="请输入用户名" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">密码</label>
+          <input type="password" id="password" class="form-input" placeholder="请输入密码" required />
+        </div>
+        <button type="submit" class="login-btn" id="login-btn">登录</button>
+        <div id="error-message" class="error-message"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 主页面 -->
+  <div id="admin-layout" class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="admin-logo">管理面板</div>
+      <div class="admin-nav-item active" data-view="dashboard">数据概览</div>
+      <div class="admin-nav-item" data-view="surveys">调查详情</div>
+      <div class="admin-nav-item" data-view="messages">用户AI交互记录</div>
+    </aside>
+
+    <main class="admin-content">
+      <header class="admin-header">
+        <h1 class="admin-title">数据概览</h1>
+        <button class="logout-btn" id="logout-btn">退出登录</button>
+      </header>
+
+      <!-- 数据概览 -->
+      <div id="dashboard-view">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-value" id="total-surveys">-</div>
+            <div class="stat-label">总调查数</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="avg-satisfaction">-</div>
+            <div class="stat-label">平均满意度</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="avg-understanding">-</div>
+            <div class="stat-label">平均理解度</div>
+          </div>
+        </div>
+
+        <div class="charts-grid">
+          <div class="chart-card">
+            <h2 class="chart-title">满意度分布</h2>
+            <div id="satisfaction-chart" class="bar-chart"></div>
+          </div>
+          <div class="chart-card">
+            <h2 class="chart-title">理解度分布</h2>
+            <div id="understanding-chart" class="bar-chart"></div>
+          </div>
+          <div class="chart-card">
+            <h2 class="chart-title">焦虑程度分布</h2>
+            <div id="anxiety-chart" class="bar-chart"></div>
+          </div>
+          <div class="chart-card">
+            <h2 class="chart-title">年龄分布</h2>
+            <div id="age-chart" class="bar-chart"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 调查详情 -->
+      <div id="surveys-view" class="hidden">
+        <div class="data-table-container">
+          <h2 class="chart-title">调查记录列表</h2>
+          <div id="table-loading" class="loading">加载中...</div>
+          <table class="data-table" id="surveys-table">
+            <thead>
+              <tr>
+                <th>用户</th>
+                <th>满意度</th>
+                <th>理解度</th>
+                <th>焦虑程度</th>
+                <th>帮助程度</th>
+                <th>建议</th>
+                <th>时间</th>
+              </tr>
+            </thead>
+            <tbody id="surveys-tbody">
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 用户AI交互记录 -->
+      <div id="messages-view" class="hidden">
+        <div class="messages-container">
+          <div class="messages-sidebar">
+            <div class="filter-section">
+              <h3 class="filter-title">筛选条件</h3>
+              <div class="filter-group">
+                <label>用户类型:</label>
+                <select id="filter-user-type" class="filter-select">
+                  <option value="">全部</option>
+                  <option value="registered">已注册用户</option>
+                  <option value="guest">访客</option>
+                </select>
+              </div>
+              <div class="filter-group">
+                <label>搜索用户:</label>
+                <input type="text" id="search-user" class="search-input" placeholder="用户名或账号...">
+              </div>
+              <button id="filter-btn" class="filter-btn">筛选</button>
+            </div>
+            <div class="user-list">
+              <h3 class="user-list-title">用户列表</h3>
+              <div id="user-list-container" class="user-list-items">
+                <div class="loading">加载中...</div>
+              </div>
+            </div>
+          </div>
+          <div class="messages-main">
+            <div id="messages-header" class="messages-header">
+              <h2>选择用户查看聊天记录</h2>
+            </div>
+            <div id="messages-chat-container" class="messages-chat-container">
+              <div class="empty-state">
+                <div class="empty-icon">💬</div>
+                <div class="empty-text">请从左侧选择一个用户查看聊天记录</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- 用户详情弹窗 -->
+  <div id="user-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-title">用户详情</h3>
+        <button class="modal-close" id="modal-close">&times;</button>
+      </div>
+      <div class="modal-body" id="modal-body">
+        <div class="modal-loading">加载中...</div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .data-table-container {
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #999;
+    }
+
+    /* 消息容器 */
+    .messages-container {
+      display: flex;
+      height: calc(100vh - 100px);
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      overflow: hidden;
+    }
+
+    .messages-sidebar {
+      width: 320px;
+      border-right: 1px solid #e8e8e8;
+      display: flex;
+      flex-direction: column;
+      background: #f8f9fa;
+    }
+
+    .filter-section {
+      padding: 20px;
+      border-bottom: 1px solid #e8e8e8;
+      background: white;
+    }
+
+    .filter-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 12px;
+    }
+
+    .filter-group {
+      margin-bottom: 12px;
+    }
+
+    .filter-group label {
+      display: block;
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 6px;
+    }
+
+    .filter-select,
+    .search-input {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+
+    .filter-btn {
+      width: 100%;
+      padding: 10px;
+      background: #1890ff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .filter-btn:hover {
+      background: #40a9ff;
+    }
+
+    .user-list {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .user-list-title {
+      padding: 12px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #666;
+      background: #f8f9fa;
+      border-bottom: 1px solid #e8e8e8;
+    }
+
+    .user-list-items {
+      overflow-y: auto;
+    }
+
+    .user-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      cursor: pointer;
+      border-bottom: 1px solid #f0f0f0;
+      transition: background 0.2s;
+    }
+
+    .user-item:hover {
+      background: #e6f7ff;
+    }
+
+    .user-item.active {
+      background: #1890ff;
+      color: white;
+    }
+
+    .user-item.active .user-item-name,
+    .user-item.active .user-item-meta,
+    .user-item.active .user-list-avatar {
+      color: white;
+      border-color: white;
+    }
+
+    .user-list-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 4px;
+      background: #1890ff;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 14px;
+      margin-right: 12px;
+      border: 2px solid #e8e8e8;
+      flex-shrink: 0;
+    }
+
+    .user-list-avatar.guest {
+      background: #ff9c6e;
+      border-color: #ff9c6e;
+    }
+
+    .user-list-avatar.registered {
+      background: #1890ff;  /* 蓝色，与聊天区域用户头像一致 */
+      border-color: #1890ff;
+    }
+
+    .user-item-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .user-item-name {
+      font-weight: 500;
+      color: #333;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .user-item-meta {
+      font-size: 12px;
+      color: #999;
+    }
+
+    .badge-guest {
+      display: inline-block;
+      padding: 2px 6px;
+      background: #ff9c6e;
+      color: white;
+      border-radius: 3px;
+      font-size: 11px;
+      margin-left: 6px;
+    }
+
+    .badge-registered {
+      display: inline-block;
+      padding: 2px 6px;
+      background: #52c41a;
+      color: white;
+      border-radius: 3px;
+      font-size: 11px;
+      margin-left: 6px;
+    }
+
+    .messages-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: white;
+    }
+
+    .messages-header {
+      padding: 20px;
+      border-bottom: 1px solid #e8e8e8;
+      background: #fff;
+    }
+
+    .messages-header h2 {
+      font-size: 18px;
+      color: #333;
+      margin: 0;
+    }
+
+    .messages-chat-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: #999;
+    }
+
+    .empty-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    .empty-text {
+      font-size: 16px;
+    }
+
+    /* QQ样式聊天气泡 */
+    .chat-bubble {
+      display: flex;
+      margin-bottom: 20px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .chat-bubble.user {
+      justify-content: flex-end;
+    }
+
+    .chat-bubble.assistant {
+      justify-content: flex-start;
+    }
+
+    .chat-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .chat-bubble.user .chat-avatar {
+      order: 2;  /* 头像放在最后，即右边 */
+      margin-left: 12px;
+      background: #1890ff;
+    }
+
+    .chat-bubble.user .chat-avatar.guest {
+      background: #ff9c6e;  /* 访客消息：橙色，与用户列表一致 */
+    }
+
+    .chat-bubble.user .chat-avatar.registered {
+      background: #1890ff;  /* 已注册用户消息：蓝色，与用户列表一致 */
+    }
+
+    .chat-bubble.assistant .chat-avatar {
+      order: 0;  /* 头像放在最前，即左边 */
+      margin-right: 12px;
+      background: #52c41a;
+    }
+
+    .chat-message {
+      max-width: 70%;
+      position: relative;
+    }
+
+    .chat-bubble.user .chat-message {
+      background: #95ec69;  /* 绿色气泡，类似微信 */
+      color: #000;
+      border-radius: 8px;
+      padding: 10px 14px;
+    }
+
+    .chat-bubble.assistant .chat-message {
+      background: white;  /* 白色气泡 */
+      color: #333;
+      border-radius: 8px;
+      padding: 10px 14px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);  /* 添加轻微阴影 */
+    }
+
+    .chat-message-title {
+      font-weight: 600;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    .chat-message-content {
+      word-wrap: break-word;
+      white-space: pre-wrap;
+      line-height: 1.6;
+    }
+
+    .chat-message-time {
+      font-size: 12px;
+      color: #999;
+      margin-top: 6px;
+    }
+
+    .chat-bubble.user .chat-message-time {
+      text-align: right;
+    }
+
+    .risk-indicator {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 3px;
+      font-size: 11px;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    .risk-normal {
+      background: #e6f7ff;
+      color: #1890ff;
+    }
+
+    .risk-sensitive {
+      background: #fff2f0;
+      color: #ff4d4f;
+    }
+
+    .risk-system {
+      background: #f0f0f0;
+      color: #999;
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-top: 20px;
+      padding: 20px;
+    }
+
+    .pagination button {
+      padding: 8px 16px;
+      border: 1px solid #ddd;
+      background: white;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .pagination button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .pagination button:hover:not(:disabled) {
+      background: #f8f9fa;
+    }
+
+    .pagination .page-info {
+      color: #666;
+    }
+
+    /* 用户详情弹窗 */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
+      max-height: 80vh;
+      overflow: hidden;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px;
+      border-bottom: 1px solid #eee;
+      background: #f8f9fa;
+    }
+
+    .modal-header h3 {
+      margin: 0;
+      font-size: 18px;
+      color: #333;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: #999;
+      cursor: pointer;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+
+    .modal-close:hover {
+      background: #f0f0f0;
+      color: #666;
+    }
+
+    .modal-body {
+      padding: 20px;
+      overflow-y: auto;
+      max-height: calc(80vh - 80px);
+    }
+
+    .user-info-row {
+      display: flex;
+      padding: 12px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .user-info-row:last-child {
+      border-bottom: none;
+    }
+
+    .user-info-label {
+      width: 100px;
+      color: #666;
+      font-weight: 500;
+      flex-shrink: 0;
+    }
+
+    .user-info-value {
+      color: #333;
+      flex: 1;
+      word-break: break-word;
+    }
+
+    .user-info-value.masked {
+      color: #999;
+      font-family: 'Courier New', monospace;
+      letter-spacing: 1px;
+    }
+
+    .user-name-link {
+      color: #1890ff;
+      cursor: pointer;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .user-name-link:hover {
+      color: #40a9ff;
+      text-decoration: underline;
+    }
+
+    .modal-loading {
+      text-align: center;
+      padding: 40px;
+      color: #999;
+    }
+  </style>
+
+  <script src="admin.js"></script>
+</body>
+</html>

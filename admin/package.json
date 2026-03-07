@@ -1,0 +1,14 @@
+{
+  "name": "gi-admin",
+  "version": "1.0.0",
+  "description": "GI Education Assistant Admin Panel",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "pg": "^8.13.1"
+  }
+}

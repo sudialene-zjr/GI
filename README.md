@@ -58,6 +58,7 @@ psql "postgresql://<superuser>@127.0.0.1:5432/gi_edu" -c "GRANT ALL PRIVILEGES O
 # 初始化数据库
 psql "postgresql://app_user:huaxi@127.0.0.1:5432/gi_edu" -f server/db/init.sql
 psql "postgresql://app_user:huaxi@127.0.0.1:5432/gi_edu" -f server/db/video_tables.sql
+psql "postgresql://app_user:huaxi@127.0.0.1:5432/gi_edu" -f server/db/gi_messages.sql
 
 # 向视频表单中导入已有的视频元数据
 node server/scripts/import_videos.js
