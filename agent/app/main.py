@@ -1,5 +1,15 @@
-# -*- coding: utf-8 -*-
-from __future__ import annotations
+import json
+from pathlib import Path
+
+# 从 agent/app/main.py 跳回根目录 GI-main
+BASE_DIR = Path(__file__).parent.parent.parent  
+
+# 正确路径：server → scripts_video → data → video_data.json
+video_data_path = BASE_DIR / "server" / "scripts_video" / "data" / "video_data.json"
+
+with open(video_data_path, "r", encoding="utf-8") as f:
+    VIDEO_DATA = json.load(f)
+
 
 import os
 import re
@@ -20,8 +30,7 @@ app = FastAPI(title="GI Endoscopy Education API", version="0.1.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=os.getenv("CORS_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000").split(","
-    ),
+    allow_origins=os.getenv("CORS_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000").split(","),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -66,12 +75,76 @@ class ChatRequest(BaseModel):
     survey: Optional[SurveyResponse] = None
 
 
+class VideoItem(BaseModel):
+    video_id: str
+    title: str
+    code: str
+    cos_key: str
+    video_url: str
+
+
 class ChatResponse(BaseModel):
     answer: str
     risk_level: str
     escalate: bool
     sources: List[str]
     matched_redline: Optional[str] = None
+    videos: List[VideoItem] = []
+
+def match_videos_by_question(query: str, top_n=3) -> list:
+    import json
+    from pathlib import Path
+    
+    data_file = video_data_path
+
+    with open(data_file, "r", encoding="utf-8") as f:
+        VIDEO_DATA = json.load(f)
+    matches = []
+    q = query.lower().strip()
+
+    domain_words = {
+        "麻醉", "无痛", "胃肠镜", "胃镜", "肠镜", "内镜",
+        "术前", "术后", "饮食", "泻药", "肠道准备", "复苏",
+        "活检", "息肉", "体位", "报告", "复查", "费用",
+        "禁忌症", "适应症", "评估", "抗凝", "祛泡剂", "清洁度"
+    }
+    if not any(w in q for w in domain_words):
+        return []
+
+    prepare_keywords = ["肠镜准备", "肠镜怎么准备", "肠道准备", "肠镜术前", "泻药", "肠镜饮食"]
+    is_prepare = any(k in q for k in prepare_keywords)
+    is_colon = "肠镜" in q
+
+    for cat in VIDEO_DATA["categories"]:
+        for sec in cat["sections"]:
+            for v in sec["videos"]:
+                title = v["title"].lower()
+                matched = False
+
+                if (is_prepare or is_colon) and any(kw in title for kw in [
+                    "肠镜术前", "泻药", "肠道清洁", "饮食注意事项", "祛泡剂", "波士顿"
+                ]):
+                    matched = True
+                elif any(word in title for word in q.split() if len(word) > 1):
+                    matched = True
+
+                if matched:
+                    video_url = f"https://huaxi-gi-1363940944.cos.ap-guangzhou.myqcloud.com/{v['cos_key']}"
+                    matches.append({
+                        "video_id": v["video_id"],
+                        "title": v["title"],
+                        "code": v["code"],
+                        "cos_key": v["cos_key"],
+                        "video_url": video_url
+                    })
+
+    seen = set()
+    out = []
+    for item in matches:
+        if item["video_id"] not in seen:
+            seen.add(item["video_id"])
+            out.append(item)
+    return out[:top_n]
 
 
 def build_user_prompt(
@@ -253,10 +326,29 @@ def chat(req: ChatRequest) -> ChatResponse:
     try:
         answer = call_qwen(messages)
     except Exception:
-        answer = "当前模型服务不可用，请稍后再试或联系医护人员。"
+        answer = "当前模型服务不可用，请稍后再试联系医护人员。"
 
     if effective_q != original_q:
         answer = f"我先按“{effective_q}”理解你的问题。\n\n{answer}"
 
     answer = _normalize_to_chinese(answer)
-    return ChatResponse(answer=answer, risk_level="normal", escalate=False, sources=sources)
+
+    videos = match_videos_by_question(effective_q, top_n=3)
+    if videos:
+        answer += "\n\n---\n📺 相关教学视频\n"
+        for v in videos:
+            answer += f"""
+【{v['title']}】
+<video width="100%" controls style="max-width:600px;border-radius:8px;background:#000;">
+<source src="{v['video_url']}" type="video/mp4">
+您的浏览器不支持视频播放
+</video>
+"""
+
+    return ChatResponse(
+        answer=answer,
+        risk_level="normal",
+        escalate=False,
+        sources=sources,
+        videos=videos
+    )

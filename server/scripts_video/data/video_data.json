@@ -1,0 +1,625 @@
+{
+  "exported_at": "2026-02-16T15:53:21.969Z",
+  "total_videos": 30,
+  "total_categories": 7,
+  "categories": [
+    {
+      "category_code": "1",
+      "category_title": "无痛消化内镜诊疗概述",
+      "category_sort_order": 1,
+      "category_id": "8440a02c-abf9-4bb6-b1af-cfcf7a7e5c4c",
+      "sections": [
+        {
+          "section_code": "1.1",
+          "section_title": "概念界定与术式区分",
+          "section_sort_order": 0,
+          "section_id": "ff105214-7593-4283-85dc-81d2e1802873",
+          "videos": [
+            {
+              "video_id": "344c4c8d-133d-4aa0-9eb1-48b82da45b71",
+              "code": "1.1.2",
+              "title": "“无痛”技术的麻醉学内涵",
+              "original_filename": "1.1.2“无痛”技术的麻醉学内涵.mp4",
+              "file_hash": "46420d495cd1f4978ace956ebcb9b9ef229702fae9c4e6dad7aabf1854bdebb3",
+              "cos_key": "videos/46420d495cd1f4978ace956ebcb9b9ef229702fae9c4e6dad7aabf1854bdebb3",
+              "file_size": "2230273",
+              "duration": null,
+              "mime_type": "video/mp4",
+              "sort_order": 0,
+              "is_active": true,
+              "created_at": "2026-02-16T11:11:31.343Z",
+              "updated_at": "2026-02-16T11:11:31.343Z"
+            },
+            {
+              "video_id": "2fb58f94-d084-49e8-828d-f9b395ca9484",
+              "code": "1.1.4",
+              "title": "胃、肠镜必须一起做吗",
+              "original_filename": "1.1.4 胃、肠镜必须一起做吗.mp4",
+              "file_hash": "25a962217ef43d3cc697927b1bbc5402d64e01f589e72a2fa9b7fffa805d0918",
+              "cos_key": "videos/25a962217ef43d3cc697927b1bbc5402d64e01f589e72a2fa9b7fffa805d0918",
+              "file_size": "14297149",
+              "duration": null,
+              "mime_type": "video/mp4",
+              "sort_order": 0,
+              "is_active": true,
+              "created_at": "2026-02-16T11:11:37.621Z",
+              "updated_at": "2026-02-16T11:11:37.621Z"
+            },
+            {
+              "video_id": "24d05567-8ea8-4975-9db7-ad8c6cdd5036",
+              "code": "1.1.1",
+              "title": "胃镜、肠镜检查的区别",
+              "original_filename": "1.1.1胃镜、肠镜检查的区别.mp4",
+              "file_hash": "3ecaf04f37b250ff65977f6ac8f56fa324089eb77d2f581a3e20c215ba3b196c",
+              "cos_key": "videos/3ecaf04f37b250ff65977f6ac8f56fa324089eb77d2f581a3e20c215ba3b196c",
+              "file_size": "51596869",
+              "duration": null,
+              "mime_type": "video/mp4",
+              "sort_order": 0,
+              "is_active": true,
+              "created_at": "2026-02-16T11:11:30.587Z",
+              "updated_at": "2026-02-16T11:11:30.587Z"
+            },
+            {
+              "video_id": "41d765fd-c649-427b-bf86-03ff9cf7138e",
+              "code": "1.1.3",
+              "title": "常规内镜与无痛内镜的差异对比",
+              "original_filename": "1.1.3 常规内镜与无痛内镜的差异对比.mp4",
+              "file_hash": "c9cbcf183d2a06bae59b203cdaedf6945d0d5bc1145edeb592999c3fb8c7da5d",
+              "cos_key": "videos/c9cbcf183d2a06bae59b203cdaedf6945d0d5bc1145edeb592999c3fb8c7da5d",
+              "file_size": "34025770",
+              "duration": null,
+              "mime_type": "video/mp4",
+              "sort_order": 0,
+              "is_active": true,
+              "created_at": "2026-02-16T11:11:35.596Z",
+              "updated_at": "2026-02-16T11:11:35.596Z"
+            }
+          ]
+        },
+        {
+          "section_code": "1.2",
+          "section_title": "适应证与禁忌证",
+          "section_sort_order": 0,
+          "section_id": "4599600e-489a-497b-9661-3184ea3c8b15",
+          "videos": [
+            {
+              "video_id": "bc4d6235-fcae-486d-bd0e-74cb20bf7b99",
+              "code": "1.2.1",
+              "title": "检查指征：临床症状与筛查建议",
+              "original_filename": "1.2.1 检查指征：临床症状与筛查建议.mp4",
+              "file_hash": "05cd2a0fe22d06cceae0bd8680e084d7b527133fb209816ea6b5a83d8eb02aa8",
+              "cos_key": "videos/05cd2a0fe22d06cceae0bd8680e084d7b527133fb209816ea6b5a83d8eb02aa8",
+              "file_size": "76091584",
+              "duration": null,
+              "mime_type": "video/mp4",
+              "sort_order": 0,
+              "is_active": true,
+              "created_at": "2026-02-16T11:11:47.427Z",
+              "updated_at": "2026-02-16T11:11:47.427Z"
+            },
+            {
+              "video_id": "020d5769-8e99-4757-985d-c019a325d8a2",
+              "code": "1.2.2",
+              "title": "检查禁忌",
+              "original_filename": "1.2.2 检查禁忌.mp4",
+              "file_hash": "24defb646a32eb68c968e9cd32cfe828a9f7eb2b6916c568df1f2941f55f76c0",
+              "cos_key": "videos/24defb646a32eb68c968e9cd32cfe828a9f7eb2b6916c568df1f2941f55f76c0",
+              "file_size": "97333511",
+              "duration": null,
+              "mime_type": "video/mp4",
+              "sort_order": 0,
+              "is_active": true,
+              "created_at": "2026-02-16T11:12:03.918Z",
+              "updated_at": "2026-02-16T11:12:03.918Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "category_code": "2",
+      "category_title": "术前评估与用药管理",
+      "category_sort_order": 2,
+      "category_id": "8b87c8c2-9fb2-49fb-9cea-73361ba2b75b",
+      "sections": [
+        {
+          "section_code": "2.2",
+          "section_title": "既往用药调整策略",
+          "section_sort_order": 0,
+          "section_id": "a6f12108-4e7e-4117-a365-69e18f0087b5",
+          "videos": [
+            {
+              "video_id": "bf1671da-bf0e-4619-ae9d-58e1d725074b",
+              "code": "2.21",
+              "title": "抗凝与抗血小板药物的停药原则",
+              "original_filename": "2.21 抗凝与抗血小板药物的停药原则.mp4",
+              "file_hash": "98599e87fd931abcf0954fad1d90181c2b63ea9dcc00196bf8a262a109ca7e58",
+              "cos_key": "videos/98599e87fd931abcf0954fad1d90181c2b63ea9dcc00196bf8a262a109ca7e58",
+              "file_size": "93003680",
+              "duration": null,
+              "mime_type": "video/mp4",
+              "sort_order": 0,
+              "is_active": true,
+              "created_at": "2026-02-16T11:14:39.752Z",
+              "updated_at": "2026-02-16T11:14:39.752Z"
+            },
+            {
+              "video_id": "ff73e531-9f8f-407e-a14e-45eaddf48b3c",
+              "code": "2.2.2",
+              "title": "慢性病药物的围术期管理.",
+              "original_filename": "2.2.2 慢性病药物的围术期管理..mp4",
+              "file_hash": "c67b0c5f87e987eef7c11e44078a01076ad609ead9a0f293c82f9799b578874b",
+              "cos_key": "videos/c67b0c5f87e987eef7c11e44078a01076ad609ead9a0f293c82f9799b578874b",
+              "file_size": "48221574",
+              "duration": null,
+              "mime_type": "video/mp4",
+              "sort_order": 0,
+              "is_active": true,
+              "created_at": "2026-02-16T11:12:28.857Z",
+              "updated_at": "2026-02-16T11:12:28.857Z"
+            }
+          ]
+        },
+        {
+          "section_code": "2.1",
+          "section_title": "术前医学检查",
+          "section_sort_order": 0,
+          "section_id": "86cc621f-1f4e-494c-a72f-922cde1c2183",
+          "videos": [
+            {
+              "video_id": "0bcbc905-aaa4-4d77-a183-4137cad36533",
+              "code": "2.1.2",
+              "title": "术前麻醉评估",
+              "original_filename": "2.1.2 术前麻醉评估.mp4",
+              "file_hash": "cf16848928e7e72c669402820dc34c1ba038987b24d3066126527bb9ac3b7d1c",
+              "cos_key": "videos/cf16848928e7e72c669402820dc34c1ba038987b24d3066126527bb9ac3b7d1c",
+              "file_size": "23954704",
+              "duration": null,
+              "mime_type": "video/mp4",
+              "sort_order": 0,
+              "is_active": true,
+              "created_at": "2026-02-16T11:12:19.990Z",
+              "updated_at": "2026-02-16T11:12:19.990Z"
+            },
+            {
+              "video_id": "5850319f-d84d-4cf6-a5e0-2b795eaaec75",
+              "code": "2.1.1",
+              "title": "术前检验、检查项目及其目的",
+              "original_filename": "2.1.1 术前检验、检查项目及其目的.mp4",
+              "file_hash": "3cedbcf007a325ddb3bb5b716c121dfd1ffba7c0047441964069d76f847c3d91",
+              "cos_key": "videos/3cedbcf007a325ddb3bb5b716c121dfd1ffba7c0047441964069d76f847c3d91",
+              "file_size": "49490221",
+              "duration": null,
+              "mime_type": "video/mp4",
+              "sort_order": 0,
+              "is_active": true,
+              "created_at": "2026-02-16T11:12:16.055Z",
+              "updated_at": "2026-02-16T11:12:16.055Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "category_code": "3",
+      "category_title": "肠道准备与饮食控制",
+      "category_sort_order": 3,
+      "category_id": "88d32108-d2ba-40cb-afe1-9189d72f3bb3",
+      "sections": [
+        {
+          "section_code": "3.2",
+          "section_title": "胃肠道清洁方案",
+          "section_sort_order": 0,
+          "section_id": "6f916fa3-fb56-4d58-9cd9-a02a88fad02f",
+          "videos": [
+            {
+              "video_id": "1bd7dbd2-715a-4fd8-983c-63ce54d9d854",
+              "code": "3.2.4",
+              "title": "口服泻药后如何缓解恶心呕吐",
+              "original_filename": "3.2.4  口服泻药后如何缓解恶心呕吐.mp4",
+              "file_hash": "a8c61c04f298d4fed8d70ac9b5dae5eec8853215bab6b80e5738a030a4274480",
+              "cos_key": "videos/a8c61c04f298d4fed8d70ac9b5dae5eec8853215bab6b80e5738a030a4274480",
+              "file_size": "35481775",
+              "duration": null,
+              "mime_type": "video/mp4",
+              "sort_order": 0,
+              "is_active": true,
+              "created_at": "2026-02-16T11:12:55.649Z",
+              "updated_at": "2026-02-16T11:12:55.649Z"
+            },
+            {
+              "video_id": "51e03da3-1713-4876-b169-894a28abcdd2",
+              "code": "3.2.1",
+              "title": "胃镜术前口服祛泡剂",
+              "original_filename": "3.2.1 胃镜术前口服祛泡剂.mp4",
+              "file_hash": "153b1f7da1a09f0341e7aa3215097abf2e23e25b8947584f90086515e88c667d",
+              "cos_key": "videos/153b1f7da1a09f0341e7aa3215097abf2e23e25b8947584f90086515e88c667d",
+              "file_size": "2568644",
+              "duration": null,
+              "mime_type": "video/mp4",
+              "sort_order": 0,
+              "is_active": true,
+              "created_at": "2026-02-16T11:12:33.361Z",
+              "updated_at": "2026-02-16T11:12:33.361Z"
+            },
+            {
+              "video_id": "87759670-f6a0-4e2f-8c63-e4624e1efb3f",
+              "code": "3.2.2",
+              "title": "肠镜术前口服泻药",
+              "original_filename": "3.2.2 肠镜术前口服泻药.mp4",
+              "file_hash": "3aa1267dc36496083542b825a5ba83c1e9c686e1cdafdd6d6926b42fc9ea78c0",
+              "cos_key": "videos/3aa1267dc36496083542b825a5ba83c1e9c686e1cdafdd6d6926b42fc9ea78c0",
+              "file_size": "77111890",
+              "duration": null,
+              "mime_type": "video/mp4",
+              "sort_order": 0,
+              "is_active": true,
+              "created_at": "2026-02-16T11:12:42.995Z",
+              "updated_at": "2026-02-16T11:12:42.995Z"
+            },
+            {
+              "video_id": "94f5ec81-bd07-49c4-9259-23fb47b9b5ee",
+              "code": "3.2.3",
+              "title": "肠道清洁度达标的判断标准（波士顿量表）",
+              "original_filename": "3.2.3  肠道清洁度达标的判断标准（波士顿量表）.mp4",
+              "file_hash": "af157af9e1a831dba171816abc91981e5b90ee465c0ceb76417be387f5ece36a",
+              "cos_key": "videos/af157af9e1a831dba171816abc91981e5b90ee465c0ceb76417be387f5ece36a",
+              "file_size": "54724900",
+              "duration": null,
+              "mime_type": "video/mp4",
+              "sort_order": 0,
+              "is_active": true,
+              "created_at": "2026-02-16T11:12:50.412Z",
+              "updated_at": "2026-02-16T11:12:50.412Z"
+            }
+          ]
+        },
+        {
+          "section_code": "3.1",
+          "section_title": "饮食限制与时机",
+          "section_sort_order": 0,
+          "section_id": "72267408-4b17-4034-ad11-b0e141913556",
+          "videos": [
+            {
+              "video_id": "cfb3f5da-31bd-4e4d-b07f-3cba8f351dac",
+              "code": "3.1.1",
+              "title": "胃肠镜术前的饮食注意事项 1.",
+              "original_filename": "3.1.1 胃肠镜术前的饮食注意事项 1..mp4",
+              "file_hash": "3a66859d02d4eea45b396384fd7947b4bd0f4dbcf91f41918783de778d64ed27",
+              "cos_key": "videos/3a66859d02d4eea45b396384fd7947b4bd0f4dbcf91f41918783de778d64ed27",
+              "file_size": "11883719",
+              "duration": null,
+              "mime_type": "video/mp4",
+              "sort_order": 0,
+              "is_active": true,
+              "created_at": "2026-02-16T11:12:30.891Z",
+              "updated_at": "2026-02-16T11:12:30.891Z"
+            },
+            {
+              "video_id": "e9c7c8cc-2027-410f-9a17-224647fee211",
+              "code": "3.1.2",
+              "title": "胃肠镜术前的饮食注意事项2",
+              "original_filename": "3.1.2 胃肠镜术前的饮食注意事项2.mp4",
+              "file_hash": "6ad7fcccf108ee907315f9fde42dc2ce8f93c28ec5232f5e4f504e16cf86ecaf",
+              "cos_key": "videos/6ad7fcccf108ee907315f9fde42dc2ce8f93c28ec5232f5e4f504e16cf86ecaf",
+              "file_size": "4977535",
+              "duration": null,
+              "mime_type": "video/mp4",
+              "sort_order": 0,
+              "is_active": true,
+              "created_at": "2026-02-16T11:12:31.727Z",
+              "updated_at": "2026-02-16T11:12:31.727Z"
+            },
+            {
+              "video_id": "6106efd7-be8f-44bb-97dd-6fd35f59115f",
+              "code": "3.1.3",
+              "title": "胃肠镜术前的饮食注意事项 3",
+              "original_filename": "3.1.3 胃肠镜术前的饮食注意事项 3.mp4",
+              "file_hash": "8eeded18f6f8815572046c413dae2d20efb528734f4e181b05735e17c51f4a66",
+              "cos_key": "videos/8eeded18f6f8815572046c413dae2d20efb528734f4e181b05735e17c51f4a66",
+              "file_size": "4711438",
+              "duration": null,
+              "mime_type": "video/mp4",
+              "sort_order": 0,
+              "is_active": true,
+              "created_at": "2026-02-16T11:12:32.686Z",
+              "updated_at": "2026-02-16T11:12:32.686Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "category_code": "4",
+      "category_title": "麻醉流程与术中监护",
+      "category_sort_order": 4,
+      "category_id": "aff45051-006c-446e-832d-5529c9610a90",
+      "sections": [
+        {
+          "section_code": "4.1",
+          "section_title": "概述",
+          "section_sort_order": 0,
+          "section_id": "20bf37b4-5d2c-49be-823a-70d4b1dc357e",
+          "videos": [
+            {
+              "video_id": "a47fd453-1cc1-4c38-bfde-1398eba82433",
+              "code": "4.1",
+              "title": "麻醉流程与术中监护",
+              "original_filename": "4.1 麻醉流程与术中监护.mp4",
+              "file_hash": "40436b7840cb230b5fc02c39b37ca48f6144e02bcf321f22db7b44376719e0a2",
+              "cos_key": "videos/40436b7840cb230b5fc02c39b37ca48f6144e02bcf321f22db7b44376719e0a2",
+              "file_size": "44849974",
+              "duration": null,
+              "mime_type": "video/mp4",
+              "sort_order": 0,
+              "is_active": true,
+              "created_at": "2026-02-16T11:33:07.639Z",
+              "updated_at": "2026-02-16T11:33:07.639Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "category_code": "5",
+      "category_title": "内镜操作技术与影像演示",
+      "category_sort_order": 5,
+      "category_id": "a7611b3c-8b19-43c3-9c18-0d9ca85842c4",
+      "sections": [
+        {
+          "section_code": "5.1",
+          "section_title": "标准化检查过程",
+          "section_sort_order": 0,
+          "section_id": "8fcbf940-1bf2-4031-b946-f76d89dea5c4",
+          "videos": [
+            {
+              "video_id": "bca01e29-6e85-4535-8518-9639d164bf3d",
+              "code": "5.1.3",
+              "title": "胃肠镜检查操作流程",
+              "original_filename": "5.1.3 胃肠镜检查操作流程.mp4",
+              "file_hash": "02adf17ae1f4232e1504aa61f224da39e329de26ddada1687bfa1ae95e162723",
+              "cos_key": "videos/02adf17ae1f4232e1504aa61f224da39e329de26ddada1687bfa1ae95e162723",
+              "file_size": "39507475",
+              "duration": null,
+              "mime_type": "video/mp4",
+              "sort_order": 0,
+              "is_active": true,
+              "created_at": "2026-02-16T11:13:20.993Z",
+              "updated_at": "2026-02-16T11:13:20.993Z"
+            },
+            {
+              "video_id": "bfe2f528-02ba-4a8f-847c-18dbfdd9f079",
+              "code": "5.1.1",
+              "title": "体位摆放与入室配合1",
+              "original_filename": "5.1.1 体位摆放与入室配合1.mp4",
+              "file_hash": "40ead67341e37bc89eff7ab263c91714901b85a9ec6ea6328f2b29ede247b82a",
+              "cos_key": "videos/40ead67341e37bc89eff7ab263c91714901b85a9ec6ea6328f2b29ede247b82a",
+              "file_size": "45148845",
+              "duration": null,
+              "mime_type": "video/mp4",
+              "sort_order": 0,
+              "is_active": true,
+              "created_at": "2026-02-16T11:13:01.676Z",
+              "updated_at": "2026-02-16T11:13:01.676Z"
+            },
+            {
+              "video_id": "fda6f155-7c36-46c4-bdf0-7efaf8edbf75",
+              "code": "5.1.2",
+              "title": "体位摆放与入室配合2",
+              "original_filename": "5.1.2 体位摆放与入室配合2.mp4",
+              "file_hash": "42ee75fd792485c80537d775f5d4be71aba16d1d364dca2a026c27f7aef91a0f",
+              "cos_key": "videos/42ee75fd792485c80537d775f5d4be71aba16d1d364dca2a026c27f7aef91a0f",
+              "file_size": "47761178",
+              "duration": null,
+              "mime_type": "video/mp4",
+              "sort_order": 0,
+              "is_active": true,
+              "created_at": "2026-02-16T11:13:13.898Z",
+              "updated_at": "2026-02-16T11:13:13.898Z"
+            }
+          ]
+        },
+        {
+          "section_code": "5.2",
+          "section_title": "镜下治疗与操作演示",
+          "section_sort_order": 0,
+          "section_id": "ec45013c-a17f-4270-998b-387edd38a29b",
+          "videos": [
+            {
+              "video_id": "ca3491c1-0b14-48ce-9e4c-960cae9309ce",
+              "code": "5.21",
+              "title": "胃镜真实操作及动画影像资料展示",
+              "original_filename": "5.21 胃镜真实操作及动画影像资料展示.mp4",
+              "file_hash": "bc5cabec35bfe0941db7a1b1a78f02fac92db8b944aa0f21b25e076d9c43d7f8",
+              "cos_key": "videos/bc5cabec35bfe0941db7a1b1a78f02fac92db8b944aa0f21b25e076d9c43d7f8",
+              "file_size": "218556178",
+              "duration": null,
+              "mime_type": "video/mp4",
+              "sort_order": 0,
+              "is_active": true,
+              "created_at": "2026-02-16T11:15:10.558Z",
+              "updated_at": "2026-02-16T11:15:10.558Z"
+            },
+            {
+              "video_id": "22f96b13-0a66-43e1-a672-3bb2bca4300b",
+              "code": "5.22",
+              "title": "肠镜真实操作及动画影像资料展示",
+              "original_filename": "5.22 肠镜真实操作及动画影像资料展示.mp4",
+              "file_hash": "49e01b7c3d65650b369651899ed79e3345802754f301825e4abd5735c7134910",
+              "cos_key": "videos/49e01b7c3d65650b369651899ed79e3345802754f301825e4abd5735c7134910",
+              "file_size": "176563450",
+              "duration": null,
+              "mime_type": "video/mp4",
+              "sort_order": 0,
+              "is_active": true,
+              "created_at": "2026-02-16T11:15:35.402Z",
+              "updated_at": "2026-02-16T11:15:35.402Z"
+            },
+            {
+              "video_id": "509901e6-9a7e-4d52-9be1-1e7fc6c75779",
+              "code": "5.23",
+              "title": "哪些情况需要活检取样",
+              "original_filename": "5.23 哪些情况需要活检取样.mp4",
+              "file_hash": "69488e9fbaa5028495107f6f0d6cb8fb04ddcebe5155a09a7975095489746be3",
+              "cos_key": "videos/69488e9fbaa5028495107f6f0d6cb8fb04ddcebe5155a09a7975095489746be3",
+              "file_size": "74828808",
+              "duration": null,
+              "mime_type": "video/mp4",
+              "sort_order": 0,
+              "is_active": true,
+              "created_at": "2026-02-16T11:15:46.096Z",
+              "updated_at": "2026-02-16T11:15:46.096Z"
+            },
+            {
+              "video_id": "2c646e19-ffbf-47e8-ab16-bc18d36607df",
+              "code": "5.24",
+              "title": "镜下息肉切除",
+              "original_filename": "5.24 镜下息肉切除.mp4",
+              "file_hash": "6441fc061c485a5abf2d2da93ea1557189a074f24232db3a60f66d4eb96257e3",
+              "cos_key": "videos/6441fc061c485a5abf2d2da93ea1557189a074f24232db3a60f66d4eb96257e3",
+              "file_size": "41808483",
+              "duration": null,
+              "mime_type": "video/mp4",
+              "sort_order": 0,
+              "is_active": true,
+              "created_at": "2026-02-16T11:15:52.943Z",
+              "updated_at": "2026-02-16T11:15:52.943Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "category_code": "6",
+      "category_title": "术后复苏与饮食指导",
+      "category_sort_order": 6,
+      "category_id": "ed9c4f71-0ff6-4eec-b53b-af0b372a77a5",
+      "sections": [
+        {
+          "section_code": "6.2",
+          "section_title": "概述",
+          "section_sort_order": 0,
+          "section_id": "c1f357be-dced-400f-aee2-5cb8207e0618",
+          "videos": [
+            {
+              "video_id": "5baa5dff-e9c6-4ce4-9291-6fb85fb868cf",
+              "code": "6.2",
+              "title": "术后饮食恢复",
+              "original_filename": "6.2 术后饮食恢复.mp4",
+              "file_hash": "bbf714b20ba177f951cc760656744b6a23260cba99ebcb5452f8364d1354e961",
+              "cos_key": "videos/bbf714b20ba177f951cc760656744b6a23260cba99ebcb5452f8364d1354e961",
+              "file_size": "70867406",
+              "duration": null,
+              "mime_type": "video/mp4",
+              "sort_order": 0,
+              "is_active": true,
+              "created_at": "2026-02-16T11:16:08.140Z",
+              "updated_at": "2026-02-16T11:16:08.140Z"
+            }
+          ]
+        },
+        {
+          "section_code": "6.1",
+          "section_title": "概述",
+          "section_sort_order": 0,
+          "section_id": "3291db68-0dec-4f07-a8f6-a096b734f3bf",
+          "videos": [
+            {
+              "video_id": "a25f3f79-6c42-4e4c-9bc7-04ea3e91baae",
+              "code": "6.1",
+              "title": "复苏期观察",
+              "original_filename": "6.1 复苏期观察.mp4",
+              "file_hash": "0d178e771d49a75e2585544f7db7ba875388eb3227b0fe79144f99f1c51a5155",
+              "cos_key": "videos/0d178e771d49a75e2585544f7db7ba875388eb3227b0fe79144f99f1c51a5155",
+              "file_size": "39871418",
+              "duration": null,
+              "mime_type": "video/mp4",
+              "sort_order": 0,
+              "is_active": true,
+              "created_at": "2026-02-16T11:15:58.284Z",
+              "updated_at": "2026-02-16T11:15:58.284Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "category_code": "7",
+      "category_title": "结果解读与随访管理",
+      "category_sort_order": 7,
+      "category_id": "c844a109-38de-4aee-8042-7f417ec3b27c",
+      "sections": [
+        {
+          "section_code": "7.1",
+          "section_title": "概述",
+          "section_sort_order": 0,
+          "section_id": "dea9370c-b8e1-47ee-97d6-10555e55cd6f",
+          "videos": [
+            {
+              "video_id": "6f6b2a25-4831-417d-a541-e68e995f6887",
+              "code": "7.1",
+              "title": "内镜报告解读",
+              "original_filename": "7.1 内镜报告解读.mp4",
+              "file_hash": "00786a6a894643c1344477933591fba9a4d0a1c9e5d93239026aae024b9c6720",
+              "cos_key": "videos/00786a6a894643c1344477933591fba9a4d0a1c9e5d93239026aae024b9c6720",
+              "file_size": "99553680",
+              "duration": null,
+              "mime_type": "video/mp4",
+              "sort_order": 0,
+              "is_active": true,
+              "created_at": "2026-02-16T11:16:21.110Z",
+              "updated_at": "2026-02-16T11:16:21.110Z"
+            }
+          ]
+        },
+        {
+          "section_code": "7.2",
+          "section_title": "概述",
+          "section_sort_order": 0,
+          "section_id": "43ecc3c8-21a1-45be-a0bc-63949f9b5d31",
+          "videos": [
+            {
+              "video_id": "229091d9-d0bf-4a3a-9374-c0fa0222b4ff",
+              "code": "7.2",
+              "title": "复查周期建议",
+              "original_filename": "7.2 复查周期建议.mp4",
+              "file_hash": "f692ec5e3013b9c071470c39c67c82e983ef821ef6d666f342cc25b7c832b0a2",
+              "cos_key": "videos/f692ec5e3013b9c071470c39c67c82e983ef821ef6d666f342cc25b7c832b0a2",
+              "file_size": "78671276",
+              "duration": null,
+              "mime_type": "video/mp4",
+              "sort_order": 0,
+              "is_active": true,
+              "created_at": "2026-02-16T11:16:32.191Z",
+              "updated_at": "2026-02-16T11:16:32.191Z"
+            }
+          ]
+        },
+        {
+          "section_code": "7.3",
+          "section_title": "概述",
+          "section_sort_order": 0,
+          "section_id": "14b3e37b-98ae-4d1d-9aff-6a9b6669c665",
+          "videos": [
+            {
+              "video_id": "c1c710ba-7058-4226-b7a7-92cdc622e5bf",
+              "code": "7.3",
+              "title": "费用参考",
+              "original_filename": "7.3 费用参考.mp4",
+              "file_hash": "91e1513a96273f0c467fe1df5c1dcc9652bd2c99213d00feeaa721f1dfbffe1b",
+              "cos_key": "videos/91e1513a96273f0c467fe1df5c1dcc9652bd2c99213d00feeaa721f1dfbffe1b",
+              "file_size": "9018363",
+              "duration": null,
+              "mime_type": "video/mp4",
+              "sort_order": 0,
+              "is_active": true,
+              "created_at": "2026-02-16T11:16:34.417Z",
+              "updated_at": "2026-02-16T11:16:34.417Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

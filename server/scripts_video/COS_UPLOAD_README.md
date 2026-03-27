@@ -32,5 +32,5 @@ psql "postgresql://app_user:huaxi@127.0.0.1:5432/gi_edu" -f server/db/video_tabl
 ## 3. 同步视频表单
 将 video_data_export.json 导入 gi_edu 数据库的视频表单
 ```bash
-node server/scripts/import_videos.js
+node server/scripts_video/import_videos.js
 ```
