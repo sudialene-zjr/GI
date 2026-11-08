@@ -1,64 +1,64 @@
-# Node
+# ---------- Node ----------
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
 
-# Env
+# ---------- 环境变量与密钥 ----------
 .env
 .env.*
+!.env.example
+*.pem
+*.key
+*.p12
 
-# OS
+# ---------- 操作系统 ----------
 .DS_Store
+**/.DS_Store
+Thumbs.db
+desktop.ini
 
-# Logs
+# ---------- 日志 ----------
 logs/
 *.log
+nohup.out
 
-# Build / Dist
+# ---------- 构建产物 ----------
 dist/
 build/
+static/
 
-# Local data
-server/data/
-
-# IDE
+# ---------- IDE ----------
 .vscode/
 .idea/
+*.swp
 
-# Python / Agent
+# ---------- Python ----------
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+venv/
+.venv/
+server/venv~/
+
+# ---------- Agent 子项目 ----------
 agent/.venv/
-agent/__pycache__/
-agent/**/*.pyc
-agent/.pytest_cache/
-agent/.mypy_cache/
-agent/.ruff_cache/
 agent/.env
 agent/.env.*
 !agent/.env.example
 agent/data/processed/
 agent/data/processed/**
 
-# Python virtual environments
-venv/
-server/venv~/
-
-# nohup logs
-agent/nohup.out
-
-# Local artifacts
-agent/.DS_Store
-
-# Office temp
-.~*
-~$*
-
-# Static files
-static/
-
-# Users datas
+# ---------- 运行时数据（含用户信息，禁止入库） ----------
+server/data/
 server/scripts_users/data/
 server/scripts_users/data/**
+server/scripts_video/data/
 
-# 视频元数据
-server/scripts_video/data
+# ---------- Office 临时文件 ----------
+.~*
+~$*
