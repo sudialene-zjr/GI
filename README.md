@@ -16,13 +16,8 @@ GI/
         app/                             # API、检索、提示词
         scripts/                         # 数据处理脚本
         
-    static/                            # 静态资源
-        data/                            # 知识库原始数据与术语
-            患者提问/
-            评测集/
-        images/                          # 存储静态图片
-            check-flow-01.png
-            ...
+    agent/data/                        # 知识库原始表格（7 类场景问答，Excel）
+    data/processed/                    # 由 build_data.py 生成的检索数据（运行时产物）
 ```
 
 ## 系统架构与数据流
@@ -48,17 +43,17 @@ psql "postgresql://<superuser>@127.0.0.1:5432/postgres" -c "CREATE DATABASE gi_e
 # 数据库安装拓展
 psql "postgresql://<superuser>@127.0.0.1:5432/gi_edu" -c "CREATE EXTENSION IF NOT EXISTS pgcrypto;"
 
-# 创建 app_user 用户, 密码为 huaxi
-psql "postgresql://<superuser>@127.0.0.1:5432/gi_edu" -c "CREATE USER app_user WITH PASSWORD 'huaxi';"
+# 创建 app_user 用户（示例密码 change_me_local，请自行替换为你的本地密码）
+psql "postgresql://<superuser>@127.0.0.1:5432/gi_edu" -c "CREATE USER app_user WITH PASSWORD 'change_me_local';";
 
 # 赋予 app_user 权限
 psql "postgresql://<superuser>@127.0.0.1:5432/gi_edu" -c "GRANT ALL ON SCHEMA public TO app_user;"
 psql "postgresql://<superuser>@127.0.0.1:5432/gi_edu" -c "GRANT ALL PRIVILEGES ON DATABASE gi_edu TO app_user;"
 
 # 初始化数据库
-psql "postgresql://app_user:huaxi@127.0.0.1:5432/gi_edu" -f server/db/init.sql
-psql "postgresql://app_user:huaxi@127.0.0.1:5432/gi_edu" -f server/db/video_tables.sql
-psql "postgresql://app_user:huaxi@127.0.0.1:5432/gi_edu" -f server/db/gi_messages.sql
+psql "postgresql://app_user:change_me_local@127.0.0.1:5432/gi_edu" -f server/db/init.sql
+psql "postgresql://app_user:change_me_local@127.0.0.1:5432/gi_edu" -f server/db/video_tables.sql
+psql "postgresql://app_user:change_me_local@127.0.0.1:5432/gi_edu" -f server/db/gi_messages.sql
 
 # 向视频表单中导入已有的视频元数据
 node server/scripts/import_videos.js
@@ -157,9 +152,31 @@ curl -X POST http://127.0.0.1:8000/v1/chat   -H "Content-Type: application/json"
 ## 评测方法
 **目标**：避免红线漏报、保证核心 FAQ 命中、提升满意度。
 
-1. 回归评测集：使用 `agent/data/评测集/*.xlsx` 作为问题集，统计指标包括红线命中率、召回率、低风险错误率。
+1. 回归评测集：使用 `agent/auto_eval.py` 批量跑评测问题，统计指标包括红线命中率、召回率、低风险错误率。
 2. 人工抽检：每次更新提示词或知识库后，随机抽样 20-50 条对话评估正确性。
 3. 线上反馈：结合 `survey_responses` 的满意度/理解度指标做版本对比。
+
+## 开源说明
+
+### 许可证
+
+本仓库代码以 [MIT License](LICENSE) 发布。
+
+`agent/data/` 下的医学知识库表格为项目自建的示范内容，随仓库一并提供，供学习与二次开发参考；其医学结论不能替代执业医师的判断。
+
+### 免责声明
+
+本项目为**患者教育**用途的技术演示，**不是医疗器械，也不构成诊疗建议**。
+
+- 若用于任何真实医疗场景，必须由具备资质的医疗机构完成内容审核、风险分级与合规评估；
+- `agent/app/` 内的提示词与知识库内容均未经过临床验证；
+- 使用者因直接或间接采用本项目内容所产生的任何后果，作者不承担责任。
+
+### 数据与隐私
+
+- 仓库内**不包含任何真实患者信息**：`server/data/`、`server/scripts_users/data/`、`server/scripts_video/data/` 等运行时目录均已在 `.gitignore` 中排除；
+- 视频元数据仅含分类与标题，不含访问地址或个人信息；
+- 提交代码前请确认未携带 `.env`、密钥文件或导出的用户数据；本地变量参考 `agent/.env.example` 与 `server/.env.example`。
 
 ## 常见问题
 - `pip install` 报 PEP 668：必须使用虚拟环境
